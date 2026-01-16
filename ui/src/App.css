@@ -112,6 +112,46 @@
   color: #4a4f55;
 }
 
+.skeleton-picker {
+  border: 1px solid #d9dde3;
+  border-radius: 10px;
+  padding: 0.75rem;
+  background: #ffffff;
+  margin: 0.5rem 0 0.75rem;
+}
+
+.skeleton-svg {
+  width: 100%;
+  max-width: 360px;
+  display: block;
+}
+
+.skeleton-edge {
+  stroke: #a7b0bb;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+.skeleton-point {
+  fill: #ffffff;
+  stroke: #1d1f23;
+  stroke-width: 1.2;
+  cursor: pointer;
+}
+
+.skeleton-point:hover {
+  stroke-width: 2;
+}
+
+.skeleton-point.selected {
+  fill: #1d7c54;
+  stroke: #1d7c54;
+}
+
+.skeleton-legend {
+  margin-top: 0.5rem;
+}
+
 .checkbox-text {
   display: flex;
   flex-direction: column;

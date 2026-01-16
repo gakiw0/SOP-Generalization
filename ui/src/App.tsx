@@ -153,6 +153,126 @@ const OPENPOSE25_JOINT_OPTIONS: JointOption[] = [
   { id: 24, label: 'RHeel' },
 ]
 
+const OPENPOSE25_LABEL_BY_ID = Object.fromEntries(
+  OPENPOSE25_JOINT_OPTIONS.map((joint) => [joint.id, joint.label])
+) as Record<number, string>
+
+// Simple 2D layout for visual selection (not anatomically exact; just a usable picker).
+type JointPos = { x: number; y: number }
+const OPENPOSE25_POS: Record<number, JointPos> = {
+  0: { x: 50, y: 14 }, // Nose
+  1: { x: 50, y: 22 }, // Neck
+  2: { x: 62, y: 26 }, // RShoulder
+  3: { x: 72, y: 36 }, // RElbow
+  4: { x: 78, y: 48 }, // RWrist
+  5: { x: 38, y: 26 }, // LShoulder
+  6: { x: 28, y: 36 }, // LElbow
+  7: { x: 22, y: 48 }, // LWrist
+  8: { x: 50, y: 44 }, // MidHip
+  9: { x: 58, y: 46 }, // RHip
+  10: { x: 60, y: 62 }, // RKnee
+  11: { x: 62, y: 78 }, // RAnkle
+  12: { x: 42, y: 46 }, // LHip
+  13: { x: 40, y: 62 }, // LKnee
+  14: { x: 38, y: 78 }, // LAnkle
+  15: { x: 54, y: 12 }, // REye
+  16: { x: 46, y: 12 }, // LEye
+  17: { x: 58, y: 14 }, // REar
+  18: { x: 42, y: 14 }, // LEar
+  19: { x: 35, y: 90 }, // LBigToe
+  20: { x: 38, y: 90 }, // LSmallToe
+  21: { x: 41, y: 88 }, // LHeel
+  22: { x: 65, y: 90 }, // RBigToe
+  23: { x: 62, y: 90 }, // RSmallToe
+  24: { x: 59, y: 88 }, // RHeel
+}
+
+const OPENPOSE25_EDGES: Array<[number, number]> = [
+  [0, 1],
+  [1, 2],
+  [2, 3],
+  [3, 4],
+  [1, 5],
+  [5, 6],
+  [6, 7],
+  [1, 8],
+  [8, 9],
+  [9, 10],
+  [10, 11],
+  [8, 12],
+  [12, 13],
+  [13, 14],
+  [0, 15],
+  [0, 16],
+  [15, 17],
+  [16, 18],
+  [14, 19],
+  [14, 20],
+  [14, 21],
+  [11, 22],
+  [11, 23],
+  [11, 24],
+]
+
+type SkeletonPickerProps = {
+  selected: number[]
+  onToggle: (jointId: number, checked: boolean) => void
+}
+
+function OpenPose25SkeletonPicker({ selected, onToggle }: SkeletonPickerProps) {
+  const selectedSet = new Set(selected)
+  const viewBox = '0 0 100 100'
+  return (
+    <div className="skeleton-picker">
+      <svg
+        className="skeleton-svg"
+        viewBox={viewBox}
+        role="group"
+        aria-label="OpenPose25 joint picker"
+      >
+        {OPENPOSE25_EDGES.map(([a, b]) => {
+          const pa = OPENPOSE25_POS[a]
+          const pb = OPENPOSE25_POS[b]
+          if (!pa || !pb) return null
+          return (
+            <line
+              key={`${a}-${b}`}
+              x1={pa.x}
+              y1={pa.y}
+              x2={pb.x}
+              y2={pb.y}
+              className="skeleton-edge"
+            />
+          )
+        })}
+
+        {OPENPOSE25_JOINT_OPTIONS.map((joint) => {
+          const pos = OPENPOSE25_POS[joint.id]
+          const isSelected = selectedSet.has(joint.id)
+          if (!pos) return null
+          return (
+            <g key={joint.id} className="skeleton-point-group">
+              <circle
+                cx={pos.x}
+                cy={pos.y}
+                r={2.3}
+                className={isSelected ? 'skeleton-point selected' : 'skeleton-point'}
+                onClick={() => onToggle(joint.id, !isSelected)}
+              />
+              <title>
+                {joint.id}: {joint.label}
+              </title>
+            </g>
+          )
+        })}
+      </svg>
+      <div className="skeleton-legend hint">
+        Click joints to toggle. Selected joints are highlighted.
+      </div>
+    </div>
+  )
+}
+
 const toNumberCsv = (items: number[]): string => items.join(', ')
 
 const fromNumberCsv = (value: string): number[] =>
@@ -709,6 +829,23 @@ function App() {
                       <p className="hint" style={{ marginTop: 0 }}>
                         Select BODY_25 joints (OpenPose25). Saved as numeric indices.
                       </p>
+                      <OpenPose25SkeletonPicker
+                        selected={phase.joints_of_interest ?? []}
+                        onToggle={(jointId, checked) => {
+                          setRuleSetDraft((prev) => ({
+                            ...prev,
+                            phases: prev.phases.map((p, i) => {
+                              if (i !== index) return p
+                              const next = toggleNumberListItem(
+                                p.joints_of_interest ?? [],
+                                jointId,
+                                checked
+                              ).sort((a, b) => a - b)
+                              return { ...p, joints_of_interest: next }
+                            }),
+                          }))
+                        }}
+                      />
                       <div className="checkbox-group">
                         {OPENPOSE25_JOINT_OPTIONS.map((joint) => (
                           <label key={joint.id} className="checkbox-item">
@@ -739,7 +876,13 @@ function App() {
                         ))}
                       </div>
                       <p className="hint" style={{ marginTop: '0.5rem' }}>
-                        Selected: {toNumberCsv(phase.joints_of_interest ?? []) || '(none)'}
+                        Selected:{' '}
+                        {toNumberCsv(phase.joints_of_interest ?? []) || '(none)'}{' '}
+                        {phase.joints_of_interest && phase.joints_of_interest.length > 0
+                          ? `(${phase.joints_of_interest
+                              .map((id) => OPENPOSE25_LABEL_BY_ID[id] ?? String(id))
+                              .join(', ')})`
+                          : ''}
                       </p>
                     </div>
                   </div>
