@@ -44,6 +44,7 @@ type Rule = {
       }
   conditions: Condition[]
   score: Score
+  feedback: Feedback[]
 }
 
 const PREPROCESS_OPTIONS = ['align_orientation', 'normalize_lengths']
@@ -163,6 +164,13 @@ type Score = {
   mode: 'all-or-nothing' | 'average'
   pass_score: number
   max_score: number
+}
+
+type Feedback = {
+  condition_ids: string[]
+  message: string
+  severity: 'info' | 'warn' | 'fail'
+  attach_to_ts?: string
 }
 
 const formatConditionValue = (value: unknown): string => {
@@ -412,6 +420,7 @@ function App() {
               pass_score: 1,
               max_score: 1,
             },
+            feedback: [],
           }
           return rule
         })(),
@@ -451,6 +460,31 @@ function App() {
       rules: prev.rules.map((r, i) => {
         if (i !== ruleIndex) return r
         return { ...r, conditions: r.conditions.filter((_, j) => j !== conditionIndex) }
+      }),
+    }))
+  }
+
+  const handleAddFeedback = (ruleIndex: number) => {
+    setRuleSetDraft((prev) => ({
+      ...prev,
+      rules: prev.rules.map((r, i) => {
+        if (i !== ruleIndex) return r
+        const next: Feedback = {
+          condition_ids: [],
+          message: '',
+          severity: 'warn',
+        }
+        return { ...r, feedback: [...r.feedback, next] }
+      }),
+    }))
+  }
+
+  const handleRemoveFeedback = (ruleIndex: number, feedbackIndex: number) => {
+    setRuleSetDraft((prev) => ({
+      ...prev,
+      rules: prev.rules.map((r, i) => {
+        if (i !== ruleIndex) return r
+        return { ...r, feedback: r.feedback.filter((_, j) => j !== feedbackIndex) }
       }),
     }))
   }
@@ -1936,6 +1970,157 @@ function App() {
                           Weighted scoring is omitted in the UI for now.
                         </p>
                       </div>
+                    </div>
+
+                    <div className="field">
+                      <label>feedback</label>
+                      <div className="actions" style={{ marginBottom: '0.5rem' }}>
+                        <button type="button" onClick={() => handleAddFeedback(index)}>
+                          Add feedback
+                        </button>
+                      </div>
+
+                      {rule.feedback.length === 0 ? (
+                        <p className="hint" style={{ marginTop: 0 }}>
+                          No feedback yet.
+                        </p>
+                      ) : (
+                        rule.feedback.map((fb, fbIndex) => (
+                          <div
+                            key={fbIndex}
+                            style={{
+                              border: '1px solid #d9dde3',
+                              borderRadius: 10,
+                              padding: '0.75rem',
+                              marginBottom: '0.75rem',
+                              background: '#ffffff',
+                            }}
+                          >
+                            <div className="actions" style={{ justifyContent: 'flex-end' }}>
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveFeedback(index, fbIndex)}
+                              >
+                                Remove
+                              </button>
+                            </div>
+
+                            <div className="field">
+                              <label htmlFor={`rule_${index}_fb_${fbIndex}_condition_ids`}>
+                                condition_ids (CSV)
+                              </label>
+                              <input
+                                id={`rule_${index}_fb_${fbIndex}_condition_ids`}
+                                type="text"
+                                value={toCsv(fb.condition_ids)}
+                                onChange={(event) => {
+                                  const next = fromCsv(event.target.value)
+                                  setRuleSetDraft((prev) => ({
+                                    ...prev,
+                                    rules: prev.rules.map((r, i) => {
+                                      if (i !== index) return r
+                                      return {
+                                        ...r,
+                                        feedback: r.feedback.map((f, j) =>
+                                          j === fbIndex ? { ...f, condition_ids: next } : f
+                                        ),
+                                      }
+                                    }),
+                                  }))
+                                }}
+                              />
+                            </div>
+
+                            <div className="field">
+                              <label htmlFor={`rule_${index}_fb_${fbIndex}_message`}>message</label>
+                              <input
+                                id={`rule_${index}_fb_${fbIndex}_message`}
+                                type="text"
+                                value={fb.message}
+                                onChange={(event) =>
+                                  setRuleSetDraft((prev) => ({
+                                    ...prev,
+                                    rules: prev.rules.map((r, i) => {
+                                      if (i !== index) return r
+                                      return {
+                                        ...r,
+                                        feedback: r.feedback.map((f, j) =>
+                                          j === fbIndex ? { ...f, message: event.target.value } : f
+                                        ),
+                                      }
+                                    }),
+                                  }))
+                                }
+                              />
+                            </div>
+
+                            <div className="field">
+                              <label htmlFor={`rule_${index}_fb_${fbIndex}_severity`}>severity</label>
+                              <select
+                                id={`rule_${index}_fb_${fbIndex}_severity`}
+                                value={fb.severity}
+                                onChange={(event) =>
+                                  setRuleSetDraft((prev) => ({
+                                    ...prev,
+                                    rules: prev.rules.map((r, i) => {
+                                      if (i !== index) return r
+                                      return {
+                                        ...r,
+                                        feedback: r.feedback.map((f, j) =>
+                                          j === fbIndex
+                                            ? {
+                                                ...f,
+                                                severity: event.target.value as Feedback['severity'],
+                                              }
+                                            : f
+                                        ),
+                                      }
+                                    }),
+                                  }))
+                                }
+                              >
+                                <option value="info">info</option>
+                                <option value="warn">warn</option>
+                                <option value="fail">fail</option>
+                              </select>
+                            </div>
+
+                            <div className="field">
+                              <label htmlFor={`rule_${index}_fb_${fbIndex}_attach_to_ts`}>
+                                attach_to_ts (optional)
+                              </label>
+                              <input
+                                id={`rule_${index}_fb_${fbIndex}_attach_to_ts`}
+                                type="text"
+                                placeholder="event:impact or frame:0"
+                                value={fb.attach_to_ts ?? ''}
+                                onChange={(event) =>
+                                  setRuleSetDraft((prev) => ({
+                                    ...prev,
+                                    rules: prev.rules.map((r, i) => {
+                                      if (i !== index) return r
+                                      return {
+                                        ...r,
+                                        feedback: r.feedback.map((f, j) =>
+                                          j === fbIndex
+                                            ? {
+                                                ...f,
+                                                attach_to_ts: event.target.value || undefined,
+                                              }
+                                            : f
+                                        ),
+                                      }
+                                    }),
+                                  }))
+                                }
+                              />
+                              <p className="hint">
+                                Format: <code>event:&lt;name&gt;</code> or <code>frame:&lt;idx&gt;</code>
+                              </p>
+                            </div>
+                          </div>
+                        ))
+                      )}
                     </div>
 
                     <div className="field">
