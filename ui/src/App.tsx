@@ -43,6 +43,7 @@ type Rule = {
         default_phase?: string
       }
   conditions: Condition[]
+  score: Score
 }
 
 const PREPROCESS_OPTIONS = ['align_orientation', 'normalize_lengths']
@@ -156,6 +157,12 @@ type Condition = {
   tolerance?: number
   logic?: 'all' | 'any' | 'none'
   conditions?: string[]
+}
+
+type Score = {
+  mode: 'all-or-nothing' | 'average'
+  pass_score: number
+  max_score: number
 }
 
 const formatConditionValue = (value: unknown): string => {
@@ -400,6 +407,11 @@ function App() {
               ref: defaultPhase ? `phase:${defaultPhase}` : '',
             },
             conditions: [],
+            score: {
+              mode: 'all-or-nothing',
+              pass_score: 1,
+              max_score: 1,
+            },
           }
           return rule
         })(),
@@ -1850,6 +1862,80 @@ function App() {
                           </div>
                         ))
                       )}
+                    </div>
+
+                    <div className="field">
+                      <label>score</label>
+                      <div
+                        style={{
+                          border: '1px solid #d9dde3',
+                          borderRadius: 10,
+                          padding: '0.75rem',
+                          background: '#ffffff',
+                        }}
+                      >
+                        <div className="field">
+                          <label htmlFor={`rule_${index}_score_mode`}>mode</label>
+                          <select
+                            id={`rule_${index}_score_mode`}
+                            value={rule.score.mode}
+                            onChange={(event) => {
+                              const nextMode = event.target.value as Score['mode']
+                              setRuleSetDraft((prev) => ({
+                                ...prev,
+                                rules: prev.rules.map((r, i) =>
+                                  i === index ? { ...r, score: { ...r.score, mode: nextMode } } : r
+                                ),
+                              }))
+                            }}
+                          >
+                            <option value="all-or-nothing">all-or-nothing</option>
+                            <option value="average">average</option>
+                          </select>
+                        </div>
+
+                        <div className="field">
+                          <label htmlFor={`rule_${index}_score_pass`}>pass_score</label>
+                          <input
+                            id={`rule_${index}_score_pass`}
+                            type="number"
+                            value={rule.score.pass_score}
+                            onChange={(event) => {
+                              const value = Number(event.target.value)
+                              setRuleSetDraft((prev) => ({
+                                ...prev,
+                                rules: prev.rules.map((r, i) =>
+                                  i === index
+                                    ? { ...r, score: { ...r.score, pass_score: value } }
+                                    : r
+                                ),
+                              }))
+                            }}
+                          />
+                        </div>
+
+                        <div className="field">
+                          <label htmlFor={`rule_${index}_score_max`}>max_score</label>
+                          <input
+                            id={`rule_${index}_score_max`}
+                            type="number"
+                            value={rule.score.max_score}
+                            onChange={(event) => {
+                              const value = Number(event.target.value)
+                              setRuleSetDraft((prev) => ({
+                                ...prev,
+                                rules: prev.rules.map((r, i) =>
+                                  i === index ? { ...r, score: { ...r.score, max_score: value } } : r
+                                ),
+                              }))
+                            }}
+                          />
+                        </div>
+
+                        <p className="hint" style={{ marginTop: 0 }}>
+                          Weighted scoring is omitted in the UI for now.
+                        </p>
+                      </div>
                     </div>
 
                     <div className="field">
