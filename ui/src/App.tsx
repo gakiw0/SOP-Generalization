@@ -33,6 +33,15 @@ type Rule = {
   phase: string
   category: string
   severity: 'info' | 'warn' | 'fail'
+  signal:
+    | { type: 'frame_range_ref'; ref: string }
+    | { type: 'direct'; frame_range: [number, number] }
+    | {
+        type: 'event_window'
+        event: string
+        window_ms: [number, number]
+        default_phase?: string
+      }
 }
 
 const PREPROCESS_OPTIONS = ['align_orientation', 'normalize_lengths']
@@ -333,13 +342,22 @@ function App() {
       ...prev,
       rules: [
         ...prev.rules,
-        {
-          id: '',
-          label: '',
-          phase: prev.phases.find((p) => p.id.trim().length > 0)?.id ?? '',
-          category: '',
-          severity: 'warn',
-        },
+        (() => {
+          const defaultPhase =
+            prev.phases.find((p) => p.id.trim().length > 0)?.id ?? ''
+          const rule: Rule = {
+            id: '',
+            label: '',
+            phase: defaultPhase,
+            category: '',
+            severity: 'warn',
+            signal: {
+              type: 'frame_range_ref',
+              ref: defaultPhase ? `phase:${defaultPhase}` : '',
+            },
+          }
+          return rule
+        })(),
       ],
     }))
   }
@@ -643,7 +661,7 @@ function App() {
 
                 return (
                   <div
-                    key={`${index}-${phase.id}`}
+                    key={index}
                     style={{
                       border: '1px solid #d9dde3',
                       borderRadius: 10,
@@ -942,7 +960,7 @@ function App() {
 
                 return (
                   <div
-                    key={`${index}-${rule.id}`}
+                    key={index}
                     style={{
                       border: '1px solid #d9dde3',
                       borderRadius: 10,
@@ -1001,7 +1019,23 @@ function App() {
                             setRuleSetDraft((prev) => ({
                               ...prev,
                               rules: prev.rules.map((r, i) =>
-                                i === index ? { ...r, phase: event.target.value } : r
+                                i === index
+                                  ? (() => {
+                                      const nextPhase = event.target.value
+                                      const nextRule: Rule = { ...r, phase: nextPhase }
+                                      if (
+                                        r.signal.type === 'frame_range_ref' &&
+                                        (!r.signal.ref ||
+                                          r.signal.ref === `phase:${r.phase}`)
+                                      ) {
+                                        nextRule.signal = {
+                                          type: 'frame_range_ref',
+                                          ref: nextPhase ? `phase:${nextPhase}` : '',
+                                        }
+                                      }
+                                      return nextRule
+                                    })()
+                                  : r
                               ),
                             }))
                           }
@@ -1022,7 +1056,23 @@ function App() {
                             setRuleSetDraft((prev) => ({
                               ...prev,
                               rules: prev.rules.map((r, i) =>
-                                i === index ? { ...r, phase: event.target.value } : r
+                                i === index
+                                  ? (() => {
+                                      const nextPhase = event.target.value
+                                      const nextRule: Rule = { ...r, phase: nextPhase }
+                                      if (
+                                        r.signal.type === 'frame_range_ref' &&
+                                        (!r.signal.ref ||
+                                          r.signal.ref === `phase:${r.phase}`)
+                                      ) {
+                                        nextRule.signal = {
+                                          type: 'frame_range_ref',
+                                          ref: nextPhase ? `phase:${nextPhase}` : '',
+                                        }
+                                      }
+                                      return nextRule
+                                    })()
+                                  : r
                               ),
                             }))
                           }
@@ -1034,6 +1084,238 @@ function App() {
                         </p>
                       ) : null}
                     </div>
+
+                    <div className="field">
+                      <label htmlFor={`rule_${index}_signal_type`}>signal</label>
+                      <select
+                        id={`rule_${index}_signal_type`}
+                        value={rule.signal.type}
+                        onChange={(event) => {
+                          const nextType = event.target.value as Rule['signal']['type']
+                          setRuleSetDraft((prev) => ({
+                            ...prev,
+                            rules: prev.rules.map((r, i) => {
+                              if (i !== index) return r
+                              if (nextType === 'frame_range_ref') {
+                                return {
+                                  ...r,
+                                  signal: {
+                                    type: 'frame_range_ref',
+                                    ref: r.phase ? `phase:${r.phase}` : '',
+                                  },
+                                }
+                              }
+                              if (nextType === 'direct') {
+                                return {
+                                  ...r,
+                                  signal: { type: 'direct', frame_range: [0, 0] },
+                                }
+                              }
+                              return {
+                                ...r,
+                                signal: {
+                                  type: 'event_window',
+                                  event: '',
+                                  window_ms: [-200, 100],
+                                  default_phase: r.phase || undefined,
+                                },
+                              }
+                            }),
+                          }))
+                        }}
+                      >
+                        <option value="frame_range_ref">frame_range_ref</option>
+                        <option value="direct">direct</option>
+                        <option value="event_window">event_window</option>
+                      </select>
+                    </div>
+
+                    {rule.signal.type === 'frame_range_ref' ? (
+                      <div className="field">
+                        <label htmlFor={`rule_${index}_signal_ref`}>ref</label>
+                        <input
+                          id={`rule_${index}_signal_ref`}
+                          type="text"
+                          placeholder="phase:step1"
+                          value={rule.signal.ref}
+                          onChange={(event) =>
+                            setRuleSetDraft((prev) => ({
+                              ...prev,
+                              rules: prev.rules.map((r, i) =>
+                                i === index
+                                  ? {
+                                      ...r,
+                                      signal: { type: 'frame_range_ref', ref: event.target.value },
+                                    }
+                                  : r
+                              ),
+                            }))
+                          }
+                        />
+                        <p className="hint">
+                          Format: <code>phase:&lt;phaseId&gt;</code>
+                        </p>
+                      </div>
+                    ) : null}
+
+                    {rule.signal.type === 'direct' ? (
+                      <div className="field">
+                        <label>frame_range</label>
+                        <p className="hint" style={{ marginTop: 0 }}>
+                          Inclusive frame indices: [start, end].
+                        </p>
+                        <div style={{ display: 'flex', gap: '0.75rem' }}>
+                          <input
+                            type="number"
+                            value={rule.signal.frame_range[0]}
+                            onChange={(event) => {
+                              const start = Number(event.target.value)
+                              setRuleSetDraft((prev) => ({
+                                ...prev,
+                                rules: prev.rules.map((r, i) => {
+                                  if (i !== index) return r
+                                  if (r.signal.type !== 'direct') return r
+                                  return { ...r, signal: { ...r.signal, frame_range: [start, r.signal.frame_range[1]] } }
+                                }),
+                              }))
+                            }}
+                          />
+                          <input
+                            type="number"
+                            value={rule.signal.frame_range[1]}
+                            onChange={(event) => {
+                              const end = Number(event.target.value)
+                              setRuleSetDraft((prev) => ({
+                                ...prev,
+                                rules: prev.rules.map((r, i) => {
+                                  if (i !== index) return r
+                                  if (r.signal.type !== 'direct') return r
+                                  return { ...r, signal: { ...r.signal, frame_range: [r.signal.frame_range[0], end] } }
+                                }),
+                              }))
+                            }}
+                          />
+                        </div>
+                      </div>
+                    ) : null}
+
+                    {rule.signal.type === 'event_window' ? (
+                      <>
+                        <div className="field">
+                          <label htmlFor={`rule_${index}_signal_event`}>event</label>
+                          <input
+                            id={`rule_${index}_signal_event`}
+                            type="text"
+                            placeholder="impact"
+                            value={rule.signal.event}
+                            onChange={(event) =>
+                              setRuleSetDraft((prev) => ({
+                                ...prev,
+                                rules: prev.rules.map((r, i) =>
+                                  i === index && r.signal.type === 'event_window'
+                                    ? { ...r, signal: { ...r.signal, event: event.target.value } }
+                                    : r
+                                ),
+                              }))
+                            }
+                          />
+                        </div>
+                        <div className="field">
+                          <label>window_ms</label>
+                          <p className="hint" style={{ marginTop: 0 }}>
+                            Time window around the event in milliseconds: [pre, post].
+                          </p>
+                          <div style={{ display: 'flex', gap: '0.75rem' }}>
+                            <input
+                              type="number"
+                              value={rule.signal.window_ms[0]}
+                              onChange={(event) => {
+                                const pre = Number(event.target.value)
+                                setRuleSetDraft((prev) => ({
+                                  ...prev,
+                                  rules: prev.rules.map((r, i) => {
+                                    if (i !== index) return r
+                                    if (r.signal.type !== 'event_window') return r
+                                    return { ...r, signal: { ...r.signal, window_ms: [pre, r.signal.window_ms[1]] } }
+                                  }),
+                                }))
+                              }}
+                            />
+                            <input
+                              type="number"
+                              value={rule.signal.window_ms[1]}
+                              onChange={(event) => {
+                                const post = Number(event.target.value)
+                                setRuleSetDraft((prev) => ({
+                                  ...prev,
+                                  rules: prev.rules.map((r, i) => {
+                                    if (i !== index) return r
+                                    if (r.signal.type !== 'event_window') return r
+                                    return { ...r, signal: { ...r.signal, window_ms: [r.signal.window_ms[0], post] } }
+                                  }),
+                                }))
+                              }}
+                            />
+                          </div>
+                        </div>
+                        <div className="field">
+                          <label htmlFor={`rule_${index}_signal_default_phase`}>
+                            default_phase (optional)
+                          </label>
+                          {hasPhaseOptions ? (
+                            <select
+                              id={`rule_${index}_signal_default_phase`}
+                              value={rule.signal.default_phase ?? ''}
+                              onChange={(event) =>
+                                setRuleSetDraft((prev) => ({
+                                  ...prev,
+                                  rules: prev.rules.map((r, i) =>
+                                    i === index && r.signal.type === 'event_window'
+                                      ? {
+                                          ...r,
+                                          signal: {
+                                            ...r.signal,
+                                            default_phase: event.target.value || undefined,
+                                          },
+                                        }
+                                      : r
+                                  ),
+                                }))
+                              }
+                            >
+                              <option value="">(none)</option>
+                              {phaseOptions.map((id) => (
+                                <option key={id} value={id}>
+                                  {id}
+                                </option>
+                              ))}
+                            </select>
+                          ) : (
+                            <input
+                              id={`rule_${index}_signal_default_phase`}
+                              type="text"
+                              value={rule.signal.default_phase ?? ''}
+                              onChange={(event) =>
+                                setRuleSetDraft((prev) => ({
+                                  ...prev,
+                                  rules: prev.rules.map((r, i) =>
+                                    i === index && r.signal.type === 'event_window'
+                                      ? {
+                                          ...r,
+                                          signal: {
+                                            ...r.signal,
+                                            default_phase: event.target.value || undefined,
+                                          },
+                                        }
+                                      : r
+                                  ),
+                                }))
+                              }
+                            />
+                          )}
+                        </div>
+                      </>
+                    ) : null}
 
                     <div className="field">
                       <label htmlFor={`rule_${index}_category`}>category</label>
