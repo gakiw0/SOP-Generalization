@@ -4,12 +4,14 @@ Runner for RuleEngine with optional legacy artifact generation.
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional, Dict
+import json
 
 import numpy as np
 
 from jc_utils import scoring_utils as su
 from .engine import RuleEngine
-from .plugins.baseball import BaseballPlugin
+from . import plugins
+from .plugins.registry import default_plugin_registry, resolve_plugin_name
 from .legacy_adapter import build_step_ranges, to_legacy_results
 from . import artifacts
 
@@ -19,7 +21,7 @@ class RunnerOptions:
     data_root: Path
     data_name: str
     rule_path: Path
-    plugin_name: str = "baseball"
+    plugin_name: str = "auto"
     save_new: bool = True
     save_legacy: bool = True
     save_step_ranges: bool = True
@@ -30,10 +32,18 @@ class RunnerOptions:
     profile: bool = False
 
 
-def _get_plugin(plugin_name: str):
-    if plugin_name == "baseball":
-        return BaseballPlugin()
-    raise ValueError(f"Unknown plugin: {plugin_name}")
+def _load_rule_set(rule_path: Path) -> Dict:
+    with Path(rule_path).open("r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def _get_plugin(rule_set: Dict, plugin_name: Optional[str]):
+    plugins.load_builtin_plugins()
+    resolved = resolve_plugin_name(rule_set, plugin_name)
+    try:
+        return default_plugin_registry.create(resolved)
+    except KeyError as e:
+        raise ValueError(str(e)) from e
 
 
 def _load_skeletons(data_root: Path, data_name: str) -> Dict[str, np.ndarray]:
@@ -46,9 +56,9 @@ def _load_skeletons(data_root: Path, data_name: str) -> Dict[str, np.ndarray]:
 
 
 def run(options: RunnerOptions) -> Dict[str, Path]:
-    plugin = _get_plugin(options.plugin_name)
-    engine = RuleEngine.from_file(options.rule_path, plugin=plugin)
-    rule_set = engine.rule_set
+    rule_set = _load_rule_set(options.rule_path)
+    plugin = _get_plugin(rule_set, options.plugin_name)
+    engine = RuleEngine(rule_set=rule_set, plugin=plugin)
 
     skel = _load_skeletons(options.data_root, options.data_name)
     student = skel["student"]

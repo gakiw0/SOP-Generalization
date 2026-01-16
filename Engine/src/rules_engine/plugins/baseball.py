@@ -6,6 +6,7 @@ import numpy as np
 
 from jc_utils import scoring_utils as su
 from .base import BaseRulePlugin
+from .registry import register_plugin
 
 
 def stance_angle_diff_ratio(student: np.ndarray, coach: np.ndarray) -> float:
@@ -104,6 +105,7 @@ def hip_yaw_angle_diff_ratio_or_clamp(student: np.ndarray, coach: np.ndarray) ->
     return val
 
 
+@register_plugin("baseball")
 class BaseballPlugin(BaseRulePlugin):
     """
     Parity-focused plugin: expose metrics that mirror the original analyze_step1-4 valX values.

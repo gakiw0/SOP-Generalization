@@ -48,7 +48,12 @@ def main():
         default=None,
         help="Root data folder (default: $env:SOP_DATA_ROOT, or SOP/Data, or jc_utils.scoring_utils.DATA_ROOT).",
     )
-    parser.add_argument("--plugin", type=str, default="baseball", help="Plugin name.")
+    parser.add_argument(
+        "--plugin",
+        type=str,
+        default="auto",
+        help="Plugin name (default: auto -> inferred from rule_set.sport).",
+    )
     parser.add_argument("--no-save-new", action="store_true", help="Do not save analysis_results_new.json.")
     parser.add_argument("--no-save-legacy", action="store_true", help="Do not save analysis_results.json.")
     parser.add_argument("--no-save-step-ranges", action="store_true", help="Do not save step_frame_ranges.json.")
