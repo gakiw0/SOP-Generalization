@@ -42,6 +42,7 @@ type Rule = {
         window_ms: [number, number]
         default_phase?: string
       }
+  conditions: Condition[]
 }
 
 const PREPROCESS_OPTIONS = ['align_orientation', 'normalize_lengths']
@@ -128,6 +129,14 @@ const toggleStringListItem = (
   return list.filter((entry) => entry !== item)
 }
 
+const toCsv = (items: string[]): string => items.join(', ')
+
+const fromCsv = (value: string): string[] =>
+  value
+    .split(',')
+    .map((item) => item.trim())
+    .filter((item) => item.length > 0)
+
 const toggleNumberListItem = (
   list: number[],
   item: number,
@@ -135,6 +144,41 @@ const toggleNumberListItem = (
 ): number[] => {
   if (checked) return list.includes(item) ? list : [...list, item]
   return list.filter((entry) => entry !== item)
+}
+
+type Condition = {
+  id: string
+  type: 'threshold' | 'range' | 'boolean' | 'composite'
+  metric?: string
+  op?: string
+  value?: unknown
+  abs_val?: boolean
+  tolerance?: number
+  logic?: 'all' | 'any' | 'none'
+  conditions?: string[]
+}
+
+const formatConditionValue = (value: unknown): string => {
+  if (value == null) return ''
+  if (typeof value === 'string') return value
+  if (typeof value === 'number' || typeof value === 'boolean') return String(value)
+  try {
+    return JSON.stringify(value)
+  } catch {
+    return String(value)
+  }
+}
+
+const parseLooseJsonValue = (raw: string): unknown => {
+  const trimmed = raw.trim()
+  if (trimmed.length === 0) return undefined
+  try {
+    return JSON.parse(trimmed)
+  } catch {
+    const n = Number(trimmed)
+    if (Number.isFinite(n)) return n
+    return trimmed
+  }
 }
 
 type JointOption = {
@@ -355,6 +399,7 @@ function App() {
               type: 'frame_range_ref',
               ref: defaultPhase ? `phase:${defaultPhase}` : '',
             },
+            conditions: [],
           }
           return rule
         })(),
@@ -366,6 +411,35 @@ function App() {
     setRuleSetDraft((prev) => ({
       ...prev,
       rules: prev.rules.filter((_, i) => i !== index),
+    }))
+  }
+
+  const handleAddCondition = (ruleIndex: number) => {
+    setRuleSetDraft((prev) => ({
+      ...prev,
+      rules: prev.rules.map((r, i) => {
+        if (i !== ruleIndex) return r
+        const next: Condition = {
+          id: '',
+          type: 'threshold',
+          metric: '',
+          op: 'between',
+          value: 0,
+          abs_val: false,
+          tolerance: 0,
+        }
+        return { ...r, conditions: [...r.conditions, next] }
+      }),
+    }))
+  }
+
+  const handleRemoveCondition = (ruleIndex: number, conditionIndex: number) => {
+    setRuleSetDraft((prev) => ({
+      ...prev,
+      rules: prev.rules.map((r, i) => {
+        if (i !== ruleIndex) return r
+        return { ...r, conditions: r.conditions.filter((_, j) => j !== conditionIndex) }
+      }),
     }))
   }
 
@@ -1316,6 +1390,467 @@ function App() {
                         </div>
                       </>
                     ) : null}
+
+                    <div className="field">
+                      <label>conditions</label>
+                      <div className="actions" style={{ marginBottom: '0.5rem' }}>
+                        <button type="button" onClick={() => handleAddCondition(index)}>
+                          Add condition
+                        </button>
+                      </div>
+
+                      {rule.conditions.length === 0 ? (
+                        <p className="hint" style={{ marginTop: 0 }}>
+                          No conditions yet.
+                        </p>
+                      ) : (
+                        rule.conditions.map((cond, condIndex) => (
+                          <div
+                            key={condIndex}
+                            style={{
+                              border: '1px solid #d9dde3',
+                              borderRadius: 10,
+                              padding: '0.75rem',
+                              marginBottom: '0.75rem',
+                              background: '#ffffff',
+                            }}
+                          >
+                            <div className="actions" style={{ justifyContent: 'flex-end' }}>
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveCondition(index, condIndex)}
+                              >
+                                Remove
+                              </button>
+                            </div>
+
+                            <div className="field">
+                              <label htmlFor={`rule_${index}_cond_${condIndex}_id`}>id</label>
+                              <input
+                                id={`rule_${index}_cond_${condIndex}_id`}
+                                type="text"
+                                value={cond.id}
+                                onChange={(event) =>
+                                  setRuleSetDraft((prev) => ({
+                                    ...prev,
+                                    rules: prev.rules.map((r, i) => {
+                                      if (i !== index) return r
+                                      return {
+                                        ...r,
+                                        conditions: r.conditions.map((c, j) =>
+                                          j === condIndex ? { ...c, id: event.target.value } : c
+                                        ),
+                                      }
+                                    }),
+                                  }))
+                                }
+                              />
+                            </div>
+
+                            <div className="field">
+                              <label htmlFor={`rule_${index}_cond_${condIndex}_type`}>type</label>
+                              <select
+                                id={`rule_${index}_cond_${condIndex}_type`}
+                                value={cond.type}
+                                onChange={(event) => {
+                                  const nextType = event.target.value as Condition['type']
+                                  setRuleSetDraft((prev) => ({
+                                    ...prev,
+                                    rules: prev.rules.map((r, i) => {
+                                      if (i !== index) return r
+                                      return {
+                                        ...r,
+                                        conditions: r.conditions.map((c, j) => {
+                                          if (j !== condIndex) return c
+                                          if (nextType === 'threshold') {
+                                            return {
+                                              id: c.id,
+                                              type: 'threshold',
+                                              metric: c.metric ?? '',
+                                              op: 'gte',
+                                              value: 0,
+                                              abs_val: c.abs_val ?? false,
+                                              tolerance: c.tolerance ?? 0,
+                                            }
+                                          }
+                                          if (nextType === 'range') {
+                                            return {
+                                              id: c.id,
+                                              type: 'range',
+                                              metric: c.metric ?? '',
+                                              op: 'between',
+                                              value: [0, 1],
+                                              abs_val: c.abs_val ?? false,
+                                              tolerance: c.tolerance ?? 0,
+                                            }
+                                          }
+                                          if (nextType === 'boolean') {
+                                            return {
+                                              id: c.id,
+                                              type: 'boolean',
+                                              metric: c.metric ?? '',
+                                              op: 'is_true',
+                                            }
+                                          }
+                                          return {
+                                            id: c.id,
+                                            type: 'composite',
+                                            logic: 'all',
+                                            conditions: [],
+                                          }
+                                        }),
+                                      }
+                                    }),
+                                  }))
+                                }}
+                              >
+                                <option value="threshold">threshold</option>
+                                <option value="range">range</option>
+                                <option value="boolean">boolean</option>
+                                <option value="composite">composite</option>
+                              </select>
+                            </div>
+
+                            {cond.type !== 'composite' ? (
+                              <div className="field">
+                                <label htmlFor={`rule_${index}_cond_${condIndex}_metric`}>
+                                  metric
+                                </label>
+                                <input
+                                  id={`rule_${index}_cond_${condIndex}_metric`}
+                                  type="text"
+                                  value={cond.metric ?? ''}
+                                  onChange={(event) =>
+                                    setRuleSetDraft((prev) => ({
+                                      ...prev,
+                                      rules: prev.rules.map((r, i) => {
+                                        if (i !== index) return r
+                                        return {
+                                          ...r,
+                                          conditions: r.conditions.map((c, j) =>
+                                            j === condIndex ? { ...c, metric: event.target.value } : c
+                                          ),
+                                        }
+                                      }),
+                                    }))
+                                  }
+                                />
+                              </div>
+                            ) : null}
+
+                            {cond.type === 'threshold' ? (
+                              <>
+                                <div className="field">
+                                  <label htmlFor={`rule_${index}_cond_${condIndex}_op`}>op</label>
+                                  <select
+                                    id={`rule_${index}_cond_${condIndex}_op`}
+                                    value={cond.op ?? 'gte'}
+                                    onChange={(event) =>
+                                      setRuleSetDraft((prev) => ({
+                                        ...prev,
+                                        rules: prev.rules.map((r, i) => {
+                                          if (i !== index) return r
+                                          return {
+                                            ...r,
+                                            conditions: r.conditions.map((c, j) =>
+                                              j === condIndex ? { ...c, op: event.target.value } : c
+                                            ),
+                                          }
+                                        }),
+                                      }))
+                                    }
+                                  >
+                                    <option value="gte">gte</option>
+                                    <option value="gt">gt</option>
+                                    <option value="lte">lte</option>
+                                    <option value="lt">lt</option>
+                                    <option value="eq">eq</option>
+                                    <option value="neq">neq</option>
+                                  </select>
+                                </div>
+                                <div className="field">
+                                  <label htmlFor={`rule_${index}_cond_${condIndex}_value`}>
+                                    value
+                                  </label>
+                                  <input
+                                    id={`rule_${index}_cond_${condIndex}_value`}
+                                    type="text"
+                                    value={formatConditionValue(cond.value)}
+                                    onChange={(event) =>
+                                      setRuleSetDraft((prev) => ({
+                                        ...prev,
+                                        rules: prev.rules.map((r, i) => {
+                                          if (i !== index) return r
+                                          return {
+                                            ...r,
+                                            conditions: r.conditions.map((c, j) =>
+                                              j === condIndex
+                                                ? { ...c, value: parseLooseJsonValue(event.target.value) }
+                                                : c
+                                            ),
+                                          }
+                                        }),
+                                      }))
+                                    }
+                                  />
+                                  <p className="hint">
+                                    Accepts a number or JSON (e.g. <code>0.65</code>).
+                                  </p>
+                                </div>
+                                <div className="field">
+                                  <label>options</label>
+                                  <div className="checkbox-group">
+                                    <label className="checkbox-item">
+                                      <input
+                                        type="checkbox"
+                                        checked={Boolean(cond.abs_val)}
+                                        onChange={(event) =>
+                                          setRuleSetDraft((prev) => ({
+                                            ...prev,
+                                            rules: prev.rules.map((r, i) => {
+                                              if (i !== index) return r
+                                              return {
+                                                ...r,
+                                                conditions: r.conditions.map((c, j) =>
+                                                  j === condIndex ? { ...c, abs_val: event.target.checked } : c
+                                                ),
+                                              }
+                                            }),
+                                          }))
+                                        }
+                                      />
+                                      <span>abs_val</span>
+                                    </label>
+                                  </div>
+                                </div>
+                                <div className="field">
+                                  <label htmlFor={`rule_${index}_cond_${condIndex}_tolerance`}>
+                                    tolerance
+                                  </label>
+                                  <input
+                                    id={`rule_${index}_cond_${condIndex}_tolerance`}
+                                    type="number"
+                                    value={Number(cond.tolerance ?? 0)}
+                                    onChange={(event) =>
+                                      setRuleSetDraft((prev) => ({
+                                        ...prev,
+                                        rules: prev.rules.map((r, i) => {
+                                          if (i !== index) return r
+                                          return {
+                                            ...r,
+                                            conditions: r.conditions.map((c, j) =>
+                                              j === condIndex
+                                                ? { ...c, tolerance: Number(event.target.value) }
+                                                : c
+                                            ),
+                                          }
+                                        }),
+                                      }))
+                                    }
+                                  />
+                                </div>
+                              </>
+                            ) : null}
+
+                            {cond.type === 'range' ? (
+                              <>
+                                <div className="field">
+                                  <label>value (between)</label>
+                                  <p className="hint" style={{ marginTop: 0 }}>
+                                    Lower and upper bounds.
+                                  </p>
+                                  <div style={{ display: 'flex', gap: '0.75rem' }}>
+                                    <input
+                                      type="number"
+                                      value={Array.isArray(cond.value) ? Number(cond.value[0]) : 0}
+                                      onChange={(event) => {
+                                        const lower = Number(event.target.value)
+                                        const upper = Array.isArray(cond.value) ? Number(cond.value[1]) : 0
+                                        setRuleSetDraft((prev) => ({
+                                          ...prev,
+                                          rules: prev.rules.map((r, i) => {
+                                            if (i !== index) return r
+                                            return {
+                                              ...r,
+                                              conditions: r.conditions.map((c, j) =>
+                                                j === condIndex ? { ...c, op: 'between', value: [lower, upper] } : c
+                                              ),
+                                            }
+                                          }),
+                                        }))
+                                      }}
+                                    />
+                                    <input
+                                      type="number"
+                                      value={Array.isArray(cond.value) ? Number(cond.value[1]) : 0}
+                                      onChange={(event) => {
+                                        const upper = Number(event.target.value)
+                                        const lower = Array.isArray(cond.value) ? Number(cond.value[0]) : 0
+                                        setRuleSetDraft((prev) => ({
+                                          ...prev,
+                                          rules: prev.rules.map((r, i) => {
+                                            if (i !== index) return r
+                                            return {
+                                              ...r,
+                                              conditions: r.conditions.map((c, j) =>
+                                                j === condIndex ? { ...c, op: 'between', value: [lower, upper] } : c
+                                              ),
+                                            }
+                                          }),
+                                        }))
+                                      }}
+                                    />
+                                  </div>
+                                </div>
+                                <div className="field">
+                                  <label>options</label>
+                                  <div className="checkbox-group">
+                                    <label className="checkbox-item">
+                                      <input
+                                        type="checkbox"
+                                        checked={Boolean(cond.abs_val)}
+                                        onChange={(event) =>
+                                          setRuleSetDraft((prev) => ({
+                                            ...prev,
+                                            rules: prev.rules.map((r, i) => {
+                                              if (i !== index) return r
+                                              return {
+                                                ...r,
+                                                conditions: r.conditions.map((c, j) =>
+                                                  j === condIndex ? { ...c, abs_val: event.target.checked } : c
+                                                ),
+                                              }
+                                            }),
+                                          }))
+                                        }
+                                      />
+                                      <span>abs_val</span>
+                                    </label>
+                                  </div>
+                                </div>
+                                <div className="field">
+                                  <label htmlFor={`rule_${index}_cond_${condIndex}_tolerance`}>
+                                    tolerance
+                                  </label>
+                                  <input
+                                    id={`rule_${index}_cond_${condIndex}_tolerance`}
+                                    type="number"
+                                    value={Number(cond.tolerance ?? 0)}
+                                    onChange={(event) =>
+                                      setRuleSetDraft((prev) => ({
+                                        ...prev,
+                                        rules: prev.rules.map((r, i) => {
+                                          if (i !== index) return r
+                                          return {
+                                            ...r,
+                                            conditions: r.conditions.map((c, j) =>
+                                              j === condIndex
+                                                ? { ...c, tolerance: Number(event.target.value) }
+                                                : c
+                                            ),
+                                          }
+                                        }),
+                                      }))
+                                    }
+                                  />
+                                </div>
+                              </>
+                            ) : null}
+
+                            {cond.type === 'boolean' ? (
+                              <div className="field">
+                                <label htmlFor={`rule_${index}_cond_${condIndex}_op`}>op</label>
+                                <select
+                                  id={`rule_${index}_cond_${condIndex}_op`}
+                                  value={cond.op ?? 'is_true'}
+                                  onChange={(event) =>
+                                    setRuleSetDraft((prev) => ({
+                                      ...prev,
+                                      rules: prev.rules.map((r, i) => {
+                                        if (i !== index) return r
+                                        return {
+                                          ...r,
+                                          conditions: r.conditions.map((c, j) =>
+                                            j === condIndex ? { ...c, op: event.target.value } : c
+                                          ),
+                                        }
+                                      }),
+                                    }))
+                                  }
+                                >
+                                  <option value="is_true">is_true</option>
+                                  <option value="is_false">is_false</option>
+                                </select>
+                              </div>
+                            ) : null}
+
+                            {cond.type === 'composite' ? (
+                              <>
+                                <div className="field">
+                                  <label htmlFor={`rule_${index}_cond_${condIndex}_logic`}>logic</label>
+                                  <select
+                                    id={`rule_${index}_cond_${condIndex}_logic`}
+                                    value={cond.logic ?? 'all'}
+                                    onChange={(event) =>
+                                      setRuleSetDraft((prev) => ({
+                                        ...prev,
+                                        rules: prev.rules.map((r, i) => {
+                                          if (i !== index) return r
+                                          return {
+                                            ...r,
+                                            conditions: r.conditions.map((c, j) =>
+                                              j === condIndex
+                                                ? {
+                                                    ...c,
+                                                    logic: event.target.value as Condition['logic'],
+                                                  }
+                                                : c
+                                            ),
+                                          }
+                                        }),
+                                      }))
+                                    }
+                                  >
+                                    <option value="all">all</option>
+                                    <option value="any">any</option>
+                                    <option value="none">none</option>
+                                  </select>
+                                </div>
+                                <div className="field">
+                                  <label htmlFor={`rule_${index}_cond_${condIndex}_conditions`}>
+                                    conditions (CSV of condition ids)
+                                  </label>
+                                  <input
+                                    id={`rule_${index}_cond_${condIndex}_conditions`}
+                                    type="text"
+                                    value={toCsv(cond.conditions ?? [])}
+                                    onChange={(event) =>
+                                      setRuleSetDraft((prev) => ({
+                                        ...prev,
+                                        rules: prev.rules.map((r, i) => {
+                                          if (i !== index) return r
+                                          return {
+                                            ...r,
+                                            conditions: r.conditions.map((c, j) =>
+                                              j === condIndex
+                                                ? {
+                                                    ...c,
+                                                    conditions: fromCsv(event.target.value),
+                                                  }
+                                                : c
+                                            ),
+                                          }
+                                        }),
+                                      }))
+                                    }
+                                  />
+                                </div>
+                              </>
+                            ) : null}
+                          </div>
+                        ))
+                      )}
+                    </div>
 
                     <div className="field">
                       <label htmlFor={`rule_${index}_category`}>category</label>
