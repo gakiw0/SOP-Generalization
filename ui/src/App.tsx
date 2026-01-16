@@ -8,6 +8,12 @@ type Inputs = {
   preprocess?: string[]
 }
 
+type Globals = {
+  confidence_threshold?: number
+  angle_units?: string
+  feature_pipeline?: string[]
+}
+
 const KEYPOINTS_FORMATS = ['openpose25', 'coco17', 'other']
 const CAMERA_VIEWS = ['side', 'front', 'rear', 'other']
 const PREPROCESS_OPTIONS = ['align_orientation', 'normalize_lengths']
@@ -25,7 +31,7 @@ type RuleSet = {
     changelog?: unknown[]
   }
   inputs: Inputs
-  globals: Record<string, unknown>
+  globals: Globals
   phases: unknown[]
   rules: unknown[]
 }
@@ -44,7 +50,11 @@ const createEmptyRuleSet = (): RuleSet => ({
     camera_view: '',
     preprocess: [],
   },
-  globals: {},
+  globals: {
+    confidence_threshold: 0,
+    angle_units: 'degrees',
+    feature_pipeline: [],
+  },
   phases: [],
   rules: [],
 })
@@ -317,6 +327,63 @@ function App() {
                   </label>
                 ))}
               </div>
+            </div>
+          </section>
+
+          <section className="panel">
+            <h2>Globals</h2>
+            <div className="field">
+              <label htmlFor="confidence_threshold">confidence_threshold</label>
+              <input
+                id="confidence_threshold"
+                type="number"
+                value={ruleSetDraft.globals.confidence_threshold ?? 0}
+                onChange={(event) =>
+                  setRuleSetDraft((prev) => ({
+                    ...prev,
+                    globals: {
+                      ...prev.globals,
+                      confidence_threshold: Number(event.target.value),
+                    },
+                  }))
+                }
+              />
+            </div>
+            <div className="field">
+              <label htmlFor="angle_units">angle_units</label>
+              <select
+                id="angle_units"
+                value={ruleSetDraft.globals.angle_units ?? 'degrees'}
+                onChange={(event) =>
+                  setRuleSetDraft((prev) => ({
+                    ...prev,
+                    globals: {
+                      ...prev.globals,
+                      angle_units: event.target.value,
+                    },
+                  }))
+                }
+              >
+                <option value="degrees">degrees</option>
+                <option value="radians">radians</option>
+              </select>
+            </div>
+            <div className="field">
+              <label htmlFor="feature_pipeline">feature_pipeline (CSV)</label>
+              <input
+                id="feature_pipeline"
+                type="text"
+                value={toCsv(ruleSetDraft.globals.feature_pipeline ?? [])}
+                onChange={(event) =>
+                  setRuleSetDraft((prev) => ({
+                    ...prev,
+                    globals: {
+                      ...prev.globals,
+                      feature_pipeline: fromCsv(event.target.value),
+                    },
+                  }))
+                }
+              />
             </div>
           </section>
 
