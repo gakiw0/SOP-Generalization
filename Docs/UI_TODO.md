@@ -89,9 +89,9 @@
 - MVPは `schema v1` のまま（拡張なし）。
 - 新規作成は「空テンプレ」から開始し、最低限の必須項目のみ事前入力する（`rule_set_id`, `sport`, `sport_version`, `metadata.title`）。
 
-### Step 2: UI骨組み
-- `New / Edit / Validate / Export` の画面・導線を作る
-- `ruleSetDraft` の初期生成を実装
+### Step 2: UI骨組み（実装内容）
+- 画面遷移は1画面構成（`New / Edit / Validate / Export` を同一画面に配置）で開始する。
+- `ruleSetDraft` の初期生成は「空テンプレ」生成関数として実装する（Step 1で決めた必須項目を初期値にする）。
 
 ### Step 3: 編集フォーム（優先順）
 1. metadata / sport情報
