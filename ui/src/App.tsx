@@ -1,6 +1,17 @@
 import { useMemo, useState } from 'react'
 import './App.css'
 
+type Inputs = {
+  expected_fps?: number
+  keypoints_format?: string
+  camera_view?: string
+  preprocess?: string[]
+}
+
+const KEYPOINTS_FORMATS = ['openpose25', 'coco17', 'other']
+const CAMERA_VIEWS = ['side', 'front', 'rear', 'other']
+const PREPROCESS_OPTIONS = ['align_orientation', 'normalize_lengths']
+
 type RuleSet = {
   schema_version: string
   rule_set_id: string
@@ -13,7 +24,7 @@ type RuleSet = {
     notes?: string[]
     changelog?: unknown[]
   }
-  inputs: Record<string, unknown>
+  inputs: Inputs
   globals: Record<string, unknown>
   phases: unknown[]
   rules: unknown[]
@@ -27,16 +38,31 @@ const createEmptyRuleSet = (): RuleSet => ({
   metadata: {
     title: '',
   },
-  inputs: {},
+  inputs: {
+    expected_fps: 30,
+    keypoints_format: '',
+    camera_view: '',
+    preprocess: [],
+  },
   globals: {},
   phases: [],
   rules: [],
 })
 
+const toCsv = (items: string[]): string => items.join(', ')
+
+const fromCsv = (value: string): string[] =>
+  value
+    .split(',')
+    .map((item) => item.trim())
+    .filter((item) => item.length > 0)
+
 function App() {
   const [ruleSetDraft, setRuleSetDraft] = useState<RuleSet>(() =>
     createEmptyRuleSet()
   )
+  const [keypointsChoice, setKeypointsChoice] = useState('')
+  const [cameraChoice, setCameraChoice] = useState('')
   const jsonPreview = useMemo(
     () => JSON.stringify(ruleSetDraft, null, 2),
     [ruleSetDraft]
@@ -44,6 +70,8 @@ function App() {
 
   const handleNew = () => {
     setRuleSetDraft(createEmptyRuleSet())
+    setKeypointsChoice('')
+    setCameraChoice('')
   }
 
   const handleValidate = () => {
@@ -152,8 +180,144 @@ function App() {
               />
             </div>
             <p className="hint">
-              More fields (phases/rules/inputs/globals) will be added in Step 3.
+              Phases/rules/globals will be added next. Inputs are now editable.
             </p>
+          </section>
+
+          <section className="panel">
+            <h2>Inputs</h2>
+            <div className="field">
+              <label htmlFor="expected_fps">expected_fps</label>
+              <input
+                id="expected_fps"
+                type="number"
+                value={ruleSetDraft.inputs.expected_fps ?? 0}
+                onChange={(event) =>
+                  setRuleSetDraft((prev) => ({
+                    ...prev,
+                    inputs: {
+                      ...prev.inputs,
+                      expected_fps: Number(event.target.value),
+                    },
+                  }))
+                }
+              />
+            </div>
+            <div className="field">
+              <label htmlFor="keypoints_format">keypoints_format</label>
+              <select
+                id="keypoints_format"
+                value={keypointsChoice}
+                onChange={(event) =>
+                  setRuleSetDraft((prev) => {
+                    const nextValue = event.target.value
+                    setKeypointsChoice(nextValue)
+                    return {
+                      ...prev,
+                      inputs: {
+                        ...prev.inputs,
+                        keypoints_format: nextValue === 'other' ? '' : nextValue,
+                      },
+                    }
+                  })
+                }
+              >
+                <option value="">Select format</option>
+                {KEYPOINTS_FORMATS.map((format) => (
+                  <option key={format} value={format}>
+                    {format}
+                  </option>
+                ))}
+              </select>
+              {keypointsChoice === 'other' && (
+                <input
+                  type="text"
+                  placeholder="custom keypoints_format"
+                  value={ruleSetDraft.inputs.keypoints_format ?? ''}
+                  onChange={(event) =>
+                    setRuleSetDraft((prev) => ({
+                      ...prev,
+                      inputs: {
+                        ...prev.inputs,
+                        keypoints_format: event.target.value,
+                      },
+                    }))
+                  }
+                />
+              )}
+            </div>
+            <div className="field">
+              <label htmlFor="camera_view">camera_view</label>
+              <select
+                id="camera_view"
+                value={cameraChoice}
+                onChange={(event) =>
+                  setRuleSetDraft((prev) => {
+                    const nextValue = event.target.value
+                    setCameraChoice(nextValue)
+                    return {
+                      ...prev,
+                      inputs: {
+                        ...prev.inputs,
+                        camera_view: nextValue === 'other' ? '' : nextValue,
+                      },
+                    }
+                  })
+                }
+              >
+                <option value="">Select view</option>
+                {CAMERA_VIEWS.map((view) => (
+                  <option key={view} value={view}>
+                    {view}
+                  </option>
+                ))}
+              </select>
+              {cameraChoice === 'other' && (
+                <input
+                  type="text"
+                  placeholder="custom camera_view"
+                  value={ruleSetDraft.inputs.camera_view ?? ''}
+                  onChange={(event) =>
+                    setRuleSetDraft((prev) => ({
+                      ...prev,
+                      inputs: {
+                        ...prev.inputs,
+                        camera_view: event.target.value,
+                      },
+                    }))
+                  }
+                />
+              )}
+            </div>
+            <div className="field">
+              <label>preprocess</label>
+              <div className="checkbox-group">
+                {PREPROCESS_OPTIONS.map((option) => (
+                  <label key={option} className="checkbox-item">
+                    <input
+                      type="checkbox"
+                      checked={(ruleSetDraft.inputs.preprocess ?? []).includes(option)}
+                      onChange={(event) =>
+                        setRuleSetDraft((prev) => {
+                          const current = prev.inputs.preprocess ?? []
+                          const next = event.target.checked
+                            ? [...current, option]
+                            : current.filter((item) => item !== option)
+                          return {
+                            ...prev,
+                            inputs: {
+                              ...prev.inputs,
+                              preprocess: next,
+                            },
+                          }
+                        })
+                      }
+                    />
+                    <span>{option}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
           </section>
 
           <section className="panel">

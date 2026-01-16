@@ -84,6 +84,27 @@
   padding: 0.55rem 0.75rem;
 }
 
+.field select {
+  border: 1px solid #c5c9d2;
+  border-radius: 6px;
+  padding: 0.55rem 0.75rem;
+  background: #fff;
+}
+
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #4a4f55;
+}
+
 .hint {
   margin-top: 1.25rem;
   color: #6d737b;
