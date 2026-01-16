@@ -1,0 +1,296 @@
+{
+  "step1": {
+    "Rules": {
+      "step1_stance_angle": {
+        "rule_id": "step1_stance_angle",
+        "label": "Stance angle",
+        "passed": true,
+        "score": 1.0,
+        "conditions": [
+          {
+            "id": "angle_ok",
+            "passed": true,
+            "value": 0.36543907602656134
+          }
+        ],
+        "feedback": []
+      },
+      "step1_cg_offset_avg": {
+        "rule_id": "step1_cg_offset_avg",
+        "label": "CG offset (avg)",
+        "passed": true,
+        "score": 1.0,
+        "conditions": [
+          {
+            "id": "cg_ok",
+            "passed": true,
+            "value": 0.08853369100018192
+          }
+        ],
+        "feedback": []
+      }
+    },
+    "Score": 100,
+    "StepClassification": "correct",
+    "Metrics": {
+      "stance_angle_diff_ratio": 0.36543907602656134,
+      "cg_z_avg_ratio_or_flag": 0.08853369100018192
+    },
+    "FrameRange": [
+      0,
+      1,
+      2
+    ]
+  },
+  "step2": {
+    "Rules": {
+      "step2_head_move": {
+        "rule_id": "step2_head_move",
+        "label": "Head move consistency",
+        "passed": true,
+        "score": 1.0,
+        "conditions": [
+          {
+            "id": "head_move_ok",
+            "passed": true,
+            "value": 0.07183577368194181
+          }
+        ],
+        "feedback": []
+      },
+      "step2_stride": {
+        "rule_id": "step2_stride",
+        "label": "Stride length",
+        "passed": true,
+        "score": 1.0,
+        "conditions": [
+          {
+            "id": "stride_ok",
+            "passed": true,
+            "value": 0.0
+          }
+        ],
+        "feedback": []
+      },
+      "step2_cg_offset_end": {
+        "rule_id": "step2_cg_offset_end",
+        "label": "CG offset (end)",
+        "passed": false,
+        "score": 0.0,
+        "conditions": [
+          {
+            "id": "cg_end_ok",
+            "passed": false,
+            "value": -50.0
+          }
+        ],
+        "feedback": [
+          {
+            "condition_ids": [
+              "cg_end_ok"
+            ],
+            "message": "Control forward CG at stride completion.",
+            "severity": "fail"
+          }
+        ]
+      },
+      "step2_shoulder_angle": {
+        "rule_id": "step2_shoulder_angle",
+        "label": "Shoulder XZ angle",
+        "passed": false,
+        "score": 0.0,
+        "conditions": [
+          {
+            "id": "shoulder_angle_ok",
+            "passed": false,
+            "value": 8.31596853827311
+          }
+        ],
+        "feedback": [
+          {
+            "condition_ids": [
+              "shoulder_angle_ok"
+            ],
+            "message": "Keep shoulder line similar in XZ plane.",
+            "severity": "warn"
+          }
+        ]
+      }
+    },
+    "Score": 65,
+    "StepClassification": "mid",
+    "Metrics": {
+      "head_move_diff_ratio": 0.07183577368194181,
+      "stride_z_class": 0.0,
+      "cg_z_end_ratio_or_flag": -50.0,
+      "shoulder_xz_angle_diff_ratio": 8.31596853827311
+    },
+    "FrameRange": [
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55
+    ]
+  },
+  "step3": {
+    "Rules": {
+      "step3_cg_offset_end": {
+        "rule_id": "step3_cg_offset_end",
+        "label": "CG offset diff (end)",
+        "passed": true,
+        "score": 1.0,
+        "conditions": [
+          {
+            "id": "cg_end_diff_ok",
+            "passed": true,
+            "value": 0.0
+          }
+        ],
+        "feedback": []
+      },
+      "step3_shoulder_height": {
+        "rule_id": "step3_shoulder_height",
+        "label": "Shoulder height diff",
+        "passed": true,
+        "score": 1.0,
+        "conditions": [
+          {
+            "id": "shoulder_height_ok",
+            "passed": true,
+            "value": 0.012651053292988879
+          }
+        ],
+        "feedback": []
+      }
+    },
+    "Score": 100,
+    "StepClassification": "correct",
+    "Metrics": {
+      "cg_z_end_diff_class": 0.0,
+      "shoulder_height_diff_class": 0.012651053292988879
+    },
+    "FrameRange": [
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67
+    ]
+  },
+  "step4": {
+    "Rules": {
+      "step4_cg_std": {
+        "rule_id": "step4_cg_std",
+        "label": "CG Z variability",
+        "passed": true,
+        "score": 1.0,
+        "conditions": [
+          {
+            "id": "cg_std_ok",
+            "passed": true,
+            "value": 0.4174450139513699
+          }
+        ],
+        "feedback": []
+      },
+      "step4_hip_yaw": {
+        "rule_id": "step4_hip_yaw",
+        "label": "Hip yaw angle",
+        "passed": true,
+        "score": 1.0,
+        "conditions": [
+          {
+            "id": "hip_yaw_ok",
+            "passed": true,
+            "value": 0.0
+          }
+        ],
+        "feedback": []
+      }
+    },
+    "Score": 100,
+    "StepClassification": "correct",
+    "Metrics": {
+      "cg_z_std_diff_ratio": 0.4174450139513699,
+      "hip_yaw_angle_diff_ratio_or_clamp": 0.0
+    },
+    "FrameRange": [
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79,
+      80,
+      81,
+      82,
+      83,
+      84,
+      85,
+      86,
+      87,
+      88,
+      89,
+      90
+    ]
+  }
+}

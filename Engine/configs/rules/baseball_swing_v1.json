@@ -1,0 +1,488 @@
+{
+  "schema_version": "1.0.0",
+  "rule_set_id": "baseball_swing",
+  "sport": "baseball",
+  "sport_version": "1.0.0",
+  "metadata": {
+    "title": "Baseball Swing SOP (hardcoded parity)",
+    "description": "JSON extraction of current SOPScoring hardcoded baseball logic for parity.",
+    "authors": ["auto-extracted"],
+    "notes": [
+      "Phase ranges and joints match SOPScoring.main steps.",
+      "Metrics mirror valX outputs from analyze_step1-4 without behavioral change."
+    ]
+  },
+  "inputs": {
+    "expected_fps": 30,
+    "keypoints_format": "openpose25",
+    "camera_view": "side",
+    "preprocess": [
+      "align_orientation",
+      "normalize_lengths"
+    ]
+  },
+  "globals": {
+    "angle_units": "degrees",
+    "confidence_threshold": 0.0,
+    "feature_pipeline": [
+      "calculate_frechet_distance",
+      "calculate_hausdorff_distance",
+      "calculate_kendalls_tau",
+      "stance_angle_diff_ratio",
+      "cg_z_avg_ratio_or_flag",
+      "head_move_diff_ratio",
+      "stride_z_class",
+      "cg_z_end_ratio_or_flag",
+      "shoulder_xz_angle_diff_ratio",
+      "cg_z_end_diff_class",
+      "shoulder_height_diff_class",
+      "cg_z_std_diff_ratio",
+      "hip_yaw_angle_diff_ratio_or_clamp"
+    ]
+  },
+  "phases": [
+    {
+      "id": "step1",
+      "label": "Setup",
+      "frame_range": [
+        0,
+        2
+      ],
+      "joints_of_interest": [
+        0,
+        1,
+        8,
+        7,
+        9
+      ]
+    },
+    {
+      "id": "step2",
+      "label": "Stride",
+      "frame_range": [
+        4,
+        55
+      ],
+      "joints_of_interest": [
+        1,
+        8,
+        12,
+        13,
+        14
+      ]
+    },
+    {
+      "id": "step3",
+      "label": "Early Swing",
+      "frame_range": [
+        57,
+        67
+      ],
+      "joints_of_interest": [
+        7,
+        4,
+        12,
+        13,
+        14,
+        1,
+        8
+      ]
+    },
+    {
+      "id": "step4",
+      "label": "Follow Through",
+      "frame_range": [
+        69,
+        90
+      ],
+      "joints_of_interest": [
+        2,
+        5
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "id": "step1_stance_angle",
+      "label": "Stance angle",
+      "phase": "step1",
+      "category": "setup",
+      "severity": "warn",
+      "signal": {
+        "type": "frame_range_ref",
+        "ref": "phase:step1"
+      },
+      "conditions": [
+        {
+          "id": "angle_ok",
+          "type": "range",
+          "metric": "stance_angle_diff_ratio",
+          "op": "between",
+          "value": [
+            0.0,
+            0.65
+          ],
+          "tolerance": 0.0,
+          "abs_val": true
+        }
+      ],
+      "score": {
+        "mode": "all-or-nothing",
+        "pass_score": 1.0,
+        "max_score": 1.0
+      },
+      "feedback": [
+        {
+          "condition_ids": [
+            "angle_ok"
+          ],
+          "message": "Align upper-body angle with reference.",
+          "severity": "warn",
+          "attach_to_ts": "frame:0"
+        }
+      ]
+    },
+    {
+      "id": "step1_cg_offset_avg",
+      "label": "CG offset (avg)",
+      "phase": "step1",
+      "category": "setup",
+      "severity": "warn",
+      "signal": {
+        "type": "frame_range_ref",
+        "ref": "phase:step1"
+      },
+      "conditions": [
+        {
+          "id": "cg_ok",
+          "type": "range",
+          "metric": "cg_z_avg_ratio_or_flag",
+          "op": "between",
+          "value": [
+            0.0,
+            0.3
+          ],
+          "abs_val": true
+        }
+      ],
+      "score": {
+        "mode": "all-or-nothing",
+        "pass_score": 1.0,
+        "max_score": 1.0
+      },
+      "feedback": [
+        {
+          "condition_ids": [
+            "cg_ok"
+          ],
+          "message": "Keep center of gravity aligned in setup.",
+          "severity": "warn"
+        }
+      ]
+    },
+    {
+      "id": "step2_head_move",
+      "label": "Head move consistency",
+      "phase": "step2",
+      "category": "stride",
+      "severity": "warn",
+      "signal": {
+        "type": "frame_range_ref",
+        "ref": "phase:step2"
+      },
+      "conditions": [
+        {
+          "id": "head_move_ok",
+          "type": "range",
+          "metric": "head_move_diff_ratio",
+          "op": "between",
+          "value": [
+            0.0,
+            0.4
+          ],
+          "abs_val": true
+        }
+      ],
+      "score": {
+        "mode": "all-or-nothing",
+        "pass_score": 1.0,
+        "max_score": 1.0
+      },
+      "feedback": [
+        {
+          "condition_ids": [
+            "head_move_ok"
+          ],
+          "message": "Limit head travel difference.",
+          "severity": "warn"
+        }
+      ]
+    },
+    {
+      "id": "step2_stride",
+      "label": "Stride length",
+      "phase": "step2",
+      "category": "stride",
+      "severity": "fail",
+      "signal": {
+        "type": "frame_range_ref",
+        "ref": "phase:step2"
+      },
+      "conditions": [
+        {
+          "id": "stride_ok",
+          "type": "range",
+          "metric": "stride_z_class",
+          "op": "between",
+          "value": [
+            0.0,
+            5.0
+          ],
+          "abs_val": true
+        }
+      ],
+      "score": {
+        "mode": "all-or-nothing",
+        "pass_score": 1.0,
+        "max_score": 1.0
+      },
+      "feedback": [
+        {
+          "condition_ids": [
+            "stride_ok"
+          ],
+          "message": "Match stride length within tolerance.",
+          "severity": "fail"
+        }
+      ]
+    },
+    {
+      "id": "step2_cg_offset_end",
+      "label": "CG offset (end)",
+      "phase": "step2",
+      "category": "stride",
+      "severity": "fail",
+      "signal": {
+        "type": "frame_range_ref",
+        "ref": "phase:step2"
+      },
+      "conditions": [
+        {
+          "id": "cg_end_ok",
+          "type": "range",
+          "metric": "cg_z_end_ratio_or_flag",
+          "op": "between",
+          "value": [
+            0.0,
+            0.4
+          ],
+          "abs_val": true
+        }
+      ],
+      "score": {
+        "mode": "all-or-nothing",
+        "pass_score": 1.0,
+        "max_score": 1.0
+      },
+      "feedback": [
+        {
+          "condition_ids": [
+            "cg_end_ok"
+          ],
+          "message": "Control forward CG at stride completion.",
+          "severity": "fail"
+        }
+      ]
+    },
+    {
+      "id": "step2_shoulder_angle",
+      "label": "Shoulder XZ angle",
+      "phase": "step2",
+      "category": "stride",
+      "severity": "warn",
+      "signal": {
+        "type": "frame_range_ref",
+        "ref": "phase:step2"
+      },
+      "conditions": [
+        {
+          "id": "shoulder_angle_ok",
+          "type": "range",
+          "metric": "shoulder_xz_angle_diff_ratio",
+          "op": "between",
+          "value": [
+            0.0,
+            0.4
+          ],
+          "abs_val": true
+        }
+      ],
+      "score": {
+        "mode": "all-or-nothing",
+        "pass_score": 1.0,
+        "max_score": 1.0
+      },
+      "feedback": [
+        {
+          "condition_ids": [
+            "shoulder_angle_ok"
+          ],
+          "message": "Keep shoulder line similar in XZ plane.",
+          "severity": "warn"
+        }
+      ]
+    },
+    {
+      "id": "step3_cg_offset_end",
+      "label": "CG offset diff (end)",
+      "phase": "step3",
+      "category": "swing",
+      "severity": "warn",
+      "signal": {
+        "type": "frame_range_ref",
+        "ref": "phase:step3"
+      },
+      "conditions": [
+        {
+          "id": "cg_end_diff_ok",
+          "type": "range",
+          "metric": "cg_z_end_diff_class",
+          "op": "between",
+          "value": [
+            0.0,
+            0.6
+          ],
+          "abs_val": false
+        }
+      ],
+      "score": {
+        "mode": "all-or-nothing",
+        "pass_score": 1.0,
+        "max_score": 1.0
+      },
+      "feedback": [
+        {
+          "condition_ids": [
+            "cg_end_diff_ok"
+          ],
+          "message": "Limit forward CG drift at swing start.",
+          "severity": "warn"
+        }
+      ]
+    },
+    {
+      "id": "step3_shoulder_height",
+      "label": "Shoulder height diff",
+      "phase": "step3",
+      "category": "swing",
+      "severity": "warn",
+      "signal": {
+        "type": "frame_range_ref",
+        "ref": "phase:step3"
+      },
+      "conditions": [
+        {
+          "id": "shoulder_height_ok",
+          "type": "range",
+          "metric": "shoulder_height_diff_class",
+          "op": "between",
+          "value": [
+            0.0,
+            0.05
+          ],
+          "abs_val": false
+        }
+      ],
+      "score": {
+        "mode": "all-or-nothing",
+        "pass_score": 1.0,
+        "max_score": 1.0
+      },
+      "feedback": [
+        {
+          "condition_ids": [
+            "shoulder_height_ok"
+          ],
+          "message": "Balance shoulder heights through swing.",
+          "severity": "warn"
+        }
+      ]
+    },
+    {
+      "id": "step4_cg_std",
+      "label": "CG Z variability",
+      "phase": "step4",
+      "category": "follow_through",
+      "severity": "fail",
+      "signal": {
+        "type": "frame_range_ref",
+        "ref": "phase:step4"
+      },
+      "conditions": [
+        {
+          "id": "cg_std_ok",
+          "type": "range",
+          "metric": "cg_z_std_diff_ratio",
+          "op": "between",
+          "value": [
+            0.0,
+            0.8
+          ],
+          "abs_val": true
+        }
+      ],
+      "score": {
+        "mode": "all-or-nothing",
+        "pass_score": 1.0,
+        "max_score": 1.0
+      },
+      "feedback": [
+        {
+          "condition_ids": [
+            "cg_std_ok"
+          ],
+          "message": "Stabilize CG variation in follow-through.",
+          "severity": "fail"
+        }
+      ]
+    },
+    {
+      "id": "step4_hip_yaw",
+      "label": "Hip yaw angle",
+      "phase": "step4",
+      "category": "follow_through",
+      "severity": "fail",
+      "signal": {
+        "type": "frame_range_ref",
+        "ref": "phase:step4"
+      },
+      "conditions": [
+        {
+          "id": "hip_yaw_ok",
+          "type": "range",
+          "metric": "hip_yaw_angle_diff_ratio_or_clamp",
+          "op": "between",
+          "value": [
+            0.0,
+            0.2
+          ],
+          "abs_val": true
+        }
+      ],
+      "score": {
+        "mode": "all-or-nothing",
+        "pass_score": 1.0,
+        "max_score": 1.0
+      },
+      "feedback": [
+        {
+          "condition_ids": [
+            "hip_yaw_ok"
+          ],
+          "message": "Match hip rotation at follow-through.",
+          "severity": "fail"
+        }
+      ]
+    }
+  ]
+}
