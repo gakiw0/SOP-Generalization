@@ -26,6 +26,15 @@ type Phase = {
   joints_of_interest?: number[]
 }
 
+type Rule = {
+  id: string
+  label: string
+  description?: string
+  phase: string
+  category: string
+  severity: 'info' | 'warn' | 'fail'
+}
+
 const PREPROCESS_OPTIONS = ['align_orientation', 'normalize_lengths']
 
 const FEATURE_PIPELINE_OPTIONS = [
@@ -75,7 +84,7 @@ type RuleSet = {
   inputs: Inputs
   globals: Globals
   phases: Phase[]
-  rules: unknown[]
+  rules: Rule[]
 }
 
 const createEmptyRuleSet = (): RuleSet => ({
@@ -316,6 +325,29 @@ function App() {
     setRuleSetDraft((prev) => ({
       ...prev,
       phases: prev.phases.filter((_, i) => i !== index),
+    }))
+  }
+
+  const handleAddRule = () => {
+    setRuleSetDraft((prev) => ({
+      ...prev,
+      rules: [
+        ...prev.rules,
+        {
+          id: '',
+          label: '',
+          phase: prev.phases.find((p) => p.id.trim().length > 0)?.id ?? '',
+          category: '',
+          severity: 'warn',
+        },
+      ],
+    }))
+  }
+
+  const handleRemoveRule = (index: number) => {
+    setRuleSetDraft((prev) => ({
+      ...prev,
+      rules: prev.rules.filter((_, i) => i !== index),
     }))
   }
 
@@ -884,6 +916,162 @@ function App() {
                               .join(', ')})`
                           : ''}
                       </p>
+                    </div>
+                  </div>
+                )
+              })
+            )}
+          </section>
+
+          <section className="panel">
+            <h2>Rules</h2>
+            <div className="actions" style={{ marginBottom: '1rem' }}>
+              <button type="button" onClick={handleAddRule}>
+                Add rule
+              </button>
+            </div>
+
+            {ruleSetDraft.rules.length === 0 ? (
+              <p className="hint">No rules yet.</p>
+            ) : (
+              ruleSetDraft.rules.map((rule, index) => {
+                const phaseOptions = ruleSetDraft.phases
+                  .map((p) => p.id.trim())
+                  .filter((id) => id.length > 0)
+                const hasPhaseOptions = phaseOptions.length > 0
+
+                return (
+                  <div
+                    key={`${index}-${rule.id}`}
+                    style={{
+                      border: '1px solid #d9dde3',
+                      borderRadius: 10,
+                      padding: '1rem',
+                      marginBottom: '1rem',
+                      background: '#f9fafb',
+                    }}
+                  >
+                    <div className="actions" style={{ justifyContent: 'flex-end' }}>
+                      <button type="button" onClick={() => handleRemoveRule(index)}>
+                        Remove
+                      </button>
+                    </div>
+
+                    <div className="field">
+                      <label htmlFor={`rule_${index}_id`}>id</label>
+                      <input
+                        id={`rule_${index}_id`}
+                        type="text"
+                        value={rule.id}
+                        onChange={(event) =>
+                          setRuleSetDraft((prev) => ({
+                            ...prev,
+                            rules: prev.rules.map((r, i) =>
+                              i === index ? { ...r, id: event.target.value } : r
+                            ),
+                          }))
+                        }
+                      />
+                    </div>
+
+                    <div className="field">
+                      <label htmlFor={`rule_${index}_label`}>label</label>
+                      <input
+                        id={`rule_${index}_label`}
+                        type="text"
+                        value={rule.label}
+                        onChange={(event) =>
+                          setRuleSetDraft((prev) => ({
+                            ...prev,
+                            rules: prev.rules.map((r, i) =>
+                              i === index ? { ...r, label: event.target.value } : r
+                            ),
+                          }))
+                        }
+                      />
+                    </div>
+
+                    <div className="field">
+                      <label htmlFor={`rule_${index}_phase`}>phase</label>
+                      {hasPhaseOptions ? (
+                        <select
+                          id={`rule_${index}_phase`}
+                          value={rule.phase}
+                          onChange={(event) =>
+                            setRuleSetDraft((prev) => ({
+                              ...prev,
+                              rules: prev.rules.map((r, i) =>
+                                i === index ? { ...r, phase: event.target.value } : r
+                              ),
+                            }))
+                          }
+                        >
+                          <option value="">(select)</option>
+                          {phaseOptions.map((id) => (
+                            <option key={id} value={id}>
+                              {id}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        <input
+                          id={`rule_${index}_phase`}
+                          type="text"
+                          value={rule.phase}
+                          onChange={(event) =>
+                            setRuleSetDraft((prev) => ({
+                              ...prev,
+                              rules: prev.rules.map((r, i) =>
+                                i === index ? { ...r, phase: event.target.value } : r
+                              ),
+                            }))
+                          }
+                        />
+                      )}
+                      {!hasPhaseOptions ? (
+                        <p className="hint">
+                          Add phases (with ids) to pick from a dropdown.
+                        </p>
+                      ) : null}
+                    </div>
+
+                    <div className="field">
+                      <label htmlFor={`rule_${index}_category`}>category</label>
+                      <input
+                        id={`rule_${index}_category`}
+                        type="text"
+                        value={rule.category}
+                        onChange={(event) =>
+                          setRuleSetDraft((prev) => ({
+                            ...prev,
+                            rules: prev.rules.map((r, i) =>
+                              i === index ? { ...r, category: event.target.value } : r
+                            ),
+                          }))
+                        }
+                      />
+                    </div>
+
+                    <div className="field">
+                      <label htmlFor={`rule_${index}_severity`}>severity</label>
+                      <select
+                        id={`rule_${index}_severity`}
+                        value={rule.severity}
+                        onChange={(event) =>
+                          setRuleSetDraft((prev) => ({
+                            ...prev,
+                            rules: prev.rules.map((r, i) =>
+                              i === index
+                                ? { ...r, severity: event.target.value as Rule['severity'] }
+                                : r
+                            ),
+                          }))
+                        }
+                      >
+                        <option value="info">info</option>
+                        <option value="warn">warn</option>
+                        <option value="fail">fail</option>
+                      </select>
                     </div>
                   </div>
                 )
