@@ -49,12 +49,55 @@ class RuleEngine:
     def preprocess(self, student: np.ndarray, coach: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         return self._apply_preprocess(student, coach)
 
-    def _phase_frame_range(self, phase: Dict) -> List[int]:
+    def _ms_to_frame_offset(self, ms: float, fps: float) -> int:
+        return int(round(float(ms) * float(fps) / 1000.0))
+
+    def _resolve_event_frame(self, event_name: str, context: Dict, fps: float) -> int:
+        events = (context or {}).get("events") or {}
+        if event_name not in events:
+            raise KeyError(f"Event '{event_name}' not found in context['events'].")
+
+        value = events[event_name]
+        if isinstance(value, dict):
+            if "frame" in value:
+                return int(value["frame"])
+            if "ts_ms" in value:
+                return int(round(float(value["ts_ms"]) * float(fps) / 1000.0))
+            raise ValueError(
+                f"Unsupported event payload for '{event_name}': expected keys 'frame' or 'ts_ms'."
+            )
+        return int(value)
+
+    def _phase_frame_range(self, phase: Dict, *, context: Dict, max_frame: int) -> List[int]:
         if "frame_range" in phase:
             start, end = phase["frame_range"]
             return list(range(start, end + 1))
-        # event_window handling can be added later
-        raise ValueError("Phase frame_range is required for current engine.")
+
+        if "event_window" in phase:
+            event_window = phase["event_window"] or {}
+            event_name = event_window.get("event")
+            window_ms = event_window.get("window_ms")
+            fps = (self.rule_set.get("inputs", {}) or {}).get("expected_fps")
+            if not event_name:
+                raise ValueError("phase.event_window.event is required.")
+            if not window_ms or len(window_ms) != 2:
+                raise ValueError("phase.event_window.window_ms must be a 2-item array.")
+            if fps is None:
+                raise ValueError("inputs.expected_fps is required to resolve event_window.")
+
+            try:
+                event_frame = self._resolve_event_frame(str(event_name), context, float(fps))
+            except KeyError as e:
+                raise ValueError(str(e)) from e
+            start = event_frame + self._ms_to_frame_offset(window_ms[0], float(fps))
+            end = event_frame + self._ms_to_frame_offset(window_ms[1], float(fps))
+            if start > end:
+                start, end = end, start
+            start = max(0, int(start))
+            end = min(int(end), int(max_frame))
+            return list(range(start, end + 1))
+
+        raise ValueError("Phase must define either frame_range or event_window.")
 
     def _evaluate_rule(self, rule: Dict, metrics: Dict[str, float]) -> Dict:
         cond_results = []
@@ -100,7 +143,8 @@ class RuleEngine:
         for phase in phases:
             phase_start = time.perf_counter() if profile else None
             phase_id = phase["id"]
-            frame_range = self._phase_frame_range(phase)
+            max_frame = min(int(len(student_p) - 1), int(len(coach_p) - 1))
+            frame_range = self._phase_frame_range(phase, context=context, max_frame=max_frame)
 
             extract_start = time.perf_counter() if profile else None
             coach_data = su.extract_skeleton_data(coach_p, frame_range)
