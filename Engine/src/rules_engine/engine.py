@@ -99,6 +99,67 @@ class RuleEngine:
 
         raise ValueError("Phase must define either frame_range or event_window.")
 
+    def _resolve_rule_frame_range(self, rule: Dict, phase_map: Dict[str, Dict], *, context: Dict, max_frame: int) -> List[int]:
+        signal = rule.get("signal") or {}
+        stype = signal.get("type")
+
+        # Fallback: if signal is omitted or unsupported, use the rule's phase range.
+        phase_id = rule.get("phase")
+        if phase_id not in phase_map:
+            raise ValueError(f"Rule '{rule.get('id')}' references missing phase '{phase_id}'")
+
+        if not stype:
+            return self._phase_frame_range(phase_map[phase_id], context=context, max_frame=max_frame)
+
+        if stype == "frame_range_ref":
+            ref = signal.get("ref") or ""
+            if not isinstance(ref, str) or not ref.startswith("phase:"):
+                raise ValueError(f"Rule '{rule.get('id')}' has invalid signal.ref '{ref}' (expected 'phase:<id>')")
+            ref_phase = ref.split("phase:", 1)[1]
+            if ref_phase not in phase_map:
+                raise ValueError(f"Rule '{rule.get('id')}' references missing phase '{ref_phase}' in signal.ref")
+            return self._phase_frame_range(phase_map[ref_phase], context=context, max_frame=max_frame)
+
+        if stype == "direct":
+            frame_range = signal.get("frame_range")
+            if not frame_range or len(frame_range) != 2:
+                raise ValueError(f"Rule '{rule.get('id')}' direct.signal requires frame_range [start,end].")
+            start, end = frame_range
+            if start > end:
+                start, end = end, start
+            start = max(0, int(start))
+            end = min(int(end), int(max_frame))
+            return list(range(start, end + 1))
+
+        if stype == "event_window":
+            event_name = signal.get("event")
+            window_ms = signal.get("window_ms")
+            fps = (self.rule_set.get("inputs", {}) or {}).get("expected_fps")
+            if not event_name:
+                raise ValueError(f"Rule '{rule.get('id')}' signal.event_window requires 'event'.")
+            if not window_ms or len(window_ms) != 2:
+                raise ValueError(f"Rule '{rule.get('id')}' signal.event_window requires window_ms [pre,post].")
+            if fps is None:
+                raise ValueError("inputs.expected_fps is required to resolve signal.event_window.")
+            try:
+                event_frame = self._resolve_event_frame(str(event_name), context, float(fps))
+            except KeyError as e:
+                # Optional fallback to a phase when the event is missing.
+                default_phase = signal.get("default_phase")
+                if default_phase and default_phase in phase_map:
+                    return self._phase_frame_range(phase_map[default_phase], context=context, max_frame=max_frame)
+                raise ValueError(str(e)) from e
+            start = event_frame + self._ms_to_frame_offset(window_ms[0], float(fps))
+            end = event_frame + self._ms_to_frame_offset(window_ms[1], float(fps))
+            if start > end:
+                start, end = end, start
+            start = max(0, int(start))
+            end = min(int(end), int(max_frame))
+            return list(range(start, end + 1))
+
+        # Unknown signal type: be conservative and fall back to phase.
+        return self._phase_frame_range(phase_map[phase_id], context=context, max_frame=max_frame)
+
     def _evaluate_rule(self, rule: Dict, metrics: Dict[str, float]) -> Dict:
         cond_results = []
         for cond in rule.get("conditions", []):
@@ -146,21 +207,49 @@ class RuleEngine:
             max_frame = min(int(len(student_p) - 1), int(len(coach_p) - 1))
             frame_range = self._phase_frame_range(phase, context=context, max_frame=max_frame)
 
-            extract_start = time.perf_counter() if profile else None
-            coach_data = su.extract_skeleton_data(coach_p, frame_range)
-            student_data = su.extract_skeleton_data(student_p, frame_range)
-            extract_sec = (time.perf_counter() - extract_start) if profile else None
-
-            # Calculate metrics via plugin (parity with analyze_step* logic)
-            metrics_start = time.perf_counter() if profile else None
-            metrics = self.plugin.compute_metrics(phase_id, student_data, coach_data)
-            metrics_sec = (time.perf_counter() - metrics_start) if profile else None
-
-            # Evaluate applicable rules
             phase_rules = [r for r in rules if r.get("phase") == phase_id]
-            rules_eval_start = time.perf_counter() if profile else None
-            rule_results = [self._evaluate_rule(r, metrics) for r in phase_rules]
-            rules_eval_sec = (time.perf_counter() - rules_eval_start) if profile else None
+            rule_results = []
+
+            extract_sec_total = 0.0
+            metrics_sec_total = 0.0
+            rules_eval_sec_total = 0.0
+
+            # Preserve legacy behavior: compute phase-level metrics on the phase frame range.
+            extract_start = time.perf_counter() if profile else None
+            phase_coach_data = su.extract_skeleton_data(coach_p, frame_range)
+            phase_student_data = su.extract_skeleton_data(student_p, frame_range)
+            if profile:
+                extract_sec_total += (time.perf_counter() - extract_start)
+
+            metrics_start = time.perf_counter() if profile else None
+            phase_metrics = self.plugin.compute_metrics(phase_id, phase_student_data, phase_coach_data)
+            if profile:
+                metrics_sec_total += (time.perf_counter() - metrics_start)
+
+            for rule in phase_rules:
+                rule_frame_range = self._resolve_rule_frame_range(rule, phase_map, context=context, max_frame=max_frame)
+
+                if rule_frame_range == frame_range:
+                    # Fast path: reuse phase extraction and metrics (legacy rule-sets).
+                    metrics = phase_metrics
+                else:
+                    extract_start = time.perf_counter() if profile else None
+                    coach_data = su.extract_skeleton_data(coach_p, rule_frame_range)
+                    student_data = su.extract_skeleton_data(student_p, rule_frame_range)
+                    if profile:
+                        extract_sec_total += (time.perf_counter() - extract_start)
+
+                    metrics_start = time.perf_counter() if profile else None
+                    metrics = self.plugin.compute_metrics(phase_id, student_data, coach_data)
+                    if profile:
+                        metrics_sec_total += (time.perf_counter() - metrics_start)
+
+                rules_eval_start = time.perf_counter() if profile else None
+                rr = self._evaluate_rule(rule, metrics)
+                rr["FrameRange"] = rule_frame_range
+                if profile:
+                    rules_eval_sec_total += (time.perf_counter() - rules_eval_start)
+                rule_results.append(rr)
 
             # Step-level score/classification aggregation
             # Parity-first scoring:
@@ -175,16 +264,16 @@ class RuleEngine:
                 "Rules": {rr["rule_id"]: rr for rr in rule_results},
                 "Score": step_score_pct,
                 "StepClassification": classification,
-                "Metrics": metrics,
+                "Metrics": phase_metrics,
                 "FrameRange": frame_range,
             }
 
             if profile:
                 phase_total_sec = time.perf_counter() - phase_start
                 phase_dict["TimingsSec"] = {
-                    "extract_data": round(float(extract_sec), 6),
-                    "compute_metrics": round(float(metrics_sec), 6),
-                    "evaluate_rules": round(float(rules_eval_sec), 6),
+                    "extract_data": round(float(extract_sec_total), 6),
+                    "compute_metrics": round(float(metrics_sec_total), 6),
+                    "evaluate_rules": round(float(rules_eval_sec_total), 6),
                     "total": round(float(phase_total_sec), 6),
                 }
 
