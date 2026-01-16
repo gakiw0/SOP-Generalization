@@ -15,7 +15,6 @@
 1. **plugin選択が野球固定**（`runner.py` / `run_engine.py` のデフォルトと分岐）
 2. **BaseballPluginがstep1..4前提**で、競技やphase構成を差し替えにくい
 3. schemaにある汎用表現（`event_window` / `signal` / 多様なcondition）に対して、runtimeが追いついていない
-4. スコアリングが parity（pass→100, fail→30）寄りに固定されている
 
 ---
 
@@ -104,29 +103,11 @@
 
 ---
 
-### M5: スコアリングの汎用化（parity固定の解除）
-**狙い**: 競技ごとに「合格/不合格→点数」の扱いが違ってもエンジンを変えずに済むようにする。
-
-**作業**
-- 変更: `Engine/src/rules_engine/engine.py`
-  - 現在の `pass->100 / fail->30` を **設定化**する
-  - 最小案:
-    - `rule_set.globals.scoring` のような設定を追加（既存が無い場合はデフォルトで現状維持）
-    - 例: `{ "pass_score": 100, "fail_score": 30, "aggregate": "average" }`
-  - もしくは `score_cfg` の `mode` を用いて rule単位で集計できるように拡張（ただし影響範囲が大きいので後回し）
-
-**受け入れ条件**
-- 設定が無い場合は現状の parity スコアと同じになる
-- 競技ごとにスコア換算を変えられる
-
----
-
 ## 進め方（推奨順序）
 1. M1（plugin registry）→ “他競技を差し込める”入口を作る
 2. M3（signal: frame_range_ref/direct）→ ルール適用の汎用性を上げる
 3. M2（event_window）→ 区間決定をイベント駆動にできる
 4. M4（abs/tolerance/composite）→ ルール表現力の汎用化
-5. M5（スコアリング設定化）→ 運用上の競技差を吸収
 
 ---
 

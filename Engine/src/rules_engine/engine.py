@@ -49,6 +49,27 @@ class RuleEngine:
     def preprocess(self, student: np.ndarray, coach: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         return self._apply_preprocess(student, coach)
 
+    def _feature_pipeline_allowlist(self):
+        globals_cfg = (self.rule_set.get("globals", {}) or {})
+        pipeline = globals_cfg.get("feature_pipeline") or []
+        if not isinstance(pipeline, list) or len(pipeline) == 0:
+            return None
+        return {str(name) for name in pipeline if str(name).strip()}
+
+    def _apply_feature_pipeline(self, metrics: Dict[str, float]) -> Dict[str, float]:
+        """
+        Apply globals.feature_pipeline as an allow-list for emitted metrics.
+
+        - If feature_pipeline is missing/empty: return metrics unchanged.
+        - If feature_pipeline includes unknown names: ignore them.
+
+        Note: this does not *compute* additional metrics; it only filters what the plugin produced.
+        """
+        allow = self._feature_pipeline_allowlist()
+        if not allow:
+            return metrics
+        return {k: v for k, v in metrics.items() if k in allow}
+
     def _ms_to_frame_offset(self, ms: float, fps: float) -> int:
         return int(round(float(ms) * float(fps) / 1000.0))
 
@@ -251,7 +272,9 @@ class RuleEngine:
                 extract_sec_total += (time.perf_counter() - extract_start)
 
             metrics_start = time.perf_counter() if profile else None
-            phase_metrics = self.plugin.compute_metrics(phase_id, phase_student_data, phase_coach_data)
+            phase_metrics = self._apply_feature_pipeline(
+                self.plugin.compute_metrics(phase_id, phase_student_data, phase_coach_data)
+            )
             if profile:
                 metrics_sec_total += (time.perf_counter() - metrics_start)
 
@@ -269,7 +292,9 @@ class RuleEngine:
                         extract_sec_total += (time.perf_counter() - extract_start)
 
                     metrics_start = time.perf_counter() if profile else None
-                    metrics = self.plugin.compute_metrics(phase_id, student_data, coach_data)
+                    metrics = self._apply_feature_pipeline(
+                        self.plugin.compute_metrics(phase_id, student_data, coach_data)
+                    )
                     if profile:
                         metrics_sec_total += (time.perf_counter() - metrics_start)
 
