@@ -69,7 +69,9 @@
 
 #### 3.4 phases（CRUD）
 - できること: 追加/削除
-- フィールド: `phases[].id`, `phases[].label`, `phases[].frame_range`, `phases[].joints_of_interest`
+- フィールド: `phases[].id`, `phases[].label`, `phases[].joints_of_interest`
+- フィールド（区間指定）: `phases[].frame_range` または `phases[].event_window`（schemaの `oneOf`）
+- `event_window` の中身: `event`, `window_ms`
 - 入力形式: `joints_of_interest` はCSV（数値配列）
 - Done: phaseを追加して `phases[]` に反映でき、削除もできる
 
@@ -80,13 +82,18 @@
 - Done: ruleを追加/削除でき、phaseが選択できる
 
 #### 3.6 signal（最小）
-- フィールド: `rules[].signal.type`, `rules[].signal.ref`
+- フィールド: `rules[].signal.type`（`frame_range_ref` / `direct` / `event_window`）
+- `type=frame_range_ref`: `rules[].signal.ref`（`ref=phase:<phaseId>`）
+- `type=direct`: `rules[].signal.frame_range`
+- `type=event_window`: `rules[].signal.event`, `rules[].signal.window_ms`, `rules[].signal.default_phase`（任意）
 - 初期値: `type=frame_range_ref`, `ref=phase:<phaseId>` を想定（自動生成は将来でも可）
 - Done: signalを編集してJSONに反映できる
 
 #### 3.7 conditions（CRUD: 最小）
 - できること: conditionの追加/削除（rule内）
-- フィールド: `conditions[].id`, `conditions[].type`, `conditions[].metric`, `conditions[].op`, `conditions[].value`
+- フィールド（共通）: `conditions[].id`, `conditions[].type`
+- フィールド（threshold/range/boolean）: `conditions[].metric`, `conditions[].op`, `conditions[].value`, `conditions[].abs_val`（任意）, `conditions[].tolerance`（任意）
+- フィールド（composite）: `conditions[].logic`, `conditions[].conditions`（cond id参照の配列）
 - 入力形式: `value` は「数値 or JSON文字列」を許可（最初はゆるく）
 - Done: conditionを増やしてJSONに反映できる
 
@@ -109,6 +116,9 @@
   - `rule.conditions[].id` 重複（rule内）
   - `feedback.condition_ids` が条件idを参照している
   - `signal.type=frame_range_ref` の `ref=phase:<id>` が存在する
+  - `signal.type=direct` の `frame_range` が `[start,end]` 形式である
+  - `signal.type=event_window` の `event/window_ms` が妥当、`default_phase` がある場合は `phases.id` に存在する
+  - `type=composite` の `conditions[]` が同一rule内の条件idを参照している
 - Done: エラーがUIに表示され、該当箇所が分かる
 
 ### Step 5: Export
