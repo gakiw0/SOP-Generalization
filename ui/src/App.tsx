@@ -14,6 +14,11 @@ type Globals = {
   feature_pipeline?: string[]
 }
 
+type ValidationError = {
+  path: string
+  message: string
+}
+
 type Phase = {
   id: string
   label: string
@@ -171,6 +176,222 @@ type Feedback = {
   message: string
   severity: 'info' | 'warn' | 'fail'
   attach_to_ts?: string
+}
+
+const isNonEmptyString = (value: unknown): value is string =>
+  typeof value === 'string' && value.trim().length > 0
+
+const isSemver = (value: unknown): value is string =>
+  typeof value === 'string' && /^[0-9]+\\.[0-9]+\\.[0-9]+$/.test(value)
+
+const isId = (value: unknown): value is string =>
+  typeof value === 'string' && /^[A-Za-z0-9_.-]+$/.test(value)
+
+const isFiniteNumber = (value: unknown): value is number =>
+  typeof value === 'number' && Number.isFinite(value)
+
+const isFiniteInt = (value: unknown): value is number =>
+  typeof value === 'number' && Number.isFinite(value) && Number.isInteger(value)
+
+const validateRuleSet = (ruleSet: RuleSet): ValidationError[] => {
+  const errors: ValidationError[] = []
+  const add = (path: string, message: string) => errors.push({ path, message })
+
+  if (!isSemver(ruleSet.schema_version)) add('schema_version', 'Must be semver: x.y.z')
+  if (!isNonEmptyString(ruleSet.rule_set_id)) add('rule_set_id', 'Required')
+  if (!isNonEmptyString(ruleSet.sport)) add('sport', 'Required')
+  if (!isSemver(ruleSet.sport_version)) add('sport_version', 'Must be semver: x.y.z')
+  if (!isNonEmptyString(ruleSet.metadata.title)) add('metadata.title', 'Required')
+
+  if (ruleSet.phases.length === 0) add('phases', 'Add at least one phase')
+  if (ruleSet.rules.length === 0) add('rules', 'Add at least one rule')
+
+  const phaseIds = new Set<string>()
+  ruleSet.phases.forEach((phase, i) => {
+    const pPath = `phases[${i}]`
+    if (!isNonEmptyString(phase.id)) add(`${pPath}.id`, 'Required')
+    else if (!isId(phase.id)) add(`${pPath}.id`, 'Invalid id format')
+    else if (phaseIds.has(phase.id)) add(`${pPath}.id`, `Duplicate phase id '${phase.id}'`)
+    else phaseIds.add(phase.id)
+
+    if (!isNonEmptyString(phase.label)) add(`${pPath}.label`, 'Required')
+
+    const hasFrameRange = phase.frame_range != null
+    const hasEventWindow = phase.event_window != null
+    if (hasFrameRange && hasEventWindow) {
+      add(pPath, 'Specify either frame_range or event_window (not both)')
+    } else if (!hasFrameRange && !hasEventWindow) {
+      add(pPath, 'Specify either frame_range or event_window')
+    }
+
+    if (hasFrameRange) {
+      const fr = phase.frame_range
+      if (
+        !Array.isArray(fr) ||
+        fr.length !== 2 ||
+        !isFiniteInt(fr[0]) ||
+        !isFiniteInt(fr[1]) ||
+        fr[0] < 0 ||
+        fr[1] < 0
+      ) {
+        add(`${pPath}.frame_range`, 'Must be [start,end] integers >= 0')
+      }
+    }
+
+    if (hasEventWindow) {
+      const ew = phase.event_window
+      if (!ew || !isNonEmptyString(ew.event)) add(`${pPath}.event_window.event`, 'Required')
+      const wm = ew?.window_ms
+      if (!Array.isArray(wm) || wm.length !== 2 || !isFiniteNumber(wm[0]) || !isFiniteNumber(wm[1])) {
+        add(`${pPath}.event_window.window_ms`, 'Must be [pre,post] numbers')
+      }
+    }
+
+    if (phase.joints_of_interest != null) {
+      const joi = phase.joints_of_interest
+      if (!Array.isArray(joi) || joi.some((x) => !isFiniteInt(x) || x < 0)) {
+        add(`${pPath}.joints_of_interest`, 'Must be an array of integers >= 0')
+      }
+    }
+  })
+
+  const ruleIds = new Set<string>()
+  ruleSet.rules.forEach((rule, i) => {
+    const rPath = `rules[${i}]`
+    if (!isNonEmptyString(rule.id)) add(`${rPath}.id`, 'Required')
+    else if (!isId(rule.id)) add(`${rPath}.id`, 'Invalid id format')
+    else if (ruleIds.has(rule.id)) add(`${rPath}.id`, `Duplicate rule id '${rule.id}'`)
+    else ruleIds.add(rule.id)
+
+    if (!isNonEmptyString(rule.label)) add(`${rPath}.label`, 'Required')
+    if (!isNonEmptyString(rule.phase)) add(`${rPath}.phase`, 'Required')
+    else if (!phaseIds.has(rule.phase)) add(`${rPath}.phase`, `Unknown phase '${rule.phase}'`)
+    if (!isNonEmptyString(rule.category)) add(`${rPath}.category`, 'Required')
+
+    // Signal
+    const signalType = rule.signal?.type
+    if (!signalType) add(`${rPath}.signal.type`, 'Required')
+    if (signalType === 'frame_range_ref') {
+      const ref = rule.signal.ref
+      if (!isNonEmptyString(ref)) add(`${rPath}.signal.ref`, 'Required')
+      else if (!/^phase:[A-Za-z0-9_.-]+$/.test(ref)) add(`${rPath}.signal.ref`, 'Must be phase:<id>')
+      else {
+        const refId = ref.split('phase:', 2)[1]
+        if (!phaseIds.has(refId)) add(`${rPath}.signal.ref`, `Unknown phase '${refId}'`)
+      }
+    } else if (signalType === 'direct') {
+      const fr = rule.signal.frame_range
+      if (
+        !Array.isArray(fr) ||
+        fr.length !== 2 ||
+        !isFiniteInt(fr[0]) ||
+        !isFiniteInt(fr[1]) ||
+        fr[0] < 0 ||
+        fr[1] < 0
+      ) {
+        add(`${rPath}.signal.frame_range`, 'Must be [start,end] integers >= 0')
+      }
+    } else if (signalType === 'event_window') {
+      if (!isNonEmptyString(rule.signal.event)) add(`${rPath}.signal.event`, 'Required')
+      const wm = rule.signal.window_ms
+      if (!Array.isArray(wm) || wm.length !== 2 || !isFiniteNumber(wm[0]) || !isFiniteNumber(wm[1])) {
+        add(`${rPath}.signal.window_ms`, 'Must be [pre,post] numbers')
+      }
+      const dp = rule.signal.default_phase
+      if (dp != null && dp !== '' && !phaseIds.has(dp)) {
+        add(`${rPath}.signal.default_phase`, `Unknown phase '${dp}'`)
+      }
+    }
+
+    // Conditions
+    if (rule.conditions.length === 0) add(`${rPath}.conditions`, 'Add at least one condition')
+    const condIds = new Set<string>()
+    rule.conditions.forEach((cond, j) => {
+      const cPath = `${rPath}.conditions[${j}]`
+      if (!isNonEmptyString(cond.id)) add(`${cPath}.id`, 'Required')
+      else if (!isId(cond.id)) add(`${cPath}.id`, 'Invalid id format')
+      else if (condIds.has(cond.id)) add(`${cPath}.id`, `Duplicate condition id '${cond.id}'`)
+      else condIds.add(cond.id)
+
+      if (!isNonEmptyString(cond.type)) add(`${cPath}.type`, 'Required')
+
+      if (cond.type === 'threshold') {
+        if (!isNonEmptyString(cond.metric)) add(`${cPath}.metric`, 'Required')
+        const op = cond.op
+        const allowed = new Set(['gte', 'gt', 'lte', 'lt', 'eq', 'neq'])
+        if (!isNonEmptyString(op) || !allowed.has(op)) add(`${cPath}.op`, 'Invalid op')
+        if (!isFiniteNumber(cond.value)) add(`${cPath}.value`, 'Must be a number')
+        if (cond.tolerance != null && !isFiniteNumber(cond.tolerance)) add(`${cPath}.tolerance`, 'Must be a number')
+      } else if (cond.type === 'range') {
+        if (!isNonEmptyString(cond.metric)) add(`${cPath}.metric`, 'Required')
+        if ((cond.op ?? 'between') !== 'between') add(`${cPath}.op`, "Must be 'between'")
+        if (
+          !Array.isArray(cond.value) ||
+          cond.value.length !== 2 ||
+          !isFiniteNumber(cond.value[0]) ||
+          !isFiniteNumber(cond.value[1])
+        ) {
+          add(`${cPath}.value`, 'Must be [lower,upper] numbers')
+        }
+        if (cond.tolerance != null && !isFiniteNumber(cond.tolerance)) add(`${cPath}.tolerance`, 'Must be a number')
+      } else if (cond.type === 'boolean') {
+        if (!isNonEmptyString(cond.metric)) add(`${cPath}.metric`, 'Required')
+        const op = cond.op
+        const allowed = new Set(['is_true', 'is_false'])
+        if (!isNonEmptyString(op) || !allowed.has(op)) add(`${cPath}.op`, 'Invalid op')
+      } else if (cond.type === 'composite') {
+        const logic = cond.logic
+        if (!logic || !['all', 'any', 'none'].includes(logic)) add(`${cPath}.logic`, 'Invalid logic')
+        if (!Array.isArray(cond.conditions) || cond.conditions.length === 0) {
+          add(`${cPath}.conditions`, 'Must be a non-empty array of condition ids')
+        }
+      } else {
+        add(`${cPath}.type`, `Unsupported condition type '${String(cond.type)}'`)
+      }
+    })
+
+    rule.conditions.forEach((cond, j) => {
+      if (cond.type !== 'composite') return
+      const cPath = `${rPath}.conditions[${j}].conditions`
+      const refs = cond.conditions ?? []
+      refs.forEach((rid) => {
+        if (!condIds.has(rid)) add(cPath, `Unknown condition id reference '${rid}'`)
+      })
+    })
+
+    // Score
+    const mode = rule.score.mode
+    if (!isNonEmptyString(mode) || !['all-or-nothing', 'average'].includes(mode)) {
+      add(`${rPath}.score.mode`, 'Invalid mode')
+    }
+    if (!isFiniteNumber(rule.score.pass_score)) add(`${rPath}.score.pass_score`, 'Must be a number')
+    if (!isFiniteNumber(rule.score.max_score) || rule.score.max_score < 0) {
+      add(`${rPath}.score.max_score`, 'Must be a number >= 0')
+    }
+
+    // Feedback
+    rule.feedback.forEach((fb, j) => {
+      const fPath = `${rPath}.feedback[${j}]`
+      if (!Array.isArray(fb.condition_ids) || fb.condition_ids.length === 0) {
+        add(`${fPath}.condition_ids`, 'Must be a non-empty array of condition ids')
+      } else {
+        fb.condition_ids.forEach((cid) => {
+          if (!condIds.has(cid)) add(`${fPath}.condition_ids`, `Unknown condition id '${cid}'`)
+        })
+      }
+      if (!isNonEmptyString(fb.message)) add(`${fPath}.message`, 'Required')
+      if (!isNonEmptyString(fb.severity) || !['info', 'warn', 'fail'].includes(fb.severity)) {
+        add(`${fPath}.severity`, 'Invalid severity')
+      }
+      if (fb.attach_to_ts != null && fb.attach_to_ts !== '') {
+        if (!/^(event:[A-Za-z0-9_.-]+|frame:[0-9]+)$/.test(fb.attach_to_ts)) {
+          add(`${fPath}.attach_to_ts`, 'Must match event:<name> or frame:<idx>')
+        }
+      }
+    })
+  })
+
+  return errors
 }
 
 const formatConditionValue = (value: unknown): string => {
@@ -365,6 +586,7 @@ function App() {
   const [ruleSetDraft, setRuleSetDraft] = useState<RuleSet>(() =>
     createEmptyRuleSet()
   )
+  const [validationErrors, setValidationErrors] = useState<ValidationError[]>([])
   const jsonPreview = useMemo(
     () => JSON.stringify(ruleSetDraft, null, 2),
     [ruleSetDraft]
@@ -372,6 +594,7 @@ function App() {
 
   const handleNew = () => {
     setRuleSetDraft(createEmptyRuleSet())
+    setValidationErrors([])
   }
 
   const handleAddPhase = () => {
@@ -490,26 +713,18 @@ function App() {
   }
 
   const handleValidate = () => {
-    const errors: string[] = []
-    if (!ruleSetDraft.rule_set_id.trim()) errors.push('rule_set_id')
-    if (!ruleSetDraft.sport.trim()) errors.push('sport')
-    if (!ruleSetDraft.sport_version.trim()) errors.push('sport_version')
-    if (!ruleSetDraft.metadata.title.trim()) errors.push('metadata.title')
-    if ((ruleSetDraft.inputs.keypoints_format ?? '') !== 'openpose25') {
-      errors.push('inputs.keypoints_format (must be openpose25 for current engine)')
-    }
-    if ((ruleSetDraft.inputs.camera_view ?? '') !== 'side') {
-      errors.push('inputs.camera_view (must be side for current engine)')
-    }
-    if ((ruleSetDraft.globals.angle_units ?? '') !== 'degrees') {
-      errors.push('globals.angle_units (must be degrees for current engine)')
-    }
-
+    const errors = validateRuleSet(ruleSetDraft)
+    setValidationErrors(errors)
     if (errors.length === 0) {
-      window.alert('Basic check passed. Full validation will be added later.')
+      window.alert('Validation succeeded.')
       return
     }
-    window.alert(`Missing required fields: ${errors.join(', ')}`)
+    const preview = errors
+      .slice(0, 20)
+      .map((e) => `- ${e.path}: ${e.message}`)
+      .join('\n')
+    const tail = errors.length > 20 ? `\n...and ${errors.length - 20} more` : ''
+    window.alert(`Validation failed (${errors.length} errors):\n${preview}${tail}`)
   }
 
   const handleExport = () => {
@@ -685,6 +900,17 @@ function App() {
                 ))}
               </div>
             </div>
+          </section>
+
+          <section className="panel">
+            <h2>Validation</h2>
+            {validationErrors.length === 0 ? (
+              <p className="hint">No validation errors.</p>
+            ) : (
+              <pre className="code validation-code">
+                {validationErrors.map((e) => `${e.path}: ${e.message}`).join('\n')}
+              </pre>
+            )}
           </section>
 
           <section className="panel">

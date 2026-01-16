@@ -183,6 +183,12 @@
   font-size: 0.85rem;
 }
 
+.validation-code {
+  border: 1px solid #f1b4b4;
+  background: #fff6f6;
+  color: #7a1f1f;
+}
+
 @media (max-width: 900px) {
   .header {
     flex-direction: column;
