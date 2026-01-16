@@ -161,10 +161,39 @@ class RuleEngine:
         return self._phase_frame_range(phase_map[phase_id], context=context, max_frame=max_frame)
 
     def _evaluate_rule(self, rule: Dict, metrics: Dict[str, float]) -> Dict:
+        conditions = rule.get("conditions", [])
         cond_results = []
-        for cond in rule.get("conditions", []):
+        cond_results_by_id = {}
+
+        base_conds = [c for c in conditions if c.get("type") != "composite"]
+        composite_conds = [c for c in conditions if c.get("type") == "composite"]
+
+        for cond in base_conds:
             cr = evaluator.evaluate_condition(cond, metrics)
+            if cr.id in cond_results_by_id:
+                raise ValueError(f"Duplicate condition id '{cr.id}' in rule '{rule.get('id')}'")
             cond_results.append(cr)
+            cond_results_by_id[cr.id] = cr
+
+        pending = list(composite_conds)
+        while pending:
+            progressed = False
+            next_pending = []
+            for cond in pending:
+                try:
+                    cr = evaluator.evaluate_composite_condition(cond, cond_results_by_id)
+                except KeyError:
+                    next_pending.append(cond)
+                    continue
+                if cr.id in cond_results_by_id:
+                    raise ValueError(f"Duplicate condition id '{cr.id}' in rule '{rule.get('id')}'")
+                cond_results.append(cr)
+                cond_results_by_id[cr.id] = cr
+                progressed = True
+            if not progressed:
+                unresolved_ids = [c.get("id") for c in next_pending]
+                raise ValueError(f"Unresolved composite condition references in rule '{rule.get('id')}': {unresolved_ids}")
+            pending = next_pending
 
         rule_score = float(evaluator.aggregate_score(rule.get("score", {}), cond_results))
         fb = evaluator.select_feedback(rule, cond_results)

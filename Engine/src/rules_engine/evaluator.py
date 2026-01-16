@@ -27,6 +27,12 @@ def _cmp(op: str, lhs, rhs) -> bool:
     raise ValueError(f"Unsupported op: {op}")
 
 
+def _as_number(val):
+    if isinstance(val, (int, float)):
+        return float(val)
+    raise TypeError(f"Expected number, got {type(val).__name__}")
+
+
 def evaluate_condition(cond: Dict, metrics: Dict[str, float]) -> ConditionResult:
     ctype = cond.get("type")
     cond_id = cond.get("id")
@@ -37,16 +43,39 @@ def evaluate_condition(cond: Dict, metrics: Dict[str, float]) -> ConditionResult
             raise KeyError(f"Metric '{metric_name}' not computed for condition '{cond_id}'")
         val = metrics[metric_name]
 
+    abs_val = bool(cond.get("abs_val", False))
+    tol = cond.get("tolerance", 0.0)
+    tol = float(tol) if tol is not None else 0.0
+
     if ctype == "threshold":
         op = cond["op"]
-        target = cond["value"]
-        passed = bool(_cmp(op, val, target))
-        return ConditionResult(cond_id, passed, float(val))
+        target = _as_number(cond["value"])
+        lhs = _as_number(val)
+        if abs_val:
+            lhs = abs(lhs)
+
+        if op in ("gte", "gt"):
+            passed = bool(_cmp(op, lhs, target - tol))
+        elif op in ("lte", "lt"):
+            passed = bool(_cmp(op, lhs, target + tol))
+        elif op == "eq":
+            passed = bool(abs(lhs - target) <= tol)
+        elif op == "neq":
+            passed = bool(abs(lhs - target) > tol)
+        else:
+            passed = bool(_cmp(op, lhs, target))
+
+        return ConditionResult(cond_id, bool(passed), float(lhs))
 
     if ctype == "range":
         lower, upper = cond["value"]
-        passed = bool((val >= lower) and (val <= upper))
-        return ConditionResult(cond_id, passed, float(val))
+        lhs = _as_number(val)
+        if abs_val:
+            lhs = abs(lhs)
+        lower_n = _as_number(lower) - tol
+        upper_n = _as_number(upper) + tol
+        passed = bool((lhs >= lower_n) and (lhs <= upper_n))
+        return ConditionResult(cond_id, bool(passed), float(lhs))
 
     if ctype == "boolean":
         op = cond["op"]
@@ -54,11 +83,45 @@ def evaluate_condition(cond: Dict, metrics: Dict[str, float]) -> ConditionResult
         return ConditionResult(cond_id, bool(passed), bool(val))
 
     if ctype == "composite":
-        # composite uses referenced condition IDs; evaluation should be done after base conditions
-        # The caller is expected to provide the referenced condition results.
         raise NotImplementedError("Composite condition should be handled at rule level.")
 
     raise NotImplementedError(f"Condition type '{ctype}' not implemented.")
+
+
+def evaluate_composite_condition(cond: Dict, cond_results_by_id: Dict[str, ConditionResult]) -> ConditionResult:
+    """
+    Evaluate a composite condition using previously evaluated condition results.
+
+    Schema:
+      { type: "composite", logic: "all|any|none", conditions: ["condA","condB",...] }
+    """
+    cond_id = cond.get("id")
+    logic = cond.get("logic")
+    refs = cond.get("conditions") or []
+    if not refs:
+        raise ValueError(f"Composite condition '{cond_id}' requires non-empty 'conditions'.")
+
+    results = []
+    missing = []
+    for rid in refs:
+        if rid not in cond_results_by_id:
+            missing.append(rid)
+            continue
+        results.append(bool(cond_results_by_id[rid].passed))
+
+    if missing:
+        raise KeyError(f"Composite condition '{cond_id}' references missing condition(s): {missing}")
+
+    if logic == "all":
+        passed = all(results)
+    elif logic == "any":
+        passed = any(results)
+    elif logic == "none":
+        passed = not any(results)
+    else:
+        raise ValueError(f"Composite condition '{cond_id}' has unsupported logic '{logic}'")
+
+    return ConditionResult(cond_id, bool(passed), {rid: cond_results_by_id[rid].passed for rid in refs})
 
 
 def aggregate_score(score_cfg: Dict, cond_results: List[ConditionResult]) -> float:
