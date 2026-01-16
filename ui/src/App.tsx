@@ -14,9 +14,39 @@ type Globals = {
   feature_pipeline?: string[]
 }
 
-const KEYPOINTS_FORMATS = ['openpose25', 'coco17', 'other']
-const CAMERA_VIEWS = ['side', 'front', 'rear', 'other']
 const PREPROCESS_OPTIONS = ['align_orientation', 'normalize_lengths']
+
+const FEATURE_PIPELINE_OPTIONS = [
+  'calculate_frechet_distance',
+  'calculate_hausdorff_distance',
+  'calculate_kendalls_tau',
+  'stance_angle_diff_ratio',
+  'cg_z_avg_ratio_or_flag',
+  'head_move_diff_ratio',
+  'stride_z_class',
+  'cg_z_end_ratio_or_flag',
+  'shoulder_xz_angle_diff_ratio',
+  'cg_z_end_diff_class',
+  'shoulder_height_diff_class',
+  'cg_z_std_diff_ratio',
+  'hip_yaw_angle_diff_ratio_or_clamp',
+]
+
+const FEATURE_PIPELINE_DESCRIPTIONS: Record<string, string> = {
+  calculate_frechet_distance: 'Trajectory distribution similarity (distance).',
+  calculate_hausdorff_distance: 'Maximum deviation between trajectories (distance).',
+  calculate_kendalls_tau: 'Temporal trend similarity (rank correlation).',
+  stance_angle_diff_ratio: 'Upper-body stance angle difference (ratio).',
+  cg_z_avg_ratio_or_flag: 'Average CG Z offset difference (ratio/flag).',
+  head_move_diff_ratio: 'Head movement difference (ratio).',
+  stride_z_class: 'Stride direction difference (bucketed class).',
+  cg_z_end_ratio_or_flag: 'End-frame CG Z offset difference (ratio/flag).',
+  shoulder_xz_angle_diff_ratio: 'Shoulder line XZ angle difference (ratio).',
+  cg_z_end_diff_class: 'End-frame CG Z difference (bucketed class).',
+  shoulder_height_diff_class: 'Shoulder height difference (bucketed class).',
+  cg_z_std_diff_ratio: 'CG Z variability difference (stddev ratio).',
+  hip_yaw_angle_diff_ratio_or_clamp: 'Hip yaw angle difference (ratio with clamp).',
+}
 
 type RuleSet = {
   schema_version: string
@@ -46,8 +76,8 @@ const createEmptyRuleSet = (): RuleSet => ({
   },
   inputs: {
     expected_fps: 30,
-    keypoints_format: '',
-    camera_view: '',
+    keypoints_format: 'openpose25',
+    camera_view: 'side',
     preprocess: [],
   },
   globals: {
@@ -59,20 +89,19 @@ const createEmptyRuleSet = (): RuleSet => ({
   rules: [],
 })
 
-const toCsv = (items: string[]): string => items.join(', ')
-
-const fromCsv = (value: string): string[] =>
-  value
-    .split(',')
-    .map((item) => item.trim())
-    .filter((item) => item.length > 0)
+const toggleStringListItem = (
+  list: string[],
+  item: string,
+  checked: boolean
+): string[] => {
+  if (checked) return list.includes(item) ? list : [...list, item]
+  return list.filter((entry) => entry !== item)
+}
 
 function App() {
   const [ruleSetDraft, setRuleSetDraft] = useState<RuleSet>(() =>
     createEmptyRuleSet()
   )
-  const [keypointsChoice, setKeypointsChoice] = useState('')
-  const [cameraChoice, setCameraChoice] = useState('')
   const jsonPreview = useMemo(
     () => JSON.stringify(ruleSetDraft, null, 2),
     [ruleSetDraft]
@@ -80,8 +109,6 @@ function App() {
 
   const handleNew = () => {
     setRuleSetDraft(createEmptyRuleSet())
-    setKeypointsChoice('')
-    setCameraChoice('')
   }
 
   const handleValidate = () => {
@@ -90,6 +117,15 @@ function App() {
     if (!ruleSetDraft.sport.trim()) errors.push('sport')
     if (!ruleSetDraft.sport_version.trim()) errors.push('sport_version')
     if (!ruleSetDraft.metadata.title.trim()) errors.push('metadata.title')
+    if ((ruleSetDraft.inputs.keypoints_format ?? '') !== 'openpose25') {
+      errors.push('inputs.keypoints_format (must be openpose25 for current engine)')
+    }
+    if ((ruleSetDraft.inputs.camera_view ?? '') !== 'side') {
+      errors.push('inputs.camera_view (must be side for current engine)')
+    }
+    if ((ruleSetDraft.globals.angle_units ?? '') !== 'degrees') {
+      errors.push('globals.angle_units (must be degrees for current engine)')
+    }
 
     if (errors.length === 0) {
       window.alert('Basic check passed. Full validation will be added later.')
@@ -202,6 +238,7 @@ function App() {
                 id="expected_fps"
                 type="number"
                 value={ruleSetDraft.inputs.expected_fps ?? 0}
+                disabled
                 onChange={(event) =>
                   setRuleSetDraft((prev) => ({
                     ...prev,
@@ -215,89 +252,31 @@ function App() {
             </div>
             <div className="field">
               <label htmlFor="keypoints_format">keypoints_format</label>
-              <select
+              <input
                 id="keypoints_format"
-                value={keypointsChoice}
-                onChange={(event) =>
-                  setRuleSetDraft((prev) => {
-                    const nextValue = event.target.value
-                    setKeypointsChoice(nextValue)
-                    return {
-                      ...prev,
-                      inputs: {
-                        ...prev.inputs,
-                        keypoints_format: nextValue === 'other' ? '' : nextValue,
-                      },
-                    }
-                  })
-                }
-              >
-                <option value="">Select format</option>
-                {KEYPOINTS_FORMATS.map((format) => (
-                  <option key={format} value={format}>
-                    {format}
-                  </option>
-                ))}
-              </select>
-              {keypointsChoice === 'other' && (
-                <input
-                  type="text"
-                  placeholder="custom keypoints_format"
-                  value={ruleSetDraft.inputs.keypoints_format ?? ''}
-                  onChange={(event) =>
-                    setRuleSetDraft((prev) => ({
-                      ...prev,
-                      inputs: {
-                        ...prev.inputs,
-                        keypoints_format: event.target.value,
-                      },
-                    }))
-                  }
-                />
-              )}
+                type="text"
+                value={ruleSetDraft.inputs.keypoints_format ?? ''}
+                disabled
+                onChange={() => {}}
+              />
+              <p className="hint">
+                Engine currently assumes OpenPose 25 joints (hardcoded joint
+                indices).
+              </p>
             </div>
             <div className="field">
               <label htmlFor="camera_view">camera_view</label>
-              <select
+              <input
                 id="camera_view"
-                value={cameraChoice}
-                onChange={(event) =>
-                  setRuleSetDraft((prev) => {
-                    const nextValue = event.target.value
-                    setCameraChoice(nextValue)
-                    return {
-                      ...prev,
-                      inputs: {
-                        ...prev.inputs,
-                        camera_view: nextValue === 'other' ? '' : nextValue,
-                      },
-                    }
-                  })
-                }
-              >
-                <option value="">Select view</option>
-                {CAMERA_VIEWS.map((view) => (
-                  <option key={view} value={view}>
-                    {view}
-                  </option>
-                ))}
-              </select>
-              {cameraChoice === 'other' && (
-                <input
-                  type="text"
-                  placeholder="custom camera_view"
-                  value={ruleSetDraft.inputs.camera_view ?? ''}
-                  onChange={(event) =>
-                    setRuleSetDraft((prev) => ({
-                      ...prev,
-                      inputs: {
-                        ...prev.inputs,
-                        camera_view: event.target.value,
-                      },
-                    }))
-                  }
-                />
-              )}
+                type="text"
+                value={ruleSetDraft.inputs.camera_view ?? ''}
+                disabled
+                onChange={() => {}}
+              />
+              <p className="hint">
+                Camera view is not implemented in the engine yet; current rules
+                are authored assuming side view.
+              </p>
             </div>
             <div className="field">
               <label>preprocess</label>
@@ -354,6 +333,7 @@ function App() {
               <select
                 id="angle_units"
                 value={ruleSetDraft.globals.angle_units ?? 'degrees'}
+                disabled
                 onChange={(event) =>
                   setRuleSetDraft((prev) => ({
                     ...prev,
@@ -365,25 +345,44 @@ function App() {
                 }
               >
                 <option value="degrees">degrees</option>
-                <option value="radians">radians</option>
               </select>
+              <p className="hint">
+                Engine math helpers return angles in degrees.
+              </p>
             </div>
             <div className="field">
-              <label htmlFor="feature_pipeline">feature_pipeline (CSV)</label>
-              <input
-                id="feature_pipeline"
-                type="text"
-                value={toCsv(ruleSetDraft.globals.feature_pipeline ?? [])}
-                onChange={(event) =>
-                  setRuleSetDraft((prev) => ({
-                    ...prev,
-                    globals: {
-                      ...prev.globals,
-                      feature_pipeline: fromCsv(event.target.value),
-                    },
-                  }))
-                }
-              />
+              <label>feature_pipeline</label>
+              <div className="checkbox-group">
+                {FEATURE_PIPELINE_OPTIONS.map((option) => (
+                  <label key={option} className="checkbox-item">
+                    <input
+                      type="checkbox"
+                      checked={(ruleSetDraft.globals.feature_pipeline ?? []).includes(
+                        option
+                      )}
+                      onChange={(event) =>
+                        setRuleSetDraft((prev) => ({
+                          ...prev,
+                          globals: {
+                            ...prev.globals,
+                            feature_pipeline: toggleStringListItem(
+                              prev.globals.feature_pipeline ?? [],
+                              option,
+                              event.target.checked
+                            ),
+                          },
+                        }))
+                      }
+                    />
+                    <span className="checkbox-text">
+                      <span className="checkbox-label">{option}</span>
+                      <span className="checkbox-desc">
+                        {FEATURE_PIPELINE_DESCRIPTIONS[option] ?? ''}
+                      </span>
+                    </span>
+                  </label>
+                ))}
+              </div>
             </div>
           </section>
 

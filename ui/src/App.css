@@ -91,6 +91,13 @@
   background: #fff;
 }
 
+.field input:disabled,
+.field select:disabled {
+  background: #f1f3f6;
+  color: #6d737b;
+  cursor: not-allowed;
+}
+
 .checkbox-group {
   display: flex;
   flex-direction: column;
@@ -100,9 +107,24 @@
 
 .checkbox-item {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.5rem;
   color: #4a4f55;
+}
+
+.checkbox-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.checkbox-label {
+  font-size: 0.9rem;
+}
+
+.checkbox-desc {
+  font-size: 0.8rem;
+  color: #6d737b;
 }
 
 .hint {
