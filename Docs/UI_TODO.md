@@ -1,123 +1,122 @@
-# スコアリングJSON作成UI（React）: 実行計画（JSON作成に絞る）
+﻿# スコアリングJSON作成UI（React）: 実装計画（JSON作成に絞る）
 
 ## ゴール（MVP）
-- UIから「ルールセットJSON（schema v1準拠）」を **新規作成** できる
-- UI上で編集し、**スキーマ/参照整合性を検証** できる
-- 完成したJSONを **Export（ダウンロード）** できる（保存は任意で後回し可）
+- UIから「ルールセットJSON（schema v1準拠）」を新規作成できる
+- UI上で編集し、バリデーション（最低限）を実行できる
+- 完成したJSONをExport（ダウンロード）できる
 
 ---
 
-## 対象ファイル/仕様（現状の真実）
+## 参照（現状の真実）
 - スキーマ: `Engine/configs/rules/schema/v1.json`
-- 既存例（テンプレ元）: `Engine/configs/rules/baseball_swing_v1.json`
-- 検証ロジック（参考）: `Engine/scripts/validate_rules.py`
+- 既存例（テンプレ参考）: `Engine/configs/rules/baseball_swing_v1.json`
+- 参照検証ロジック（参考）: `Engine/scripts/validate_rules.py`
 
 ---
 
-## スコープ（やる / やらない）
+## スコープ（今回やる / やらない）
 ### やる
-- ルールセットの新規作成（テンプレ生成）
-- 編集（フォーム中心、必要ならJSONタブ併設）
-- Validate（schema + 参照 + 重複ID）
-- Export（JSON）
+- ルールセットJSONの新規作成（空テンプレ）
+- 編集フォーム（最低限）
+- Validate（まずは必須項目+参照整合性の一部）
+- Export（JSONダウンロード）
 
 ### やらない（今回）
-- RuleEngine実行によるプレビュー
-- plugin/metricの実装や推論
-- 権限/承認/監査ログ
-- DB保存（必要なら次フェーズ）
+- RuleEngineを実行するプレビュー
+- plugin/metricの自動補完（候補表示は将来）
+- 認証/権限/承認/監査ログ
+- DB保存（将来）
 
 ---
 
-## 実装方針（最小で確実）
-- フロント単体で完結（MVP）
-  - スキーマ検証: `ajv`（draft 2020-12対応）を利用
-  - 参照検証: フロントで `validate_rules.py` 相当の軽いロジックを実装
-- 編集UIは「フォーム」を基本にして、必要なら「JSONタブ」も用意（MVPでも有効）
+## 方針
+- UIは `ui/`（Vite + React + TypeScript）で開発する
+- `ruleSetDraft` を唯一の状態（source of truth）にして、フォーム操作で更新する
+- まずは「作れること」を優先し、厳密なスキーマ検証（AJV）はStep4で入れる
 
 ---
 
-## UI要件（画面/操作）
-### 1) 新規作成
-- `New Rule Set` ボタン
-- 生成方法:
-  - (推奨) `baseball_swing_v1.json` をベースに必要最小限だけ残して初期化
-  - もしくは “空テンプレ” を固定で用意
-- 初期入力:
-  - `rule_set_id`, `sport`, `sport_version`, `metadata.title`
-
-### 2) 編集（最低限のフォーム）
-- `metadata`（title/description/authors）
-- `inputs`（expected_fps, keypoints_format, camera_view, preprocess）
-- `globals`（confidence_threshold, angle_units, feature_pipeline）
-- `phases` CRUD（id, label, frame_range, joints_of_interest）
-- `rules` CRUD（id, label, phase, category, severity, signal, conditions, score, feedback）
-
-### 3) Validate
-- ボタン押下で検証
-- エラーは「一覧 + 該当箇所へのジャンプ（可能なら）」で表示
-
-### 4) Export
-- 現在のJSONを `rule_set_id` などからファイル名生成してダウンロード
-
----
-
-## バリデーション実装（MVP）
-### A. JSON Schema検証（AJV）
-- `Engine/configs/rules/schema/v1.json` をUI側に取り込み（静的同梱）
-- draft2020-12 で検証し、エラーに JSONパスを付与して表示
-
-### B. 参照/整合性チェック（追加）
-- `phases[].id` の重複禁止
-- `rules[].id` の重複禁止
-- 各 `rule.phase` が `phases.id` に存在すること
-- 各 `rule.conditions[].id` の重複禁止（rule内）
-- 各 `feedback[].condition_ids[]` が同一rule内の condition.id を参照していること
-- `signal.type == frame_range_ref` のとき `ref == "phase:<id>"` かつ `<id>` が存在すること
-
----
-
-## データモデル（フロントの状態管理）
-- `ruleSetDraft: RuleSetV1` を単一のsource-of-truthにする
-- フォームは `react-hook-form` で `ruleSetDraft` に反映
-- JSONタブを作る場合は「テキスト→parse→ruleSetDraft更新」「ruleSetDraft→stringify」の同期
+## UI（MVP）
+- 上部: `New / Validate / Export` ボタン
+- 左: 入力フォーム（必須項目 + phases/rules）
+- 右: JSONプレビュー（`JSON.stringify(ruleSetDraft, null, 2)`）
 
 ---
 
 ## 作業タスク分解（順序）
-### Step 1: 仕様固定（決定済み）
-- MVPは `schema v1` のまま（拡張なし）。
-- 新規作成は「空テンプレ」から開始し、最低限の必須項目のみ事前入力する（`rule_set_id`, `sport`, `sport_version`, `metadata.title`）。
+### Step 1: 仕様固定（決定）
+- MVPは `schema v1` のまま（拡張なし）
+- 新規作成は「空テンプレ」から開始し、必須項目のみ事前入力する（`rule_set_id`, `sport`, `sport_version`, `metadata.title`）
 
-### Step 2: UI骨組み（実装内容）
-- 画面遷移は1画面構成（`New / Edit / Validate / Export` を同一画面に配置）で開始する。
-- `ruleSetDraft` の初期生成は「空テンプレ」生成関数として実装する（Step 1で決めた必須項目を初期値にする）。
+### Step 2: UI骨組み
+- 1画面に `New / Edit / Validate / Export` を配置する（まずは単一画面）
+- 空テンプレ生成関数を用意し、`ruleSetDraft` を初期化できるようにする
 
-### Step 3: 編集フォーム（優先順）
-1. metadata / sport情報
-2. phases CRUD
-3. rules CRUD（phase選択、conditions/score/feedback）
-4. inputs/globals（必要最低限）
+### Step 3: 編集フォーム（細分化して段階実装）
+#### 3.1 ルールセット基本情報（必須）
+- フィールド: `rule_set_id`, `sport`, `sport_version`, `metadata.title`
+- Done: 入力内容がJSONプレビューに反映される
 
-### Step 4: Validate実装
-- AJVスキーマ検証
-- 参照整合性チェック
-- エラー表示（JSONパス/メッセージ）
+#### 3.2 inputs（最低限）
+- フィールド: `inputs.expected_fps`, `inputs.keypoints_format`, `inputs.camera_view`, `inputs.preprocess`
+- 入力形式: `preprocess` はCSVで入力し配列に変換
+- Done: JSONに `inputs` が必ず存在し、配下が編集できる
 
-### Step 5: Export実装
-- `JSON.stringify(ruleSetDraft, null, 2)` をダウンロード
-- Validate成功時のみExport可にするかは任意（MVPは両方可でもよい）
+#### 3.3 globals（最低限）
+- フィールド: `globals.confidence_threshold`, `globals.angle_units`, `globals.feature_pipeline`
+- 入力形式: `feature_pipeline` はCSVで入力し配列に変換
+- Done: JSONに `globals` が必ず存在し、配下が編集できる
+
+#### 3.4 phases（CRUD）
+- できること: 追加/削除
+- フィールド: `phases[].id`, `phases[].label`, `phases[].frame_range`, `phases[].joints_of_interest`
+- 入力形式: `joints_of_interest` はCSV（数値配列）
+- Done: phaseを追加して `phases[]` に反映でき、削除もできる
+
+#### 3.5 rules（CRUD: ベース）
+- できること: 追加/削除
+- フィールド: `rules[].id`, `rules[].label`, `rules[].phase`, `rules[].category`, `rules[].severity`
+- UI: `rules[].phase` は `phases[].id` から選択
+- Done: ruleを追加/削除でき、phaseが選択できる
+
+#### 3.6 signal（最小）
+- フィールド: `rules[].signal.type`, `rules[].signal.ref`
+- 初期値: `type=frame_range_ref`, `ref=phase:<phaseId>` を想定（自動生成は将来でも可）
+- Done: signalを編集してJSONに反映できる
+
+#### 3.7 conditions（CRUD: 最小）
+- できること: conditionの追加/削除（rule内）
+- フィールド: `conditions[].id`, `conditions[].type`, `conditions[].metric`, `conditions[].op`, `conditions[].value`
+- 入力形式: `value` は「数値 or JSON文字列」を許可（最初はゆるく）
+- Done: conditionを増やしてJSONに反映できる
+
+#### 3.8 score（最小）
+- フィールド: `score.mode`, `score.pass_score`, `score.max_score`（weightsはStep4以降）
+- Done: score設定がJSONに反映される
+
+#### 3.9 feedback（CRUD: 最小）
+- できること: feedbackの追加/削除（rule内）
+- フィールド: `feedback[].condition_ids`, `feedback[].message`, `feedback[].severity`
+- 入力形式: `condition_ids` はCSV（文字列配列）
+- Done: feedbackがJSONに反映される
+
+### Step 4: Validate（厳密化）
+- AJVで `schema/v1.json` による検証（draft2020-12）
+- 参照整合性チェック（`validate_rules.py` 相当）
+  - `phases[].id` 重複
+  - `rules[].id` 重複
+  - `rule.phase` が `phases.id` に存在する
+  - `rule.conditions[].id` 重複（rule内）
+  - `feedback.condition_ids` が条件idを参照している
+  - `signal.type=frame_range_ref` の `ref=phase:<id>` が存在する
+- Done: エラーがUIに表示され、該当箇所が分かる
+
+### Step 5: Export
+- `rule_set_id` をファイル名にしてJSONをダウンロード
+- Done: ダウンロードしたJSONが期待どおりである
 
 ---
 
-## 受け入れ条件（Doneの定義）
-- UIから新規作成→phases/rulesを追加→Validateでエラー0→ExportでJSONが出力できる
-- schema違反・参照ミスがある場合、どこが悪いかUIで分かる
-- ExportしたJSONが `schema/v1.json` に通る（AJV結果で確認）
-
----
-
-## 次フェーズ候補（今回の外）
-- plugin/metric一覧の提示（入力補助）
-- 保存（サーバ/DB）とバージョニング
-- RuleEngineプレビュー実行
+## Done（MVP完了条件）
+- UIで `phases` と `rules` を作成でき、ExportでJSONが出力できる
+- Step4のValidateでスキーマ/参照整合性のエラーが検出できる（最低限）
