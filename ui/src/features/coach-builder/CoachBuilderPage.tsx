@@ -1,5 +1,6 @@
-import { useMemo, useReducer, useState } from 'react'
-import { createInitialState } from './draftTypes'
+import { useEffect, useMemo, useReducer, useState } from 'react'
+import { createInitialState, normalizeDraftForExport } from './draftTypes'
+import { downloadRuleSetJson } from './export'
 import { summarizeValidation, toRuleSetSchemaV1 } from './mappers'
 import { coachDraftReducer } from './reducer'
 import { validateRuleSet } from './validation'
@@ -15,6 +16,7 @@ export function CoachBuilderPage() {
   const [validationErrors, setValidationErrors] = useState<
     Array<{ path: string; message: string }>
   >([])
+  const [hasValidated, setHasValidated] = useState(false)
 
   const selectedStep = useMemo(
     () => state.draft.steps.find((step) => step.id === state.selectedStepId) ?? null,
@@ -29,11 +31,27 @@ export function CoachBuilderPage() {
     [state.draft.steps]
   )
 
+  useEffect(() => {
+    setHasValidated(false)
+  }, [state.draft])
+
   const runValidation = () => {
-    const ruleSet = toRuleSetSchemaV1(state.draft)
+    const ruleSet = toRuleSetSchemaV1(normalizeDraftForExport(state.draft))
     const errors = validateRuleSet(ruleSet)
     setValidationErrors(errors)
     setValidationSummary(summarizeValidation(errors))
+    setHasValidated(true)
+    return errors
+  }
+
+  const handleExport = () => {
+    const errors = runValidation()
+    if (errors.length > 0) return
+
+    const normalizedDraft = normalizeDraftForExport(state.draft)
+    const ruleSet = toRuleSetSchemaV1(normalizedDraft)
+    const fileName = normalizedDraft.metadata.ruleSetId || 'rule_set'
+    downloadRuleSetJson(ruleSet, fileName)
   }
 
   const navigateFromPath = (path: string) => {
@@ -208,6 +226,25 @@ export function CoachBuilderPage() {
         onValidate={runValidation}
         onNavigateError={navigateFromPath}
       />
+
+      <section className="cb-panel">
+        <div className="cb-panel-header">
+          <h2>Export</h2>
+          <div className="cb-export-actions">
+            <button
+              type="button"
+              className="cb-primary"
+              disabled={!hasValidated || validationErrors.length > 0}
+              onClick={handleExport}
+            >
+              Export JSON
+            </button>
+          </div>
+        </div>
+        <p>
+          Run validation first. Export is enabled only when validation passes with zero errors.
+        </p>
+      </section>
     </main>
   )
 }
