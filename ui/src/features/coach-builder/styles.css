@@ -1,14 +1,130 @@
 .coach-builder-page {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 2rem 1rem;
+  padding: 2rem 1rem 3rem;
+  color: #1c2430;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
-.coach-builder-header h1 {
+.cb-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 1rem;
+}
+
+.cb-panel {
+  border: 1px solid #d8dde7;
+  border-radius: 12px;
+  background: #ffffff;
+  padding: 1rem;
+}
+
+.coach-builder-header h1,
+.cb-panel h2 {
   margin: 0;
 }
 
 .coach-builder-header p {
+  margin: 0.5rem 0 0;
+  color: #4b5566;
+}
+
+.cb-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.cb-field-grid {
+  margin-top: 0.75rem;
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.cb-field-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.88rem;
+  color: #4b5566;
+}
+
+.cb-field-grid input,
+.cb-field-grid select,
+.cb-field-grid textarea {
+  border: 1px solid #c6ceda;
+  border-radius: 8px;
+  padding: 0.5rem 0.6rem;
+  font: inherit;
+  color: #1c2430;
+}
+
+.cb-field-grid textarea {
+  resize: vertical;
+}
+
+.cb-full-width {
+  grid-column: 1 / -1;
+}
+
+.cb-step-list {
   margin: 0.75rem 0 0;
-  color: #586172;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.cb-step-list li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.cb-step-card {
+  border: 1px solid #c9d2e0;
+  border-radius: 10px;
+  background: #f7f9fd;
+  padding: 0.6rem;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.cb-step-list li.is-selected .cb-step-card {
+  border-color: #2f6bdb;
+  background: #edf3ff;
+}
+
+.cb-step-title {
+  font-weight: 600;
+}
+
+.cb-step-meta {
+  color: #596375;
+  font-size: 0.82rem;
+}
+
+.cb-danger {
+  border: 1px solid #cb5160;
+  background: #ffffff;
+  color: #ab273a;
+  border-radius: 8px;
+  padding: 0.35rem 0.6rem;
+}
+
+@media (max-width: 900px) {
+  .cb-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .cb-field-grid {
+    grid-template-columns: 1fr;
+  }
 }
