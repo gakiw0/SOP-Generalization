@@ -97,7 +97,7 @@ test('scenario_5_joint_diagram_expert_condition_highlight', async ({ page }) => 
   await page.goto('/')
   await page.getByTestId('cb-nav-continue').click()
 
-  await page.getByLabel('Enable expert condition types').check()
+  await page.getByTestId('cb-checkpoints-enable-expert').check()
 
   await page.getByTestId('cb-checkpoints-new-condition-type').selectOption('angle')
   await page.getByRole('button', { name: 'Add condition' }).click()

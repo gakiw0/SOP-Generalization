@@ -375,6 +375,7 @@ export function CheckpointEditor({
             type="checkbox"
             checked={expertEnabled}
             onChange={(event) => onToggleExpert(event.target.checked)}
+            data-testid="cb-checkpoints-enable-expert"
           />
           {t('checkpoint.enableExpert')}
         </label>
