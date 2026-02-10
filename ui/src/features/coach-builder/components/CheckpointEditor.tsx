@@ -179,6 +179,20 @@ export function CheckpointEditor({
               </select>
             </label>
 
+            <label>
+              {t('checkpoint.fields.category')}
+              <input
+                type="text"
+                value={selectedCheckpoint.category}
+                data-testid="cb-checkpoints-category"
+                onChange={(event) =>
+                  onUpdateCheckpoint(selectedCheckpoint.id, {
+                    category: event.target.value,
+                  })
+                }
+              />
+            </label>
+
             <label className="cb-full-width">
               {t('checkpoint.fields.description')}
               <textarea
@@ -339,19 +353,6 @@ export function CheckpointEditor({
                     onChange={(event) =>
                       onUpdateCheckpoint(selectedCheckpoint.id, {
                         id: event.target.value,
-                      })
-                    }
-                  />
-                </label>
-                <label>
-                  {t('checkpoint.fields.category')}
-                  <input
-                    type="text"
-                    value={selectedCheckpoint.category}
-                    data-testid="cb-checkpoints-category"
-                    onChange={(event) =>
-                      onUpdateCheckpoint(selectedCheckpoint.id, {
-                        category: event.target.value,
                       })
                     }
                   />
