@@ -1,4 +1,4 @@
-import type { Condition, RuleSet } from './schemaTypes'
+import type { Condition, RuleSet, RuleSetV2 } from './schemaTypes'
 
 export type ConditionType = Condition['type']
 export type BasicConditionType = 'threshold' | 'range' | 'boolean' | 'composite'
@@ -8,6 +8,9 @@ export type DraftMeta = {
   ruleSetId: string
   sport: string
   sportVersion: string
+  metricProfileId: string
+  metricProfileType: 'generic' | 'preset'
+  metricPresetId: string
   title: string
   description: string
 }
@@ -191,10 +194,13 @@ export const createInitialDraft = (): CoachDraft => {
 
   return {
     metadata: {
-      schemaVersion: '1.0.0',
-      ruleSetId: 'baseball_swing_custom',
-      sport: 'baseball',
+      schemaVersion: '2.0.0',
+      ruleSetId: 'motion_compare_custom',
+      sport: '',
       sportVersion: '1.0.0',
+      metricProfileId: 'generic_core',
+      metricProfileType: 'generic',
+      metricPresetId: '',
       title: '',
       description: '',
     },
@@ -246,11 +252,19 @@ export const normalizeDraftForExport = (draft: CoachDraft): CoachDraft => ({
   },
 })
 
-export const createDraftFromRuleSetMeta = (ruleSet: RuleSet): DraftMeta => ({
-  schemaVersion: ruleSet.schema_version,
-  ruleSetId: ruleSet.rule_set_id,
-  sport: ruleSet.sport,
-  sportVersion: ruleSet.sport_version,
-  title: ruleSet.metadata.title,
-  description: ruleSet.metadata.description ?? '',
-})
+export const createDraftFromRuleSetMeta = (ruleSet: RuleSet): DraftMeta => {
+  const isV2 = 'metric_profile' in ruleSet
+  const v2Profile = isV2 ? (ruleSet as RuleSetV2).metric_profile : null
+
+  return {
+    schemaVersion: ruleSet.schema_version,
+    ruleSetId: ruleSet.rule_set_id,
+    sport: ruleSet.sport ?? '',
+    sportVersion: ruleSet.sport_version ?? '1.0.0',
+    metricProfileId: v2Profile?.id ?? 'generic_core',
+    metricProfileType: v2Profile?.type ?? 'generic',
+    metricPresetId: v2Profile?.preset_id ?? '',
+    title: ruleSet.metadata.title,
+    description: ruleSet.metadata.description ?? '',
+  }
+}

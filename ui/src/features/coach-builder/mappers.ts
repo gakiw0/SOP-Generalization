@@ -11,6 +11,8 @@ import type {
   Feedback,
   Phase,
   Rule,
+  RuleSetV1,
+  RuleSetV2,
   RuleSet,
   Signal,
 } from './schemaTypes'
@@ -358,7 +360,7 @@ const checkpointToRule = (checkpoint: CheckpointDraft, stepId: string): Rule => 
   }
 }
 
-export const toRuleSetSchemaV1 = (draft: CoachDraft): RuleSet => {
+export const toRuleSetSchemaV1 = (draft: CoachDraft): RuleSetV1 => {
   const phases = draft.steps.map(stepToPhase)
   const rules = draft.steps.flatMap((step) =>
     step.checkpoints.map((checkpoint) => checkpointToRule(checkpoint, step.id))
@@ -389,7 +391,51 @@ export const toRuleSetSchemaV1 = (draft: CoachDraft): RuleSet => {
   }
 }
 
-export const fromRuleSetSchemaV1 = (ruleSet: RuleSet): CoachDraft => {
+export const toRuleSetSchemaV2 = (draft: CoachDraft): RuleSetV2 => {
+  const phases = draft.steps.map(stepToPhase)
+  const rules = draft.steps.flatMap((step) =>
+    step.checkpoints.map((checkpoint) => checkpointToRule(checkpoint, step.id))
+  )
+  const metadata = draft.metadata
+
+  return {
+    schema_version: metadata.schemaVersion || '2.0.0',
+    rule_set_id: metadata.ruleSetId,
+    metric_profile: {
+      id: metadata.metricProfileId || 'generic_core',
+      type: metadata.metricProfileType,
+      metric_space: 'core_v1',
+      preset_id:
+        metadata.metricProfileType === 'preset' && metadata.metricPresetId.trim().length > 0
+          ? metadata.metricPresetId.trim()
+          : undefined,
+    },
+    sport: metadata.sport.trim().length > 0 ? metadata.sport : undefined,
+    sport_version: metadata.sportVersion.trim().length > 0 ? metadata.sportVersion : undefined,
+    metadata: {
+      title: metadata.title,
+      description: metadata.description || undefined,
+    },
+    inputs: {
+      expected_fps: 30,
+      keypoints_format: 'openpose25',
+      camera_view: 'side',
+      preprocess: ['align_orientation', 'normalize_lengths'],
+    },
+    globals: {
+      confidence_threshold: 0,
+      angle_units: 'degrees',
+      feature_pipeline: [],
+    },
+    phases,
+    rules,
+  }
+}
+
+export const toRuleSetForExport = (draft: CoachDraft): RuleSetV2 =>
+  toRuleSetSchemaV2(draft)
+
+export const fromRuleSet = (ruleSet: RuleSet): CoachDraft => {
   const stepsById = new Map<string, StepDraft>()
 
   ruleSet.phases.forEach((phase) => {
@@ -485,6 +531,10 @@ export const fromRuleSetSchemaV1 = (ruleSet: RuleSet): CoachDraft => {
     steps,
   }
 }
+
+export const fromRuleSetSchemaV1 = (ruleSet: RuleSetV1): CoachDraft => fromRuleSet(ruleSet)
+
+export const fromRuleSetSchemaV2 = (ruleSet: RuleSetV2): CoachDraft => fromRuleSet(ruleSet)
 
 export const supportsExpertConditionType = (type: ConditionType): boolean =>
   ['event_exists', 'trend', 'angle', 'distance'].includes(type)

@@ -159,11 +159,9 @@ export type Rule = {
   feedback?: Feedback[]
 }
 
-export type RuleSet = {
+export type RuleSetBase = {
   schema_version: string
   rule_set_id: string
-  sport: string
-  sport_version: string
   metadata: {
     title: string
     description?: string
@@ -182,6 +180,26 @@ export type RuleSet = {
   phases: Phase[]
   rules: Rule[]
 }
+
+export type MetricProfile = {
+  id: string
+  type: 'generic' | 'preset'
+  metric_space: 'core_v1'
+  preset_id?: string
+}
+
+export type RuleSetV1 = RuleSetBase & {
+  sport: string
+  sport_version: string
+}
+
+export type RuleSetV2 = RuleSetBase & {
+  metric_profile: MetricProfile
+  sport?: string
+  sport_version?: string
+}
+
+export type RuleSet = RuleSetV1 | RuleSetV2
 
 export type ValidationCode =
   | 'required'
