@@ -51,14 +51,17 @@ export function ConditionEditorExpert({
   return (
     <article className="cb-condition-card cb-condition-expert">
       <div className="cb-condition-header">
-        <h4>{t('condition.expertTitle')}</h4>
+        <div className="cb-condition-heading">
+          <h4>{t('condition.expertTitle')}</h4>
+          <span className="cb-condition-type-chip">{t(`condition.type.${condition.type}`)}</span>
+        </div>
         <button type="button" className="cb-danger" onClick={onRemove}>
           {t('common.remove')}
         </button>
       </div>
       <p className="cb-card-help-text">{t('condition.expertHelp')}</p>
 
-      <div className="cb-field-grid">
+      <div className="cb-field-grid cb-condition-grid">
         <label>
           {t('condition.fields.id')}
           <input

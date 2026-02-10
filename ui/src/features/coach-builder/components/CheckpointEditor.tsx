@@ -122,7 +122,7 @@ export function CheckpointEditor({
   }
 
   return (
-    <section className="cb-panel">
+    <section className="cb-panel cb-editor-shell">
       <div className="cb-panel-header">
         <h2>{t('checkpoint.editorTitle')}</h2>
         <button type="button" onClick={onAddCheckpoint} data-testid="cb-checkpoints-add">
@@ -145,211 +145,221 @@ export function CheckpointEditor({
         ))}
       </div>
 
-      <div className="cb-field-grid">
-        <label>
-          {t('checkpoint.fields.label')}
-          <input
-            type="text"
-            value={selectedCheckpoint.label}
-            data-testid="cb-checkpoints-label"
-            onChange={(event) =>
-              onUpdateCheckpoint(selectedCheckpoint.id, {
-                label: event.target.value,
-              })
-            }
-          />
-        </label>
-
-        <label>
-          {t('checkpoint.fields.severity')}
-          <select
-            value={selectedCheckpoint.severity}
-            onChange={(event) =>
-              onUpdateCheckpoint(selectedCheckpoint.id, {
-                severity: event.target.value as 'info' | 'warn' | 'fail',
-              })
-            }
-          >
-            <option value="info">{t('severity.info')}</option>
-            <option value="warn">{t('severity.warn')}</option>
-            <option value="fail">{t('severity.fail')}</option>
-          </select>
-        </label>
-
-        <label className="cb-full-width">
-          {t('checkpoint.fields.description')}
-          <textarea
-            rows={2}
-            value={selectedCheckpoint.description}
-            onChange={(event) =>
-              onUpdateCheckpoint(selectedCheckpoint.id, {
-                description: event.target.value,
-              })
-            }
-            placeholder={t('checkpoint.placeholders.description')}
-          />
-        </label>
-
-        <label>
-          {t('checkpoint.fields.signalType')}
-          <select
-            value={selectedCheckpoint.signalType}
-            onChange={(event) =>
-              onUpdateCheckpoint(selectedCheckpoint.id, {
-                signalType: event.target.value as 'frame_range_ref' | 'direct' | 'event_window',
-              })
-            }
-          >
-            <option value="frame_range_ref">
-              {t('signalType.frame_range_ref')} ({formatSignalTypeLabel('frame_range_ref')})
-            </option>
-            <option value="direct">
-              {t('signalType.direct')} ({formatSignalTypeLabel('direct')})
-            </option>
-            <option value="event_window">
-              {t('signalType.event_window')} ({formatSignalTypeLabel('event_window')})
-            </option>
-          </select>
-          <span className="cb-field-help">{t('checkpoint.fields.signalTypeHelp')}</span>
-        </label>
-
-        {selectedCheckpoint.signalType === 'frame_range_ref' && (
-          <label>
-            {t('checkpoint.fields.referenceStep')}
-            <select
-              value={selectedCheckpoint.signalRefStepId}
-              onChange={(event) =>
-                onUpdateCheckpoint(selectedCheckpoint.id, {
-                  signalRefStepId: event.target.value,
-                })
-              }
-            >
-              {stepIds.map((stepId) => (
-                <option key={stepId} value={stepId}>
-                  {stepLabelMap.get(stepId) ?? stepId}
-                </option>
-              ))}
-            </select>
-          </label>
-        )}
-
-        {selectedCheckpoint.signalType === 'direct' && (
-          <>
+      <div className="cb-editor-sections">
+        <section className="cb-editor-block">
+          <h3>{t('checkpoint.fields.label')}</h3>
+          <div className="cb-field-grid">
             <label>
-              {t('checkpoint.fields.directStartFrame')}
-              <input
-                type="number"
-                value={selectedCheckpoint.signalFrameStart}
-                onChange={(event) =>
-                  onUpdateCheckpoint(selectedCheckpoint.id, {
-                    signalFrameStart: event.target.value,
-                  })
-                }
-              />
-            </label>
-            <label>
-              {t('checkpoint.fields.directEndFrame')}
-              <input
-                type="number"
-                value={selectedCheckpoint.signalFrameEnd}
-                onChange={(event) =>
-                  onUpdateCheckpoint(selectedCheckpoint.id, {
-                    signalFrameEnd: event.target.value,
-                  })
-                }
-              />
-            </label>
-          </>
-        )}
-
-        {selectedCheckpoint.signalType === 'event_window' && (
-          <>
-            <label>
-              {t('checkpoint.fields.event')}
+              {t('checkpoint.fields.label')}
               <input
                 type="text"
-                value={selectedCheckpoint.signalEvent}
+                value={selectedCheckpoint.label}
+                data-testid="cb-checkpoints-label"
                 onChange={(event) =>
                   onUpdateCheckpoint(selectedCheckpoint.id, {
-                    signalEvent: event.target.value,
+                    label: event.target.value,
                   })
                 }
               />
             </label>
+
             <label>
-              {t('checkpoint.fields.windowPreMs')}
-              <input
-                type="number"
-                value={selectedCheckpoint.signalWindowPreMs}
-                onChange={(event) =>
-                  onUpdateCheckpoint(selectedCheckpoint.id, {
-                    signalWindowPreMs: event.target.value,
-                  })
-                }
-              />
-            </label>
-            <label>
-              {t('checkpoint.fields.windowPostMs')}
-              <input
-                type="number"
-                value={selectedCheckpoint.signalWindowPostMs}
-                onChange={(event) =>
-                  onUpdateCheckpoint(selectedCheckpoint.id, {
-                    signalWindowPostMs: event.target.value,
-                  })
-                }
-              />
-            </label>
-            <label>
-              {t('checkpoint.fields.defaultPhase')}
+              {t('checkpoint.fields.severity')}
               <select
-                value={selectedCheckpoint.signalDefaultPhase}
+                value={selectedCheckpoint.severity}
                 onChange={(event) =>
                   onUpdateCheckpoint(selectedCheckpoint.id, {
-                    signalDefaultPhase: event.target.value,
+                    severity: event.target.value as 'info' | 'warn' | 'fail',
                   })
                 }
               >
-                <option value="">{t('common.none')}</option>
-                {stepIds.map((stepId) => (
-                  <option key={stepId} value={stepId}>
-                    {stepLabelMap.get(stepId) ?? stepId}
-                  </option>
-                ))}
+                <option value="info">{t('severity.info')}</option>
+                <option value="warn">{t('severity.warn')}</option>
+                <option value="fail">{t('severity.fail')}</option>
               </select>
             </label>
-          </>
-        )}
 
-        {showTechnicalFields && (
-          <>
-            <label>
-              {t('checkpoint.fields.id')}
-              <input
-                type="text"
-                value={selectedCheckpoint.id}
+            <label className="cb-full-width">
+              {t('checkpoint.fields.description')}
+              <textarea
+                rows={2}
+                value={selectedCheckpoint.description}
                 onChange={(event) =>
                   onUpdateCheckpoint(selectedCheckpoint.id, {
-                    id: event.target.value,
+                    description: event.target.value,
                   })
                 }
+                placeholder={t('checkpoint.placeholders.description')}
               />
             </label>
+          </div>
+        </section>
+
+        <section className="cb-editor-block">
+          <h3>{t('checkpoint.fields.signalType')}</h3>
+          <div className="cb-field-grid">
             <label>
-              {t('checkpoint.fields.category')}
-              <input
-                type="text"
-                value={selectedCheckpoint.category}
-                data-testid="cb-checkpoints-category"
+              {t('checkpoint.fields.signalType')}
+              <select
+                value={selectedCheckpoint.signalType}
                 onChange={(event) =>
                   onUpdateCheckpoint(selectedCheckpoint.id, {
-                    category: event.target.value,
+                    signalType: event.target.value as 'frame_range_ref' | 'direct' | 'event_window',
                   })
                 }
-              />
+              >
+                <option value="frame_range_ref">
+                  {t('signalType.frame_range_ref')} ({formatSignalTypeLabel('frame_range_ref')})
+                </option>
+                <option value="direct">
+                  {t('signalType.direct')} ({formatSignalTypeLabel('direct')})
+                </option>
+                <option value="event_window">
+                  {t('signalType.event_window')} ({formatSignalTypeLabel('event_window')})
+                </option>
+              </select>
+              <span className="cb-field-help">{t('checkpoint.fields.signalTypeHelp')}</span>
             </label>
-          </>
-        )}
+
+            {selectedCheckpoint.signalType === 'frame_range_ref' && (
+              <label>
+                {t('checkpoint.fields.referenceStep')}
+                <select
+                  value={selectedCheckpoint.signalRefStepId}
+                  onChange={(event) =>
+                    onUpdateCheckpoint(selectedCheckpoint.id, {
+                      signalRefStepId: event.target.value,
+                    })
+                  }
+                >
+                  {stepIds.map((stepId) => (
+                    <option key={stepId} value={stepId}>
+                      {stepLabelMap.get(stepId) ?? stepId}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
+
+            {selectedCheckpoint.signalType === 'direct' && (
+              <>
+                <label>
+                  {t('checkpoint.fields.directStartFrame')}
+                  <input
+                    type="number"
+                    value={selectedCheckpoint.signalFrameStart}
+                    onChange={(event) =>
+                      onUpdateCheckpoint(selectedCheckpoint.id, {
+                        signalFrameStart: event.target.value,
+                      })
+                    }
+                  />
+                </label>
+                <label>
+                  {t('checkpoint.fields.directEndFrame')}
+                  <input
+                    type="number"
+                    value={selectedCheckpoint.signalFrameEnd}
+                    onChange={(event) =>
+                      onUpdateCheckpoint(selectedCheckpoint.id, {
+                        signalFrameEnd: event.target.value,
+                      })
+                    }
+                  />
+                </label>
+              </>
+            )}
+
+            {selectedCheckpoint.signalType === 'event_window' && (
+              <>
+                <label>
+                  {t('checkpoint.fields.event')}
+                  <input
+                    type="text"
+                    value={selectedCheckpoint.signalEvent}
+                    onChange={(event) =>
+                      onUpdateCheckpoint(selectedCheckpoint.id, {
+                        signalEvent: event.target.value,
+                      })
+                    }
+                  />
+                </label>
+                <label>
+                  {t('checkpoint.fields.windowPreMs')}
+                  <input
+                    type="number"
+                    value={selectedCheckpoint.signalWindowPreMs}
+                    onChange={(event) =>
+                      onUpdateCheckpoint(selectedCheckpoint.id, {
+                        signalWindowPreMs: event.target.value,
+                      })
+                    }
+                  />
+                </label>
+                <label>
+                  {t('checkpoint.fields.windowPostMs')}
+                  <input
+                    type="number"
+                    value={selectedCheckpoint.signalWindowPostMs}
+                    onChange={(event) =>
+                      onUpdateCheckpoint(selectedCheckpoint.id, {
+                        signalWindowPostMs: event.target.value,
+                      })
+                    }
+                  />
+                </label>
+                <label>
+                  {t('checkpoint.fields.defaultPhase')}
+                  <select
+                    value={selectedCheckpoint.signalDefaultPhase}
+                    onChange={(event) =>
+                      onUpdateCheckpoint(selectedCheckpoint.id, {
+                        signalDefaultPhase: event.target.value,
+                      })
+                    }
+                  >
+                    <option value="">{t('common.none')}</option>
+                    {stepIds.map((stepId) => (
+                      <option key={stepId} value={stepId}>
+                        {stepLabelMap.get(stepId) ?? stepId}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </>
+            )}
+
+            {showTechnicalFields && (
+              <>
+                <label>
+                  {t('checkpoint.fields.id')}
+                  <input
+                    type="text"
+                    value={selectedCheckpoint.id}
+                    onChange={(event) =>
+                      onUpdateCheckpoint(selectedCheckpoint.id, {
+                        id: event.target.value,
+                      })
+                    }
+                  />
+                </label>
+                <label>
+                  {t('checkpoint.fields.category')}
+                  <input
+                    type="text"
+                    value={selectedCheckpoint.category}
+                    data-testid="cb-checkpoints-category"
+                    onChange={(event) =>
+                      onUpdateCheckpoint(selectedCheckpoint.id, {
+                        category: event.target.value,
+                      })
+                    }
+                  />
+                </label>
+              </>
+            )}
+          </div>
+        </section>
       </div>
 
       <JointLandmarkDiagram
