@@ -1,4 +1,5 @@
 import rawCapabilities from '../../generated/pluginCapabilities.json'
+import { formatProfileLabel } from './terminology'
 
 export type PluginCapability = {
   supported_condition_types: string[]
@@ -23,6 +24,8 @@ export type ProfileOption = {
   type: 'generic' | 'preset'
   preset_id?: string
   plugin: string
+  displayName: string
+  subtitle: string
 }
 
 export type PluginCapabilities = {
@@ -99,12 +102,21 @@ export const pluginCapabilities: PluginCapabilities = parseCapabilities(rawCapab
 
 export const listProfileOptions = (): ProfileOption[] =>
   Object.values(pluginCapabilities.profiles)
-    .map((profile) => ({
-      id: profile.id,
-      type: profile.type,
-      preset_id: profile.preset_id ?? undefined,
-      plugin: profile.plugin,
-    }))
+    .map((profile) => {
+      const label = formatProfileLabel({
+        id: profile.id,
+        type: profile.type,
+        preset_id: profile.preset_id ?? undefined,
+      })
+      return {
+        id: profile.id,
+        type: profile.type,
+        preset_id: profile.preset_id ?? undefined,
+        plugin: profile.plugin,
+        displayName: label.displayName,
+        subtitle: label.subtitle,
+      }
+    })
     .sort((a, b) => a.id.localeCompare(b.id))
 
 export const getProfileCapability = (profileId: string): PluginCapability | null => {
