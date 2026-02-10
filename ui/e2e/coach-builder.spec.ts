@@ -55,7 +55,7 @@ test('scenario_3_export_guard', async ({ page }) => {
   await page.getByTestId('cb-checkpoints-label').fill('Head Stability')
   await page.getByTestId('cb-checkpoints-toggle-technical').click()
   await page.getByTestId('cb-checkpoints-category').fill('timing')
-  await page.getByTestId('cb-condition-metric').first().fill('head_y')
+  await page.getByTestId('cb-condition-metric').first().selectOption('head_displacement_delta_mean')
   await page.getByTestId('cb-nav-continue').click()
 
   await page.getByTestId('cb-review-validate').click()
