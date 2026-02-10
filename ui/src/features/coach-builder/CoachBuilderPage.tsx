@@ -6,6 +6,7 @@ import {
   type ConditionType,
 } from './draftTypes'
 import { getProfileCapability, listProfileOptions } from './capabilities'
+import { humanizeIdentifier } from './terminology'
 import { downloadRuleSetJson } from './export'
 import { importDraftFromFile, type ImportMessageKey } from './import'
 import { toRuleSetForExport } from './mappers'
@@ -83,6 +84,8 @@ export function CoachBuilderPage() {
             ? state.draft.metadata.metricPresetId.trim()
             : undefined,
         plugin: '(custom)',
+        displayName: humanizeIdentifier(currentId),
+        subtitle: currentId,
       },
     ]
   }, [
@@ -106,6 +109,11 @@ export function CoachBuilderPage() {
     }
     return presetIds
   }, [profileOptions, state.draft.metadata.metricPresetId])
+  const selectedProfileOption =
+    profileOptionMap.get(state.draft.metadata.metricProfileId.trim()) ?? null
+  const selectedProfileTypeLabel = state.draft.metadata.metricProfileType === 'preset'
+    ? 'Preset template'
+    : 'General template'
   const supportedConditionTypes = useMemo(() => {
     if (!activeCapability) return KNOWN_CONDITION_TYPES
     const typeSet = new Set(activeCapability.supported_condition_types)
@@ -399,14 +407,17 @@ export function CoachBuilderPage() {
                 >
                   {selectableProfileOptions.map((profile) => (
                     <option key={profile.id} value={profile.id}>
-                      {profile.id} ({profile.type}
-                      {profile.type === 'preset' && profile.preset_id
-                        ? `:${profile.preset_id}`
-                        : ''}
-                      )
+                      {profile.displayName} ({profile.subtitle})
                     </option>
                   ))}
                 </select>
+                {selectedProfileOption ? (
+                  <span className="cb-field-help">
+                    {selectedProfileOption.type === 'preset' && selectedProfileOption.preset_id
+                      ? `${selectedProfileTypeLabel} · preset ${selectedProfileOption.preset_id}`
+                      : selectedProfileTypeLabel}
+                  </span>
+                ) : null}
               </label>
 
               <label>
@@ -416,8 +427,8 @@ export function CoachBuilderPage() {
                   data-testid="cb-setup-profile-type"
                   disabled
                 >
-                  <option value="generic">generic</option>
-                  <option value="preset">preset</option>
+                  <option value="generic">General template</option>
+                  <option value="preset">Preset template</option>
                 </select>
               </label>
 
@@ -433,7 +444,7 @@ export function CoachBuilderPage() {
                   >
                     {selectablePresetIds.map((presetId) => (
                       <option key={presetId} value={presetId}>
-                        {presetId}
+                        {humanizeIdentifier(presetId)} ({presetId})
                       </option>
                     ))}
                   </select>
