@@ -5,7 +5,7 @@ import {
   normalizeDraftForExport,
   type ConditionType,
 } from './draftTypes'
-import { getPluginCapability } from './capabilities'
+import { getProfileCapability } from './capabilities'
 import { downloadRuleSetJson } from './export'
 import { importDraftFromFile, type ImportMessageKey } from './import'
 import { toRuleSetSchemaV1 } from './mappers'
@@ -61,8 +61,8 @@ export function CoachBuilderPage() {
     [state.draft.steps, state.selectedStepId]
   )
   const activeCapability = useMemo(
-    () => getPluginCapability(state.draft.metadata.sport.trim()),
-    [state.draft.metadata.sport]
+    () => getProfileCapability(state.draft.metadata.metricProfileId.trim()),
+    [state.draft.metadata.metricProfileId]
   )
   const supportedConditionTypes = useMemo(() => {
     if (!activeCapability) return KNOWN_CONDITION_TYPES
@@ -97,8 +97,7 @@ export function CoachBuilderPage() {
       case 'setup':
         return (
           state.draft.metadata.ruleSetId.trim().length > 0 &&
-          state.draft.metadata.sport.trim().length > 0 &&
-          state.draft.metadata.sportVersion.trim().length > 0
+          state.draft.metadata.metricProfileId.trim().length > 0
         )
       case 'steps':
         return selectedStep != null && selectedStep.checkpoints.length > 0
@@ -110,8 +109,7 @@ export function CoachBuilderPage() {
   }, [
     workflowStage,
     state.draft.metadata.ruleSetId,
-    state.draft.metadata.sport,
-    state.draft.metadata.sportVersion,
+    state.draft.metadata.metricProfileId,
     selectedStep,
   ])
 
@@ -161,7 +159,9 @@ export function CoachBuilderPage() {
 
       if (imported.draft) {
         const importedRuleSet = toRuleSetSchemaV1(normalizeDraftForExport(imported.draft))
-        const importedCapability = getPluginCapability(imported.draft.metadata.sport.trim())
+        const importedCapability = getProfileCapability(
+          imported.draft.metadata.metricProfileId.trim()
+        )
         const capabilityErrors = validateRuleSet(importedRuleSet, importedCapability)
         setValidationErrors(capabilityErrors)
         setValidationStatus(capabilityErrors.length === 0 ? 'pass' : 'fail')
@@ -317,6 +317,50 @@ export function CoachBuilderPage() {
                   }
                 />
               </label>
+
+              <label>
+                Metric profile ID
+                <input
+                  type="text"
+                  value={state.draft.metadata.metricProfileId}
+                  data-testid="cb-setup-profile-id"
+                  onChange={(event) =>
+                    dispatch({ type: 'meta/set', field: 'metricProfileId', value: event.target.value })
+                  }
+                />
+              </label>
+
+              <label>
+                Metric profile type
+                <select
+                  value={state.draft.metadata.metricProfileType}
+                  data-testid="cb-setup-profile-type"
+                  onChange={(event) =>
+                    dispatch({
+                      type: 'meta/set',
+                      field: 'metricProfileType',
+                      value: event.target.value,
+                    })
+                  }
+                >
+                  <option value="generic">generic</option>
+                  <option value="preset">preset</option>
+                </select>
+              </label>
+
+              {state.draft.metadata.metricProfileType === 'preset' && (
+                <label>
+                  Metric preset ID
+                  <input
+                    type="text"
+                    value={state.draft.metadata.metricPresetId}
+                    data-testid="cb-setup-preset-id"
+                    onChange={(event) =>
+                      dispatch({ type: 'meta/set', field: 'metricPresetId', value: event.target.value })
+                    }
+                  />
+                </label>
+              )}
 
               <label>
                 {t('metadata.ruleVersion')}
