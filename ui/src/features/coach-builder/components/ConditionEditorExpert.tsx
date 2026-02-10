@@ -10,6 +10,7 @@ const EXPERT_TYPES: ExpertConditionType[] = ['event_exists', 'trend', 'angle', '
 type ConditionEditorExpertProps = {
   condition: ConditionDraft
   supportedTypes?: ExpertConditionType[]
+  metricCandidates?: string[]
   onUpdate: (patch: Partial<ConditionDraft>) => void
   onRemove: () => void
 }
@@ -17,12 +18,19 @@ type ConditionEditorExpertProps = {
 export function ConditionEditorExpert({
   condition,
   supportedTypes,
+  metricCandidates,
   onUpdate,
   onRemove,
 }: ConditionEditorExpertProps) {
   const { t } = useTranslation()
   const expertTypes =
     supportedTypes && supportedTypes.length > 0 ? supportedTypes : EXPERT_TYPES
+  const metrics =
+    metricCandidates && metricCandidates.length > 0
+      ? Array.from(new Set([...metricCandidates, condition.metric].filter((item) => item.length > 0)))
+      : condition.metric.length > 0
+        ? [condition.metric]
+        : []
   const selectedJointIds =
     condition.type === 'angle'
       ? parseJointIdsCsv(condition.joints)
@@ -112,12 +120,17 @@ export function ConditionEditorExpert({
           <>
             <label>
               {t('condition.fields.metric')}
-              <input
-                type="text"
+              <select
                 value={condition.metric}
                 onChange={(event) => onUpdate({ metric: event.target.value })}
-                placeholder={t('condition.placeholders.metric')}
-              />
+              >
+                <option value="">{t('condition.placeholders.metric')}</option>
+                {metrics.map((metric) => (
+                  <option key={metric} value={metric}>
+                    {metric}
+                  </option>
+                ))}
+              </select>
             </label>
             <label>
               {t('condition.fields.operator')}
@@ -236,12 +249,17 @@ export function ConditionEditorExpert({
             </label>
             <label>
               {t('condition.fields.metricOptional')}
-              <input
-                type="text"
+              <select
                 value={condition.metric}
                 onChange={(event) => onUpdate({ metric: event.target.value })}
-                placeholder={t('condition.placeholders.metric')}
-              />
+              >
+                <option value="">{t('condition.placeholders.metric')}</option>
+                {metrics.map((metric) => (
+                  <option key={metric} value={metric}>
+                    {metric}
+                  </option>
+                ))}
+              </select>
             </label>
             <label>
               {t('condition.fields.operator')}

@@ -16,6 +16,7 @@ type CheckpointEditorProps = {
   step: StepDraft | null
   stepIds: string[]
   supportedConditionTypes?: ConditionType[]
+  metricCandidates?: string[]
   selectedCheckpointId: string | null
   expertEnabled: boolean
   onToggleExpert: (enabled: boolean) => void
@@ -39,6 +40,7 @@ export function CheckpointEditor({
   step,
   stepIds,
   supportedConditionTypes,
+  metricCandidates,
   selectedCheckpointId,
   expertEnabled,
   onToggleExpert,
@@ -403,6 +405,7 @@ export function CheckpointEditor({
                 condition={condition}
                 allConditionIds={selectedCheckpoint.conditions.map((item) => item.id)}
                 supportedTypes={allowedBasicTypes}
+                metricCandidates={metricCandidates}
                 onUpdate={(patch) => onUpdateCondition(selectedCheckpoint.id, condition.id, patch)}
                 onRemove={() => onRemoveCondition(selectedCheckpoint.id, condition.id)}
               />
@@ -433,6 +436,7 @@ export function CheckpointEditor({
               key={condition.id}
               condition={condition}
               supportedTypes={allowedExpertTypes}
+              metricCandidates={metricCandidates}
               onUpdate={(patch) => onUpdateCondition(selectedCheckpoint.id, condition.id, patch)}
               onRemove={() => onRemoveCondition(selectedCheckpoint.id, condition.id)}
             />

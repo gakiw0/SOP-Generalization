@@ -5,6 +5,7 @@ type ConditionEditorBasicProps = {
   condition: ConditionDraft
   allConditionIds: string[]
   supportedTypes?: BasicConditionType[]
+  metricCandidates?: string[]
   onUpdate: (patch: Partial<ConditionDraft>) => void
   onRemove: () => void
 }
@@ -15,12 +16,19 @@ export function ConditionEditorBasic({
   condition,
   allConditionIds,
   supportedTypes,
+  metricCandidates,
   onUpdate,
   onRemove,
 }: ConditionEditorBasicProps) {
   const { t } = useTranslation()
   const availableRefIds = allConditionIds.filter((id) => id !== condition.id)
   const basicTypes = supportedTypes && supportedTypes.length > 0 ? supportedTypes : BASIC_TYPES
+  const metrics =
+    metricCandidates && metricCandidates.length > 0
+      ? Array.from(new Set([...metricCandidates, condition.metric].filter((item) => item.length > 0)))
+      : condition.metric.length > 0
+        ? [condition.metric]
+        : []
 
   return (
     <article className="cb-condition-card">
@@ -72,13 +80,18 @@ export function ConditionEditorBasic({
         {(condition.type === 'threshold' || condition.type === 'range' || condition.type === 'boolean') && (
           <label>
             {t('condition.fields.metric')}
-            <input
-              type="text"
+            <select
               value={condition.metric}
               data-testid="cb-condition-metric"
               onChange={(event) => onUpdate({ metric: event.target.value })}
-              placeholder={t('condition.placeholders.metric')}
-            />
+            >
+              <option value="">{t('condition.placeholders.metric')}</option>
+              {metrics.map((metric) => (
+                <option key={metric} value={metric}>
+                  {metric}
+                </option>
+              ))}
+            </select>
           </label>
         )}
 

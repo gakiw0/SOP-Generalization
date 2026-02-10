@@ -5,11 +5,12 @@ import { JointLandmarkDiagram } from './JointLandmarkDiagram'
 
 type StepEditorProps = {
   step: StepDraft | null
+  metricCandidates?: string[]
   onRename: (nextId: string) => void
   onUpdate: (patch: Partial<Omit<StepDraft, 'checkpoints'>>) => void
 }
 
-export function StepEditor({ step, onRename, onUpdate }: StepEditorProps) {
+export function StepEditor({ step, metricCandidates, onRename, onUpdate }: StepEditorProps) {
   const { t } = useTranslation()
   const jointPresets = [
     { key: 'head', value: '0' },
@@ -28,6 +29,7 @@ export function StepEditor({ step, onRename, onUpdate }: StepEditorProps) {
   }
 
   const selectedJointIds = parseJointIdsCsv(step.jointsOfInterest)
+  const visibleMetrics = metricCandidates && metricCandidates.length > 0 ? metricCandidates : []
   const handleStepJointSelectionChange = (nextJointIds: number[]) => {
     onUpdate({ jointsOfInterest: formatJointIdsCsv(nextJointIds) })
   }
@@ -175,6 +177,23 @@ export function StepEditor({ step, onRename, onUpdate }: StepEditorProps) {
         dataTestId="cb-joint-diagram-step"
         toggleTestId="cb-joint-diagram-toggle"
       />
+
+      <section className="cb-panel cb-sub-panel">
+        <div className="cb-panel-header">
+          <h3>{t('step.metricCandidatesTitle')}</h3>
+        </div>
+        {visibleMetrics.length === 0 ? (
+          <p>{t('step.metricCandidatesEmpty')}</p>
+        ) : (
+          <div className="cb-chip-row">
+            {visibleMetrics.map((metric) => (
+              <span key={metric} className="cb-chip-button cb-chip-static" data-testid="cb-step-metric-option">
+                {metric}
+              </span>
+            ))}
+          </div>
+        )}
+      </section>
     </section>
   )
 }
