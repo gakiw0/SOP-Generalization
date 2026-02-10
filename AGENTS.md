@@ -28,6 +28,11 @@
 - For UI changes, run both `npm run lint` and `npm run build` before creating a PR.
 - When introducing tests, use behavior-based names (example: `test_event_window_resolution`) and keep fixtures minimal.
 
+## MCP Visual Verification
+- For every UI implementation/update task, verify the actual page with MCP Playwright before reporting completion.
+- Do not treat lint/build/e2e-only results as sufficient for UI sign-off; include at least one MCP-based manual flow check.
+- Record the MCP verification result in the final report (what page/state was checked and outcome).
+
 ## Commit & Pull Request Guidelines
 - Match repository history style: lowercase prefix + colon (examples: `add: ...`, `update: ...`).
 - Keep commits scoped (engine, UI, or docs) to simplify review.
