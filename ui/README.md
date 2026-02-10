@@ -1,73 +1,54 @@
-# React + TypeScript + Vite
+# Coach JSON Builder (UI)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This UI is a coach-friendly editor for creating `schema v1` rule-set JSON files used by the comparison system.
 
-Currently, two official plugins are available:
+## What This Page Does
+- Uses **step / checkpoint** language instead of raw schema terms.
+- Produces JSON compatible with: `Engine/configs/rules/schema/v1.json`.
+- Supports:
+  - Metadata editing
+  - Step (phase) editing
+  - Checkpoint (rule) editing
+  - Basic conditions (`threshold`, `range`, `boolean`, `composite`)
+  - Expert condition types (`event_exists`, `trend`, `angle`, `distance`) per checkpoint
+  - Validation with error navigation
+  - Import existing schema v1 JSON
+  - Export validated JSON
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## React Compiler
-
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Run
+```bash
+cd ui
+npm ci
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Build and Lint
+```bash
+cd ui
+npm run lint
+npm run build
 ```
+
+## Workflow
+1. Fill metadata (`rule_set_id`, sport, version, title).
+2. Add/edit steps.
+3. Add/edit checkpoints inside each step.
+4. Add conditions.
+5. Click **Validate**.
+6. Fix any listed errors (clicking an error jumps to its target section).
+7. Export JSON (enabled only after successful validation).
+
+## Import Existing JSON
+- Click `Import JSON`.
+- Select a valid schema v1 JSON file.
+- The draft is loaded and can be re-edited and exported.
+
+## Mapping Rules
+- UI `Step` -> schema `phase`
+- UI `Checkpoint` -> schema `rule`
+- Signal and condition sections map directly to schema fields.
+
+## Notes
+- UI language is English.
+- Dominant hand is intentionally not included in exported JSON because it is not part of schema v1.
+- Expert condition types are intentionally gated per checkpoint.
