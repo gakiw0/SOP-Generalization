@@ -9,6 +9,12 @@ type StepEditorProps = {
 
 export function StepEditor({ step, onRename, onUpdate }: StepEditorProps) {
   const { t } = useTranslation()
+  const jointPresets = [
+    { key: 'head', value: '0' },
+    { key: 'arms', value: '5, 6, 7, 8, 9, 10' },
+    { key: 'torso', value: '5, 6, 11, 12' },
+    { key: 'lowerBody', value: '11, 12, 13, 14, 15, 16' },
+  ]
 
   if (!step) {
     return (
@@ -22,6 +28,7 @@ export function StepEditor({ step, onRename, onUpdate }: StepEditorProps) {
   return (
     <section className="cb-panel">
       <h2>{t('step.editorTitle')}</h2>
+      <p>{t('step.editorHelp')}</p>
 
       <div className="cb-field-grid">
         <label>
@@ -60,6 +67,7 @@ export function StepEditor({ step, onRename, onUpdate }: StepEditorProps) {
             rows={3}
             value={step.description}
             onChange={(event) => onUpdate({ description: event.target.value })}
+            placeholder={t('step.placeholders.description')}
           />
         </label>
 
@@ -72,6 +80,7 @@ export function StepEditor({ step, onRename, onUpdate }: StepEditorProps) {
             <option value="frame">{t('step.rangeType.frame')}</option>
             <option value="event">{t('step.rangeType.event')}</option>
           </select>
+          <span className="cb-field-help">{t('step.rangeTypeHelp')}</span>
         </label>
 
         {step.rangeType === 'frame' ? (
@@ -131,6 +140,24 @@ export function StepEditor({ step, onRename, onUpdate }: StepEditorProps) {
             onChange={(event) => onUpdate({ jointsOfInterest: event.target.value })}
             placeholder={t('step.placeholders.jointsOfInterest')}
           />
+          <span className="cb-field-help">{t('step.fields.jointsHelp')}</span>
+          <div className="cb-chip-row">
+            {jointPresets.map((preset) => (
+              <button
+                key={preset.key}
+                type="button"
+                className="cb-chip-button"
+                onClick={() => onUpdate({ jointsOfInterest: preset.value })}
+              >
+                {t(`step.presets.${preset.key}`)}
+              </button>
+            ))}
+          </div>
+          <div className="cb-joint-map">
+            <span>{t('step.jointGuide.head')}</span>
+            <span>{t('step.jointGuide.upperBody')}</span>
+            <span>{t('step.jointGuide.lowerBody')}</span>
+          </div>
         </label>
       </div>
     </section>

@@ -27,6 +27,7 @@ export function ConditionEditorBasic({
           {t('common.remove')}
         </button>
       </div>
+      <p className="cb-card-help-text">{t('condition.basicHelp')}</p>
 
       <div className="cb-field-grid">
         <label>

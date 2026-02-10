@@ -22,6 +22,7 @@ export function ConditionEditorExpert({ condition, onUpdate, onRemove }: Conditi
           {t('common.remove')}
         </button>
       </div>
+      <p className="cb-card-help-text">{t('condition.expertHelp')}</p>
 
       <div className="cb-field-grid">
         <label>

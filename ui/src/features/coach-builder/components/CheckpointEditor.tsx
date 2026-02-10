@@ -48,6 +48,7 @@ export function CheckpointEditor({
 }: CheckpointEditorProps) {
   const { t } = useTranslation()
   const [newConditionType, setNewConditionType] = useState<ConditionType>('threshold')
+  const [showTechnicalFields, setShowTechnicalFields] = useState(false)
 
   if (!step) {
     return (
@@ -85,6 +86,7 @@ export function CheckpointEditor({
           {t('checkpoint.addButton')}
         </button>
       </div>
+      <p>{t('checkpoint.editorHelp')}</p>
 
       <div className="cb-checkpoint-tabs">
         {step.checkpoints.map((checkpoint) => (
@@ -101,19 +103,6 @@ export function CheckpointEditor({
 
       <div className="cb-field-grid">
         <label>
-          {t('checkpoint.fields.id')}
-          <input
-            type="text"
-            value={selectedCheckpoint.id}
-            onChange={(event) =>
-              onUpdateCheckpoint(selectedCheckpoint.id, {
-                id: event.target.value,
-              })
-            }
-          />
-        </label>
-
-        <label>
           {t('checkpoint.fields.label')}
           <input
             type="text"
@@ -121,19 +110,6 @@ export function CheckpointEditor({
             onChange={(event) =>
               onUpdateCheckpoint(selectedCheckpoint.id, {
                 label: event.target.value,
-              })
-            }
-          />
-        </label>
-
-        <label>
-          {t('checkpoint.fields.category')}
-          <input
-            type="text"
-            value={selectedCheckpoint.category}
-            onChange={(event) =>
-              onUpdateCheckpoint(selectedCheckpoint.id, {
-                category: event.target.value,
               })
             }
           />
@@ -165,6 +141,7 @@ export function CheckpointEditor({
                 description: event.target.value,
               })
             }
+            placeholder={t('checkpoint.placeholders.description')}
           />
         </label>
 
@@ -182,6 +159,7 @@ export function CheckpointEditor({
             <option value="direct">{t('signalType.direct')}</option>
             <option value="event_window">{t('signalType.event_window')}</option>
           </select>
+          <span className="cb-field-help">{t('checkpoint.fields.signalTypeHelp')}</span>
         </label>
 
         {selectedCheckpoint.signalType === 'frame_range_ref' && (
@@ -285,6 +263,49 @@ export function CheckpointEditor({
             </label>
           </>
         )}
+
+        {showTechnicalFields && (
+          <>
+            <label>
+              {t('checkpoint.fields.id')}
+              <input
+                type="text"
+                value={selectedCheckpoint.id}
+                onChange={(event) =>
+                  onUpdateCheckpoint(selectedCheckpoint.id, {
+                    id: event.target.value,
+                  })
+                }
+              />
+            </label>
+            <label>
+              {t('checkpoint.fields.category')}
+              <input
+                type="text"
+                value={selectedCheckpoint.category}
+                onChange={(event) =>
+                  onUpdateCheckpoint(selectedCheckpoint.id, {
+                    category: event.target.value,
+                  })
+                }
+              />
+            </label>
+          </>
+        )}
+      </div>
+
+      <div className="cb-body-guide">
+        <h3>{t('checkpoint.bodyGuide.title')}</h3>
+        <p>{t('checkpoint.bodyGuide.help')}</p>
+        <div className="cb-body-guide-grid">
+          <span>{t('checkpoint.bodyGuide.head')}</span>
+          <span>{t('checkpoint.bodyGuide.shoulder')}</span>
+          <span>{t('checkpoint.bodyGuide.elbow')}</span>
+          <span>{t('checkpoint.bodyGuide.wrist')}</span>
+          <span>{t('checkpoint.bodyGuide.hip')}</span>
+          <span>{t('checkpoint.bodyGuide.knee')}</span>
+          <span>{t('checkpoint.bodyGuide.ankle')}</span>
+        </div>
       </div>
 
       <div className="cb-inline-actions">
@@ -296,6 +317,12 @@ export function CheckpointEditor({
           />
           {t('checkpoint.enableExpert')}
         </label>
+        <button
+          type="button"
+          onClick={() => setShowTechnicalFields((value) => !value)}
+        >
+          {showTechnicalFields ? t('checkpoint.hideTechnical') : t('checkpoint.showTechnical')}
+        </button>
 
         <button type="button" className="cb-danger" onClick={() => onRemoveCheckpoint(selectedCheckpoint.id)}>
           {t('checkpoint.removeButton')}
@@ -323,6 +350,14 @@ export function CheckpointEditor({
               {t('condition.addButton')}
             </button>
           </div>
+        </div>
+        <p>{t('checkpoint.conditionsHelp')}</p>
+        <div className="cb-chip-row">
+          {BASIC_TYPES.map((type) => (
+            <button key={type} type="button" className="cb-chip-button" onClick={() => setNewConditionType(type)}>
+              {t(`condition.type.${type}`)}
+            </button>
+          ))}
         </div>
 
         {selectedCheckpoint.conditions.map((condition) => {

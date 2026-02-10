@@ -26,6 +26,11 @@ type StatusMessage = {
   params?: Record<string, string | number>
 }
 
+type WorkflowStage = 'setup' | 'steps' | 'checkpoints' | 'review'
+type DominantHand = 'right' | 'left'
+
+const WORKFLOW_STAGES: WorkflowStage[] = ['setup', 'steps', 'checkpoints', 'review']
+
 export function CoachBuilderPage() {
   const { t, i18n } = useTranslation()
   const [state, dispatch] = useReducer(coachDraftReducer, undefined, createInitialState)
@@ -33,6 +38,8 @@ export function CoachBuilderPage() {
   const [validationStatus, setValidationStatus] = useState<ValidationStatus>('idle')
   const [statusMessage, setStatusMessage] = useState<StatusMessage | null>(null)
   const [hasValidated, setHasValidated] = useState(false)
+  const [workflowStage, setWorkflowStage] = useState<WorkflowStage>('setup')
+  const [dominantHand, setDominantHand] = useState<DominantHand>('right')
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const suppressValidationResetRef = useRef(false)
 
@@ -51,6 +58,38 @@ export function CoachBuilderPage() {
 
   const currentLocale =
     normalizeLocale(i18n.resolvedLanguage ?? i18n.language) ?? 'en'
+
+  const totalCheckpointCount = useMemo(
+    () => state.draft.steps.reduce((sum, step) => sum + step.checkpoints.length, 0),
+    [state.draft.steps]
+  )
+
+  const currentStageIndex = WORKFLOW_STAGES.indexOf(workflowStage)
+
+  const canContinue = useMemo(() => {
+    switch (workflowStage) {
+      case 'setup':
+        return (
+          state.draft.metadata.ruleSetId.trim().length > 0 &&
+          state.draft.metadata.sport.trim().length > 0 &&
+          state.draft.metadata.sportVersion.trim().length > 0
+        )
+      case 'steps':
+        return selectedStep != null
+      case 'checkpoints':
+        return selectedStep != null && selectedStep.checkpoints.length > 0
+      case 'review':
+        return false
+      default:
+        return false
+    }
+  }, [
+    workflowStage,
+    state.draft.metadata.ruleSetId,
+    state.draft.metadata.sport,
+    state.draft.metadata.sportVersion,
+    selectedStep,
+  ])
 
   useEffect(() => {
     if (suppressValidationResetRef.current) {
@@ -111,6 +150,26 @@ export function CoachBuilderPage() {
     window.sessionStorage.setItem(LOCALE_STORAGE_KEY, next)
   }
 
+  const moveStage = (nextStage: WorkflowStage) => {
+    setWorkflowStage(nextStage)
+    if (nextStage === 'review') {
+      runValidation()
+    }
+  }
+
+  const goToPreviousStage = () => {
+    if (currentStageIndex <= 0) return
+    const nextStage = WORKFLOW_STAGES[currentStageIndex - 1]
+    moveStage(nextStage)
+  }
+
+  const goToNextStage = () => {
+    if (!canContinue) return
+    if (currentStageIndex >= WORKFLOW_STAGES.length - 1) return
+    const nextStage = WORKFLOW_STAGES[currentStageIndex + 1]
+    moveStage(nextStage)
+  }
+
   const navigateFromPath = (path: string) => {
     const phaseMatch = path.match(/^phases\[(\d+)\]/)
     if (phaseMatch) {
@@ -118,6 +177,7 @@ export function CoachBuilderPage() {
       const stepId = state.draft.steps[index]?.id
       if (stepId) {
         dispatch({ type: 'step/select', stepId })
+        moveStage('steps')
       }
       return
     }
@@ -129,6 +189,7 @@ export function CoachBuilderPage() {
       if (target) {
         dispatch({ type: 'step/select', stepId: target.stepId })
         dispatch({ type: 'checkpoint/select', checkpointId: target.checkpointId })
+        moveStage('checkpoints')
       }
     }
   }
@@ -168,165 +229,267 @@ export function CoachBuilderPage() {
         />
       </header>
 
-      <section className="cb-panel">
-        <h2>{t('metadata.sectionTitle')}</h2>
-        <div className="cb-field-grid">
-          <label>
-            {t('metadata.ruleSetId')}
-            <input
-              type="text"
-              value={state.draft.metadata.ruleSetId}
-              onChange={(event) =>
-                dispatch({ type: 'meta/set', field: 'ruleSetId', value: event.target.value })
-              }
-            />
-          </label>
+      <section className="cb-panel cb-stage-strip">
+        <div className="cb-stage-track">
+          {WORKFLOW_STAGES.map((stage, index) => {
+            const isCurrent = stage === workflowStage
+            const isDone = index < currentStageIndex
+            const isEnabled = index <= currentStageIndex || index === currentStageIndex + 1
 
-          <label>
-            {t('metadata.sport')}
-            <input
-              type="text"
-              value={state.draft.metadata.sport}
-              onChange={(event) =>
-                dispatch({ type: 'meta/set', field: 'sport', value: event.target.value })
-              }
-            />
-          </label>
-
-          <label>
-            {t('metadata.ruleVersion')}
-            <input
-              type="text"
-              value={state.draft.metadata.sportVersion}
-              onChange={(event) =>
-                dispatch({ type: 'meta/set', field: 'sportVersion', value: event.target.value })
-              }
-            />
-          </label>
-
-          <label className="cb-full-width">
-            {t('metadata.title')}
-            <input
-              type="text"
-              value={state.draft.metadata.title}
-              onChange={(event) =>
-                dispatch({ type: 'meta/set', field: 'title', value: event.target.value })
-              }
-            />
-          </label>
+            return (
+              <button
+                key={stage}
+                type="button"
+                className={`cb-stage-pill${isCurrent ? ' is-current' : ''}${isDone ? ' is-done' : ''}`}
+                onClick={() => moveStage(stage)}
+                disabled={!isEnabled}
+              >
+                <span className="cb-stage-index">{index + 1}</span>
+                <span>{t(`workflow.${stage}.label`)}</span>
+              </button>
+            )
+          })}
         </div>
+        <p>{t(`workflow.${workflowStage}.description`)}</p>
       </section>
 
-      <div className="cb-layout">
-        <StepList
-          steps={state.draft.steps}
-          selectedStepId={state.selectedStepId}
-          onSelect={(stepId) => dispatch({ type: 'step/select', stepId })}
-          onAdd={() => dispatch({ type: 'step/add' })}
-          onRemove={(stepId) => dispatch({ type: 'step/remove', stepId })}
-        />
+      {workflowStage === 'setup' && (
+        <>
+          <section className="cb-panel">
+            <div className="cb-panel-header">
+              <h2>{t('setup.handednessTitle')}</h2>
+            </div>
+            <p>{t('setup.handednessHelp')}</p>
+            <div className="cb-choice-row">
+              <button
+                type="button"
+                className={`cb-choice-card${dominantHand === 'right' ? ' is-selected' : ''}`}
+                onClick={() => setDominantHand('right')}
+              >
+                {t('setup.rightHanded')}
+              </button>
+              <button
+                type="button"
+                className={`cb-choice-card${dominantHand === 'left' ? ' is-selected' : ''}`}
+                onClick={() => setDominantHand('left')}
+              >
+                {t('setup.leftHanded')}
+              </button>
+            </div>
+            <p className="cb-hint-text">{t('setup.handednessNote')}</p>
+          </section>
 
-        <StepEditor
-          step={selectedStep}
-          onRename={(nextId) => {
-            if (!selectedStep) return
-            dispatch({ type: 'step/rename', stepId: selectedStep.id, nextId })
-          }}
-          onUpdate={(patch) => {
-            if (!selectedStep) return
-            dispatch({ type: 'step/update', stepId: selectedStep.id, patch })
-          }}
-        />
-      </div>
+          <section className="cb-panel">
+            <h2>{t('metadata.sectionTitle')}</h2>
+            <p>{t('metadata.help')}</p>
+            <div className="cb-field-grid">
+              <label>
+                {t('metadata.ruleSetId')}
+                <input
+                  type="text"
+                  value={state.draft.metadata.ruleSetId}
+                  onChange={(event) =>
+                    dispatch({ type: 'meta/set', field: 'ruleSetId', value: event.target.value })
+                  }
+                />
+              </label>
 
-      <CheckpointEditor
-        step={selectedStep}
-        stepIds={state.draft.steps.map((step) => step.id)}
-        selectedCheckpointId={state.selectedCheckpointId}
-        expertEnabled={
-          state.selectedCheckpointId != null &&
-          state.expertCheckpointIds.includes(state.selectedCheckpointId)
-        }
-        onToggleExpert={(enabled) => {
-          if (!state.selectedCheckpointId) return
-          dispatch({
-            type: 'checkpoint/toggleExpert',
-            checkpointId: state.selectedCheckpointId,
-            enabled,
-          })
-        }}
-        onSelectCheckpoint={(checkpointId) =>
-          dispatch({ type: 'checkpoint/select', checkpointId })
-        }
-        onAddCheckpoint={() => {
-          if (!selectedStep) return
-          dispatch({ type: 'checkpoint/add', stepId: selectedStep.id })
-        }}
-        onRemoveCheckpoint={(checkpointId) => {
-          if (!selectedStep) return
-          dispatch({ type: 'checkpoint/remove', stepId: selectedStep.id, checkpointId })
-        }}
-        onUpdateCheckpoint={(checkpointId, patch) => {
-          if (!selectedStep) return
-          dispatch({
-            type: 'checkpoint/update',
-            stepId: selectedStep.id,
-            checkpointId,
-            patch,
-          })
-        }}
-        onAddCondition={(checkpointId, conditionType) => {
-          if (!selectedStep) return
-          dispatch({
-            type: 'condition/add',
-            stepId: selectedStep.id,
-            checkpointId,
-            conditionType,
-          })
-        }}
-        onUpdateCondition={(checkpointId, conditionId, patch) => {
-          if (!selectedStep) return
-          dispatch({
-            type: 'condition/update',
-            stepId: selectedStep.id,
-            checkpointId,
-            conditionId,
-            patch,
-          })
-        }}
-        onRemoveCondition={(checkpointId, conditionId) => {
-          if (!selectedStep) return
-          dispatch({
-            type: 'condition/remove',
-            stepId: selectedStep.id,
-            checkpointId,
-            conditionId,
-          })
-        }}
-      />
+              <label>
+                {t('metadata.sport')}
+                <input
+                  type="text"
+                  value={state.draft.metadata.sport}
+                  onChange={(event) =>
+                    dispatch({ type: 'meta/set', field: 'sport', value: event.target.value })
+                  }
+                />
+              </label>
 
-      <ValidationPanel
-        errors={validationErrors}
-        status={validationStatus}
-        onValidate={runValidation}
-        onNavigateError={navigateFromPath}
-      />
+              <label>
+                {t('metadata.ruleVersion')}
+                <input
+                  type="text"
+                  value={state.draft.metadata.sportVersion}
+                  onChange={(event) =>
+                    dispatch({ type: 'meta/set', field: 'sportVersion', value: event.target.value })
+                  }
+                />
+              </label>
 
-      <section className="cb-panel">
-        <div className="cb-panel-header">
-          <h2>{t('export.sectionTitle')}</h2>
-          <div className="cb-export-actions">
+              <label className="cb-full-width">
+                {t('metadata.title')}
+                <input
+                  type="text"
+                  value={state.draft.metadata.title}
+                  onChange={(event) =>
+                    dispatch({ type: 'meta/set', field: 'title', value: event.target.value })
+                  }
+                />
+              </label>
+            </div>
+          </section>
+        </>
+      )}
+
+      {workflowStage === 'steps' && (
+        <div className="cb-layout">
+          <StepList
+            steps={state.draft.steps}
+            selectedStepId={state.selectedStepId}
+            onSelect={(stepId) => dispatch({ type: 'step/select', stepId })}
+            onAdd={() => dispatch({ type: 'step/add' })}
+            onRemove={(stepId) => dispatch({ type: 'step/remove', stepId })}
+          />
+
+          <StepEditor
+            step={selectedStep}
+            onRename={(nextId) => {
+              if (!selectedStep) return
+              dispatch({ type: 'step/rename', stepId: selectedStep.id, nextId })
+            }}
+            onUpdate={(patch) => {
+              if (!selectedStep) return
+              dispatch({ type: 'step/update', stepId: selectedStep.id, patch })
+            }}
+          />
+        </div>
+      )}
+
+      {workflowStage === 'checkpoints' && (
+        <>
+          <section className="cb-panel cb-summary-strip">
+            <div className="cb-summary-item">
+              <span>{t('workflow.summary.steps')}</span>
+              <strong>{state.draft.steps.length}</strong>
+            </div>
+            <div className="cb-summary-item">
+              <span>{t('workflow.summary.checkpoints')}</span>
+              <strong>{totalCheckpointCount}</strong>
+            </div>
+            <div className="cb-summary-item">
+              <span>{t('workflow.summary.currentStep')}</span>
+              <strong>{selectedStep?.label || selectedStep?.id || '-'}</strong>
+            </div>
+          </section>
+
+          <CheckpointEditor
+            step={selectedStep}
+            stepIds={state.draft.steps.map((step) => step.id)}
+            selectedCheckpointId={state.selectedCheckpointId}
+            expertEnabled={
+              state.selectedCheckpointId != null &&
+              state.expertCheckpointIds.includes(state.selectedCheckpointId)
+            }
+            onToggleExpert={(enabled) => {
+              if (!state.selectedCheckpointId) return
+              dispatch({
+                type: 'checkpoint/toggleExpert',
+                checkpointId: state.selectedCheckpointId,
+                enabled,
+              })
+            }}
+            onSelectCheckpoint={(checkpointId) =>
+              dispatch({ type: 'checkpoint/select', checkpointId })
+            }
+            onAddCheckpoint={() => {
+              if (!selectedStep) return
+              dispatch({ type: 'checkpoint/add', stepId: selectedStep.id })
+            }}
+            onRemoveCheckpoint={(checkpointId) => {
+              if (!selectedStep) return
+              dispatch({ type: 'checkpoint/remove', stepId: selectedStep.id, checkpointId })
+            }}
+            onUpdateCheckpoint={(checkpointId, patch) => {
+              if (!selectedStep) return
+              dispatch({
+                type: 'checkpoint/update',
+                stepId: selectedStep.id,
+                checkpointId,
+                patch,
+              })
+            }}
+            onAddCondition={(checkpointId, conditionType) => {
+              if (!selectedStep) return
+              dispatch({
+                type: 'condition/add',
+                stepId: selectedStep.id,
+                checkpointId,
+                conditionType,
+              })
+            }}
+            onUpdateCondition={(checkpointId, conditionId, patch) => {
+              if (!selectedStep) return
+              dispatch({
+                type: 'condition/update',
+                stepId: selectedStep.id,
+                checkpointId,
+                conditionId,
+                patch,
+              })
+            }}
+            onRemoveCondition={(checkpointId, conditionId) => {
+              if (!selectedStep) return
+              dispatch({
+                type: 'condition/remove',
+                stepId: selectedStep.id,
+                checkpointId,
+                conditionId,
+              })
+            }}
+          />
+        </>
+      )}
+
+      {workflowStage === 'review' && (
+        <>
+          <ValidationPanel
+            errors={validationErrors}
+            status={validationStatus}
+            onValidate={runValidation}
+            onNavigateError={navigateFromPath}
+          />
+
+          <section className="cb-panel">
+            <div className="cb-panel-header">
+              <h2>{t('export.sectionTitle')}</h2>
+              <div className="cb-export-actions">
+                <button
+                  type="button"
+                  className="cb-primary"
+                  disabled={!hasValidated || validationErrors.length > 0}
+                  onClick={handleExport}
+                >
+                  {t('common.exportJson')}
+                </button>
+              </div>
+            </div>
+            <p>{t('export.description')}</p>
+          </section>
+        </>
+      )}
+
+      <section className="cb-panel cb-workflow-footer">
+        <div className="cb-workflow-footer-top">
+          <div className="cb-workflow-nav">
             <button
               type="button"
-              className="cb-primary"
-              disabled={!hasValidated || validationErrors.length > 0}
-              onClick={handleExport}
+              onClick={goToPreviousStage}
+              disabled={currentStageIndex <= 0}
             >
-              {t('common.exportJson')}
+              {t('common.back')}
             </button>
+            {workflowStage !== 'review' ? (
+              <button type="button" className="cb-primary cb-next-button" onClick={goToNextStage} disabled={!canContinue}>
+                {t('common.continue')}
+              </button>
+            ) : (
+              <button type="button" onClick={runValidation}>
+                {t('common.revalidate')}
+              </button>
+            )}
           </div>
         </div>
-        <p>{t('export.description')}</p>
+        <p className="cb-hint-text">{t(`workflow.${workflowStage}.footerHint`)}</p>
       </section>
     </main>
   )

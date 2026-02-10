@@ -3,6 +3,9 @@
     "add": "新增",
     "remove": "刪除",
     "reset": "重設",
+    "back": "返回",
+    "continue": "繼續下一步",
+    "revalidate": "重新驗證",
     "importJson": "匯入 JSON",
     "exportJson": "匯出 JSON",
     "validate": "驗證",
@@ -16,10 +19,45 @@
   },
   "page": {
     "title": "Coach JSON Builder",
-    "subtitle": "使用 step/checkpoint 方式建立 schema v1 JSON。"
+    "subtitle": "以教練工作流程逐步建立比較用 JSON。"
+  },
+  "workflow": {
+    "setup": {
+      "label": "準備",
+      "description": "先填寫基本資訊，再進入細節編輯。",
+      "footerHint": "完成基本資訊後，請繼續到動作步驟。"
+    },
+    "steps": {
+      "label": "步驟",
+      "description": "依教練觀察動作的順序定義步驟。",
+      "footerHint": "步驟設定完成後，請繼續到檢查點。"
+    },
+    "checkpoints": {
+      "label": "檢查點",
+      "description": "針對目前步驟新增判定檢查點。",
+      "footerHint": "檢查點完成後，進入驗證與匯出。"
+    },
+    "review": {
+      "label": "確認",
+      "description": "先驗證，無錯誤時再匯出 JSON。",
+      "footerHint": "若有錯誤先修正，再執行匯出。"
+    },
+    "summary": {
+      "steps": "步驟總數",
+      "checkpoints": "檢查點總數",
+      "currentStep": "目前編輯"
+    }
+  },
+  "setup": {
+    "handednessTitle": "選擇慣用手（教練備註）",
+    "handednessHelp": "用於編輯時統一術語，不會寫入匯出的 JSON。",
+    "handednessNote": "僅在本次會話中保留。",
+    "rightHanded": "右手/右打選手",
+    "leftHanded": "左手/左打選手"
   },
   "metadata": {
     "sectionTitle": "規則集資訊",
+    "help": "填寫識別此規則集的基本資訊。",
     "ruleSetId": "規則集 ID",
     "sport": "運動項目",
     "ruleVersion": "規則版本",
@@ -27,8 +65,11 @@
   },
   "step": {
     "listTitle": "步驟",
+    "listHelp": "請依動作發生順序建立步驟。",
     "addButton": "新增步驟",
+    "checkpointCount": "{{count}} 個檢查點",
     "editorTitle": "步驟編輯",
+    "editorHelp": "一個步驟代表一個動作階段（例如：準備、啟動、揮棒、收尾）。",
     "emptySelect": "請先選擇要編輯的步驟。",
     "uncategorized": "未分類",
     "fields": {
@@ -36,6 +77,7 @@
       "label": "步驟名稱",
       "category": "分類",
       "description": "說明",
+      "jointsHelp": "關節 ID 以逗號分隔，也可使用下方預設。",
       "rangeType": "範圍類型",
       "startFrame": "起始影格",
       "endFrame": "結束影格",
@@ -48,24 +90,52 @@
       "frame": "影格範圍",
       "event": "事件視窗"
     },
+    "rangeTypeHelp": "新手建議使用影格範圍。事件視窗適合進階情境。",
+    "presets": {
+      "head": "頭部重點",
+      "arms": "手臂重點",
+      "torso": "軀幹重點",
+      "lowerBody": "下半身重點"
+    },
+    "jointGuide": {
+      "head": "頭部: 0",
+      "upperBody": "肩/肘/手腕: 5-10",
+      "lowerBody": "髖/膝/腳踝: 11-16"
+    },
     "placeholders": {
       "id": "step1",
       "label": "準備動作",
       "category": "batting",
+      "description": "描述此階段的理想動作。",
       "eventName": "impact",
       "jointsOfInterest": "1, 8, 12"
     }
   },
   "checkpoint": {
     "editorTitle": "檢查點編輯",
+    "editorHelp": "檢查點 = 這個步驟要判定的內容。",
     "emptySelectStep": "請先選擇步驟。",
     "emptyNoCheckpoints": "目前沒有檢查點。",
     "addButton": "新增檢查點",
     "removeButton": "刪除檢查點",
+    "showTechnical": "顯示技術欄位",
+    "hideTechnical": "隱藏技術欄位",
     "enableExpert": "啟用進階條件類型",
     "conditionsTitle": "條件",
+    "conditionsHelp": "建議先使用基本條件類型，必要時再啟用進階類型。",
     "lockedTitle": "條件 ({{type}})",
     "lockedMessage": "請啟用進階模式以編輯此條件類型。",
+    "bodyGuide": {
+      "title": "身體關鍵點快速參考",
+      "help": "在條件的 joints / pair 欄位中使用這些 ID。",
+      "head": "頭部: 0",
+      "shoulder": "肩: 5, 6",
+      "elbow": "肘: 7, 8",
+      "wrist": "手腕: 9, 10",
+      "hip": "髖: 11, 12",
+      "knee": "膝: 13, 14",
+      "ankle": "腳踝: 15, 16"
+    },
     "fields": {
       "id": "檢查點 ID",
       "label": "標籤",
@@ -73,6 +143,7 @@
       "severity": "嚴重等級",
       "description": "說明",
       "signalType": "訊號類型",
+      "signalTypeHelp": "選擇此檢查點的判定時機。",
       "referenceStep": "參照步驟",
       "directStartFrame": "直接範圍起始影格",
       "directEndFrame": "直接範圍結束影格",
@@ -80,11 +151,16 @@
       "windowPreMs": "前視窗 ms",
       "windowPostMs": "後視窗 ms",
       "defaultPhase": "預設 phase（可選）"
+    },
+    "placeholders": {
+      "description": "描述何謂好動作與需修正動作。"
     }
   },
   "condition": {
     "basicTitle": "條件",
+    "basicHelp": "多數情境下，基本條件類型已足夠。",
     "expertTitle": "條件（進階）",
+    "expertHelp": "進階條件適合較複雜的指標定義。",
     "addButton": "新增條件",
     "fields": {
       "id": "條件 ID",
@@ -164,6 +240,7 @@
   },
   "validation": {
     "title": "驗證",
+    "help": "點擊問題可直接跳到對應步驟/檢查點。",
     "summary": {
       "idle": "尚未驗證。",
       "pass": "驗證通過。",

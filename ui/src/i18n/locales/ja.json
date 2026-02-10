@@ -3,6 +3,9 @@
     "add": "追加",
     "remove": "削除",
     "reset": "リセット",
+    "back": "戻る",
+    "continue": "次へ進む",
+    "revalidate": "再検証",
     "importJson": "JSONを読み込む",
     "exportJson": "JSONを書き出す",
     "validate": "検証",
@@ -16,10 +19,45 @@
   },
   "page": {
     "title": "Coach JSON Builder",
-    "subtitle": "step/checkpoint 形式で schema v1 JSON を作成します。"
+    "subtitle": "コーチ向けの作業フローで比較用 JSON を作成します。"
+  },
+  "workflow": {
+    "setup": {
+      "label": "準備",
+      "description": "まず基本情報を入力してから詳細編集に進みます。",
+      "footerHint": "基本情報を入力したら、次にステップ定義へ進んでください。"
+    },
+    "steps": {
+      "label": "ステップ",
+      "description": "コーチが見る順番で動作ステップを定義します。",
+      "footerHint": "ステップが揃ったら、次にチェックポイント設定へ進んでください。"
+    },
+    "checkpoints": {
+      "label": "チェックポイント",
+      "description": "選択中ステップに対して判定ポイントを追加します。",
+      "footerHint": "設定後は検証と書き出しへ進んでください。"
+    },
+    "review": {
+      "label": "確認",
+      "description": "検証を実行し、問題がなければ JSON を書き出します。",
+      "footerHint": "エラーがあれば修正し、問題がなければ書き出してください。"
+    },
+    "summary": {
+      "steps": "ステップ数",
+      "checkpoints": "チェックポイント数",
+      "currentStep": "編集中ステップ"
+    }
+  },
+  "setup": {
+    "handednessTitle": "利き手の選択（コーチメモ）",
+    "handednessHelp": "編集中の用語合わせに使う補助です。書き出しJSONには保存されません。",
+    "handednessNote": "この情報はセッション内のみ保持されます。",
+    "rightHanded": "右打ち・右利き",
+    "leftHanded": "左打ち・左利き"
   },
   "metadata": {
     "sectionTitle": "ルールセット情報",
+    "help": "このルールセットを識別する基本情報を入力します。",
     "ruleSetId": "ルールセットID",
     "sport": "競技",
     "ruleVersion": "ルールバージョン",
@@ -27,8 +65,11 @@
   },
   "step": {
     "listTitle": "ステップ",
+    "listHelp": "選手動作の順番でステップを作成してください。",
     "addButton": "ステップ追加",
+    "checkpointCount": "チェックポイント {{count}} 件",
     "editorTitle": "ステップ編集",
+    "editorHelp": "1ステップ = 1つの動作フェーズ（例: 構え、始動、スイング、フォロー）。",
     "emptySelect": "編集するステップを選択してください。",
     "uncategorized": "未分類",
     "fields": {
@@ -36,6 +77,7 @@
       "label": "ステップ名",
       "category": "カテゴリ",
       "description": "説明",
+      "jointsHelp": "関節IDはカンマ区切りで入力。下のプリセットも使えます。",
       "rangeType": "範囲タイプ",
       "startFrame": "開始フレーム",
       "endFrame": "終了フレーム",
@@ -48,24 +90,52 @@
       "frame": "フレーム範囲",
       "event": "イベントウィンドウ"
     },
+    "rangeTypeHelp": "初心者にはフレーム範囲がおすすめです。イベントウィンドウは上級向けです。",
+    "presets": {
+      "head": "頭部中心",
+      "arms": "腕中心",
+      "torso": "体幹中心",
+      "lowerBody": "下半身中心"
+    },
+    "jointGuide": {
+      "head": "頭部: 0",
+      "upperBody": "肩/肘/手首: 5-10",
+      "lowerBody": "股関節/膝/足首: 11-16"
+    },
     "placeholders": {
       "id": "step1",
       "label": "準備動作",
       "category": "batting",
+      "description": "このフェーズで理想とする動作を書いてください。",
       "eventName": "impact",
       "jointsOfInterest": "1, 8, 12"
     }
   },
   "checkpoint": {
     "editorTitle": "チェックポイント編集",
+    "editorHelp": "チェックポイント = このステップで何を判定するか。",
     "emptySelectStep": "まずステップを選択してください。",
     "emptyNoCheckpoints": "チェックポイントがありません。",
     "addButton": "チェックポイント追加",
     "removeButton": "チェックポイント削除",
+    "showTechnical": "技術項目を表示",
+    "hideTechnical": "技術項目を隠す",
     "enableExpert": "上級条件タイプを有効化",
     "conditionsTitle": "条件",
+    "conditionsHelp": "まずは基本条件タイプから設定し、必要時のみ上級タイプを使ってください。",
     "lockedTitle": "条件 ({{type}})",
     "lockedMessage": "この条件タイプを編集するには上級モードを有効化してください。",
+    "bodyGuide": {
+      "title": "部位IDクイックガイド",
+      "help": "条件の joints / pair 入力時に使うIDです。",
+      "head": "頭部: 0",
+      "shoulder": "肩: 5, 6",
+      "elbow": "肘: 7, 8",
+      "wrist": "手首: 9, 10",
+      "hip": "股関節: 11, 12",
+      "knee": "膝: 13, 14",
+      "ankle": "足首: 15, 16"
+    },
     "fields": {
       "id": "チェックポイントID",
       "label": "ラベル",
@@ -73,6 +143,7 @@
       "severity": "重要度",
       "description": "説明",
       "signalType": "シグナルタイプ",
+      "signalTypeHelp": "このチェックポイントを評価するタイミングを選びます。",
       "referenceStep": "参照ステップ",
       "directStartFrame": "直接指定 開始フレーム",
       "directEndFrame": "直接指定 終了フレーム",
@@ -80,11 +151,16 @@
       "windowPreMs": "前ウィンドウ ms",
       "windowPostMs": "後ウィンドウ ms",
       "defaultPhase": "デフォルトphase (任意)"
+    },
+    "placeholders": {
+      "description": "良い動作・悪い動作の基準を記述してください。"
     }
   },
   "condition": {
     "basicTitle": "条件",
+    "basicHelp": "通常は基本条件タイプで十分です。",
     "expertTitle": "条件 (上級)",
+    "expertHelp": "上級条件は詳細なメトリクス設計を行う場合に使います。",
     "addButton": "条件追加",
     "fields": {
       "id": "条件ID",
@@ -164,6 +240,7 @@
   },
   "validation": {
     "title": "検証",
+    "help": "問題をクリックすると該当ステップ/チェックポイントへ移動します。",
     "summary": {
       "idle": "未検証です。",
       "pass": "検証に成功しました。",

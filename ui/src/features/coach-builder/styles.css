@@ -1,7 +1,7 @@
 .coach-builder-page {
   max-width: 1220px;
   margin: 0 auto;
-  padding: 1.25rem 1rem 2.25rem;
+  padding: 1.25rem 1rem 6.5rem;
   color: var(--ink-900);
   display: flex;
   flex-direction: column;
@@ -51,6 +51,12 @@
 .cb-status-text {
   font-size: 0.92rem;
   font-weight: 600;
+}
+
+.cb-hint-text {
+  margin: 0.35rem 0 0;
+  font-size: 0.82rem;
+  color: var(--ink-500);
 }
 
 .cb-panel h2,
@@ -108,6 +114,57 @@
   grid-template-columns: minmax(260px, 330px) minmax(0, 1fr);
 }
 
+.cb-stage-strip {
+  border-style: dashed;
+}
+
+.cb-stage-track {
+  display: grid;
+  gap: 0.58rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.cb-stage-pill {
+  border: 1px solid #ccd4e2;
+  border-radius: 999px;
+  background: #f6f8fb;
+  color: var(--ink-700);
+  display: flex;
+  align-items: center;
+  gap: 0.42rem;
+  padding: 0.34rem 0.62rem;
+  justify-content: center;
+  font-weight: 600;
+}
+
+.cb-stage-pill.is-current {
+  border-color: #e4bb21;
+  background: #fff4bf;
+  color: #463a00;
+}
+
+.cb-stage-pill.is-done {
+  border-color: #9ec6a8;
+  background: #edf8f0;
+}
+
+.cb-stage-pill:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.cb-stage-index {
+  width: 1.2rem;
+  height: 1.2rem;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #d6deea;
+}
+
 .cb-field-grid {
   margin-top: 0.72rem;
   display: grid;
@@ -122,6 +179,13 @@
   font-size: 0.84rem;
   font-weight: 600;
   color: var(--ink-700);
+}
+
+.cb-field-help {
+  margin-top: 0.05rem;
+  color: var(--ink-500);
+  font-size: 0.75rem;
+  font-weight: 500;
 }
 
 .cb-field-grid input,
@@ -180,6 +244,12 @@
   font-size: 0.8rem;
 }
 
+.cb-step-submeta {
+  color: var(--ink-700);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
 .cb-checkpoint-tabs {
   margin: 0.8rem 0;
   display: flex;
@@ -221,10 +291,47 @@
   border-style: dashed;
 }
 
+.cb-card-help-text {
+  margin: 0.4rem 0 0;
+  color: var(--ink-500);
+  font-size: 0.8rem;
+}
+
 .cb-add-condition-row {
   display: flex;
   align-items: center;
   gap: 0.45rem;
+}
+
+.cb-chip-row {
+  margin-top: 0.45rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.cb-chip-button {
+  border: 1px solid #cad5e4;
+  background: #f6f8fc;
+  border-radius: 999px;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.76rem;
+}
+
+.cb-joint-map {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.35rem;
+  margin-top: 0.45rem;
+}
+
+.cb-joint-map span {
+  border: 1px solid #d5dde9;
+  border-radius: 10px;
+  background: #f8fbff;
+  padding: 0.33rem 0.46rem;
+  font-size: 0.75rem;
+  color: var(--ink-700);
 }
 
 .cb-condition-card {
@@ -314,6 +421,118 @@
   cursor: not-allowed;
 }
 
+.cb-choice-row {
+  margin-top: 0.75rem;
+  display: grid;
+  gap: 0.7rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.cb-choice-card {
+  border: 1px solid #ccd4e2;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #ffffff 0%, #f5f8fd 100%);
+  padding: 0.85rem 0.9rem;
+  text-align: left;
+  font-weight: 700;
+}
+
+.cb-choice-card.is-selected {
+  border-color: #d9b61e;
+  background: linear-gradient(180deg, #fffef1 0%, #fff6c9 100%);
+}
+
+.cb-summary-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.cb-summary-item {
+  border: 1px solid #d2d9e5;
+  border-radius: 12px;
+  background: #f7f9fd;
+  padding: 0.55rem 0.65rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.16rem;
+}
+
+.cb-summary-item span {
+  font-size: 0.74rem;
+  color: var(--ink-500);
+}
+
+.cb-summary-item strong {
+  font-size: 1rem;
+}
+
+.cb-body-guide {
+  margin-top: 0.9rem;
+  border: 1px solid #d5dce7;
+  border-radius: 12px;
+  background: #f8fafd;
+  padding: 0.7rem;
+}
+
+.cb-body-guide h3 {
+  font-size: 0.96rem;
+}
+
+.cb-body-guide p {
+  margin: 0.35rem 0 0;
+  color: var(--ink-700);
+  font-size: 0.82rem;
+}
+
+.cb-body-guide-grid {
+  margin-top: 0.45rem;
+  display: grid;
+  gap: 0.35rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.cb-body-guide-grid span {
+  border: 1px solid #dce3ee;
+  border-radius: 10px;
+  background: #ffffff;
+  padding: 0.28rem 0.46rem;
+  font-size: 0.76rem;
+}
+
+.cb-workflow-footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: min(1220px, 100vw);
+  margin: 0 auto;
+  border-radius: 14px 14px 0 0;
+  border-bottom: none;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(6px);
+  z-index: 20;
+}
+
+.cb-workflow-footer-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.cb-workflow-nav {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cb-next-button {
+  min-width: 200px;
+}
+
 .cb-hidden-file-input {
   display: none;
 }
@@ -333,6 +552,7 @@
 @media (max-width: 900px) {
   .coach-builder-page {
     padding-inline: 0.75rem;
+    padding-bottom: 7.5rem;
   }
 
   .cb-layout {
@@ -350,5 +570,31 @@
   .cb-inline-actions {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .cb-stage-track {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .cb-choice-row {
+    grid-template-columns: 1fr;
+  }
+
+  .cb-summary-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .cb-workflow-footer {
+    width: calc(100vw - 0.6rem);
+  }
+
+  .cb-next-button {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .cb-workflow-nav {
+    flex-direction: column-reverse;
+    align-items: stretch;
   }
 }

@@ -20,15 +20,20 @@ export function StepList({ steps, selectedStepId, onSelect, onAdd, onRemove }: S
           {t('step.addButton')}
         </button>
       </div>
+      <p>{t('step.listHelp')}</p>
 
       <ul className="cb-step-list">
         {steps.map((step) => {
           const selected = step.id === selectedStepId
+          const checkpointCount = step.checkpoints.length
           return (
             <li key={step.id} className={selected ? 'is-selected' : undefined}>
               <button type="button" onClick={() => onSelect(step.id)} className="cb-step-card">
                 <span className="cb-step-title">{step.label || step.id}</span>
                 <span className="cb-step-meta">{step.category || t('step.uncategorized')}</span>
+                <span className="cb-step-submeta">
+                  {t('step.checkpointCount', { count: checkpointCount })}
+                </span>
               </button>
               <button
                 type="button"

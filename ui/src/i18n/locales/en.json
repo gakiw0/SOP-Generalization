@@ -3,6 +3,9 @@
     "add": "Add",
     "remove": "Remove",
     "reset": "Reset",
+    "back": "Back",
+    "continue": "Continue",
+    "revalidate": "Run validation again",
     "importJson": "Import JSON",
     "exportJson": "Export JSON",
     "validate": "Validate",
@@ -16,10 +19,45 @@
   },
   "page": {
     "title": "Coach JSON Builder",
-    "subtitle": "Build schema v1 JSON with step/checkpoint language."
+    "subtitle": "Build your comparison logic in a guided coach workflow."
+  },
+  "workflow": {
+    "setup": {
+      "label": "Setup",
+      "description": "Start with basic information before editing details.",
+      "footerHint": "Set basic info first, then continue to motion steps."
+    },
+    "steps": {
+      "label": "Step",
+      "description": "Define movement phases in the same order coaches observe them.",
+      "footerHint": "Once your steps are ready, continue to checkpoint rules."
+    },
+    "checkpoints": {
+      "label": "Checkpoint",
+      "description": "Add pass/fail checkpoints for the selected step.",
+      "footerHint": "After checkpoints are set, continue to validation and export."
+    },
+    "review": {
+      "label": "Review",
+      "description": "Validate and export only when all required fields are ready.",
+      "footerHint": "Fix validation issues if needed, then export JSON."
+    },
+    "summary": {
+      "steps": "Total steps",
+      "checkpoints": "Total checkpoints",
+      "currentStep": "Currently editing"
+    }
+  },
+  "setup": {
+    "handednessTitle": "Choose dominant hand (coach note)",
+    "handednessHelp": "This helps coaches align terminology while editing. It does not change exported JSON.",
+    "handednessNote": "Saved for this session only.",
+    "rightHanded": "Right-handed player",
+    "leftHanded": "Left-handed player"
   },
   "metadata": {
     "sectionTitle": "Rule set metadata",
+    "help": "Enter core information that identifies this rule set.",
     "ruleSetId": "Rule set ID",
     "sport": "Sport",
     "ruleVersion": "Rule version",
@@ -27,8 +65,11 @@
   },
   "step": {
     "listTitle": "Steps",
+    "listHelp": "Create steps in the order of the athlete motion.",
     "addButton": "Add step",
+    "checkpointCount": "{{count}} checkpoint(s)",
     "editorTitle": "Step editor",
+    "editorHelp": "Each step is a motion phase (for example: prepare, load, swing, finish).",
     "emptySelect": "Select a step to edit.",
     "uncategorized": "uncategorized",
     "fields": {
@@ -36,6 +77,7 @@
       "label": "Step label",
       "category": "Category",
       "description": "Description",
+      "jointsHelp": "Use comma-separated joint IDs or choose a preset below.",
       "rangeType": "Range type",
       "startFrame": "Start frame",
       "endFrame": "End frame",
@@ -48,24 +90,52 @@
       "frame": "Frame range",
       "event": "Event window"
     },
+    "rangeTypeHelp": "Frame range is simpler for beginners. Event window is for event-driven timing.",
+    "presets": {
+      "head": "Head focus",
+      "arms": "Arms focus",
+      "torso": "Torso focus",
+      "lowerBody": "Lower-body focus"
+    },
+    "jointGuide": {
+      "head": "Head: 0",
+      "upperBody": "Shoulder/Elbow/Wrist: 5-10",
+      "lowerBody": "Hip/Knee/Ankle: 11-16"
+    },
     "placeholders": {
       "id": "step1",
       "label": "Get Prepared",
       "category": "batting",
+      "description": "Describe what the athlete should do in this phase.",
       "eventName": "impact",
       "jointsOfInterest": "1, 8, 12"
     }
   },
   "checkpoint": {
     "editorTitle": "Checkpoint editor",
+    "editorHelp": "Checkpoint = what to judge in this step.",
     "emptySelectStep": "Select a step to start editing checkpoints.",
     "emptyNoCheckpoints": "No checkpoints yet.",
     "addButton": "Add checkpoint",
     "removeButton": "Remove checkpoint",
+    "showTechnical": "Show technical fields",
+    "hideTechnical": "Hide technical fields",
     "enableExpert": "Enable expert condition types",
     "conditionsTitle": "Conditions",
+    "conditionsHelp": "Start with basic condition types. Expert types are optional.",
     "lockedTitle": "Condition ({{type}})",
     "lockedMessage": "Enable expert mode to edit this condition type.",
+    "bodyGuide": {
+      "title": "Body landmark quick guide",
+      "help": "Use these IDs when describing joints/pairs in conditions.",
+      "head": "Head: 0",
+      "shoulder": "Shoulders: 5, 6",
+      "elbow": "Elbows: 7, 8",
+      "wrist": "Wrists: 9, 10",
+      "hip": "Hips: 11, 12",
+      "knee": "Knees: 13, 14",
+      "ankle": "Ankles: 15, 16"
+    },
     "fields": {
       "id": "Checkpoint ID",
       "label": "Label",
@@ -73,6 +143,7 @@
       "severity": "Severity",
       "description": "Description",
       "signalType": "Signal type",
+      "signalTypeHelp": "Choose when this checkpoint should be evaluated.",
       "referenceStep": "Reference step",
       "directStartFrame": "Direct start frame",
       "directEndFrame": "Direct end frame",
@@ -80,11 +151,16 @@
       "windowPreMs": "Window pre ms",
       "windowPostMs": "Window post ms",
       "defaultPhase": "Default phase (optional)"
+    },
+    "placeholders": {
+      "description": "Describe what good/bad motion looks like."
     }
   },
   "condition": {
     "basicTitle": "Condition",
+    "basicHelp": "Basic condition type is recommended for most coach workflows.",
     "expertTitle": "Condition (Expert)",
+    "expertHelp": "Expert conditions are intended for advanced metric definitions.",
     "addButton": "Add condition",
     "fields": {
       "id": "Condition ID",
@@ -164,6 +240,7 @@
   },
   "validation": {
     "title": "Validation",
+    "help": "Click each issue to jump directly to the related step/checkpoint.",
     "summary": {
       "idle": "Not validated yet.",
       "pass": "Validation passed.",

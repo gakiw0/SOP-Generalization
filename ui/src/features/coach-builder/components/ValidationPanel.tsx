@@ -33,6 +33,7 @@ export function ValidationPanel({
           {t('common.validate')}
         </button>
       </div>
+      <p>{t('validation.help')}</p>
 
       <p className={errors.length > 0 ? 'cb-error-text' : 'cb-ok-text'}>{summary}</p>
 

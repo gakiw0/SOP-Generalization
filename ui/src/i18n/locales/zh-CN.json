@@ -3,6 +3,9 @@
     "add": "新增",
     "remove": "删除",
     "reset": "重置",
+    "back": "返回",
+    "continue": "继续下一步",
+    "revalidate": "重新校验",
     "importJson": "导入 JSON",
     "exportJson": "导出 JSON",
     "validate": "校验",
@@ -16,10 +19,45 @@
   },
   "page": {
     "title": "Coach JSON Builder",
-    "subtitle": "使用 step/checkpoint 方式生成 schema v1 JSON。"
+    "subtitle": "通过教练工作流逐步生成比较用 JSON。"
+  },
+  "workflow": {
+    "setup": {
+      "label": "准备",
+      "description": "先填写基础信息，再进入详细编辑。",
+      "footerHint": "完成基础信息后，继续到动作步骤。"
+    },
+    "steps": {
+      "label": "步骤",
+      "description": "按教练观察动作的顺序定义步骤。",
+      "footerHint": "步骤确认后，继续到检查点设置。"
+    },
+    "checkpoints": {
+      "label": "检查点",
+      "description": "为当前步骤添加判定检查点。",
+      "footerHint": "检查点设置完成后，进入校验与导出。"
+    },
+    "review": {
+      "label": "检查",
+      "description": "先校验，再在无错误时导出 JSON。",
+      "footerHint": "如有错误先修复，再导出 JSON。"
+    },
+    "summary": {
+      "steps": "步骤总数",
+      "checkpoints": "检查点总数",
+      "currentStep": "当前编辑"
+    }
+  },
+  "setup": {
+    "handednessTitle": "选择惯用手（教练备注）",
+    "handednessHelp": "用于编辑时统一术语，不会写入导出的 JSON。",
+    "handednessNote": "仅在当前会话中保存。",
+    "rightHanded": "右手/右打选手",
+    "leftHanded": "左手/左打选手"
   },
   "metadata": {
     "sectionTitle": "规则集信息",
+    "help": "填写识别该规则集的基础信息。",
     "ruleSetId": "规则集 ID",
     "sport": "运动项目",
     "ruleVersion": "规则版本",
@@ -27,8 +65,11 @@
   },
   "step": {
     "listTitle": "步骤",
+    "listHelp": "请按动作发生顺序创建步骤。",
     "addButton": "新增步骤",
+    "checkpointCount": "{{count}} 个检查点",
     "editorTitle": "步骤编辑",
+    "editorHelp": "一个步骤就是一个动作阶段（例如：准备、加载、挥棒、收杆）。",
     "emptySelect": "请选择一个步骤进行编辑。",
     "uncategorized": "未分类",
     "fields": {
@@ -36,6 +77,7 @@
       "label": "步骤名称",
       "category": "分类",
       "description": "说明",
+      "jointsHelp": "关节 ID 用逗号分隔，也可点击下方预设。",
       "rangeType": "范围类型",
       "startFrame": "起始帧",
       "endFrame": "结束帧",
@@ -48,24 +90,52 @@
       "frame": "帧范围",
       "event": "事件窗口"
     },
+    "rangeTypeHelp": "新手建议使用帧范围。事件窗口适合高级场景。",
+    "presets": {
+      "head": "头部关注",
+      "arms": "手臂关注",
+      "torso": "躯干关注",
+      "lowerBody": "下肢关注"
+    },
+    "jointGuide": {
+      "head": "头部: 0",
+      "upperBody": "肩/肘/腕: 5-10",
+      "lowerBody": "髋/膝/踝: 11-16"
+    },
     "placeholders": {
       "id": "step1",
       "label": "准备动作",
       "category": "batting",
+      "description": "填写该阶段的目标动作描述。",
       "eventName": "impact",
       "jointsOfInterest": "1, 8, 12"
     }
   },
   "checkpoint": {
     "editorTitle": "检查点编辑",
+    "editorHelp": "检查点 = 这个步骤里要判断什么。",
     "emptySelectStep": "请先选择一个步骤。",
     "emptyNoCheckpoints": "当前没有检查点。",
     "addButton": "新增检查点",
     "removeButton": "删除检查点",
+    "showTechnical": "显示技术字段",
+    "hideTechnical": "隐藏技术字段",
     "enableExpert": "启用高级条件类型",
     "conditionsTitle": "条件",
+    "conditionsHelp": "建议先使用基础条件类型，必要时再启用高级类型。",
     "lockedTitle": "条件 ({{type}})",
     "lockedMessage": "启用高级模式后可编辑该条件类型。",
+    "bodyGuide": {
+      "title": "身体关键点速查",
+      "help": "在条件的 joints / pair 中使用这些 ID。",
+      "head": "头部: 0",
+      "shoulder": "肩: 5, 6",
+      "elbow": "肘: 7, 8",
+      "wrist": "腕: 9, 10",
+      "hip": "髋: 11, 12",
+      "knee": "膝: 13, 14",
+      "ankle": "踝: 15, 16"
+    },
     "fields": {
       "id": "检查点 ID",
       "label": "标签",
@@ -73,6 +143,7 @@
       "severity": "严重级别",
       "description": "说明",
       "signalType": "信号类型",
+      "signalTypeHelp": "选择该检查点的判定时机。",
       "referenceStep": "引用步骤",
       "directStartFrame": "直接范围起始帧",
       "directEndFrame": "直接范围结束帧",
@@ -80,11 +151,16 @@
       "windowPreMs": "前窗口 ms",
       "windowPostMs": "后窗口 ms",
       "defaultPhase": "默认 phase（可选）"
+    },
+    "placeholders": {
+      "description": "描述怎样算好动作/坏动作。"
     }
   },
   "condition": {
     "basicTitle": "条件",
+    "basicHelp": "多数场景下，基础条件类型即可满足需求。",
     "expertTitle": "条件（高级）",
+    "expertHelp": "高级条件适用于复杂指标定义。",
     "addButton": "新增条件",
     "fields": {
       "id": "条件 ID",
@@ -164,6 +240,7 @@
   },
   "validation": {
     "title": "校验",
+    "help": "点击问题可直接跳转到对应步骤/检查点。",
     "summary": {
       "idle": "尚未校验。",
       "pass": "校验通过。",
