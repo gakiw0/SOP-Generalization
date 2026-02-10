@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import type { StepDraft } from '../draftTypes'
-import { parseJointIdsCsv } from '../jointParsing'
+import { formatJointIdsCsv, parseJointIdsCsv } from '../jointParsing'
 import { JointLandmarkDiagram } from './JointLandmarkDiagram'
 
 type StepEditorProps = {
@@ -28,6 +28,9 @@ export function StepEditor({ step, onRename, onUpdate }: StepEditorProps) {
   }
 
   const selectedJointIds = parseJointIdsCsv(step.jointsOfInterest)
+  const handleStepJointSelectionChange = (nextJointIds: number[]) => {
+    onUpdate({ jointsOfInterest: formatJointIdsCsv(nextJointIds) })
+  }
 
   return (
     <section className="cb-panel">
@@ -166,6 +169,7 @@ export function StepEditor({ step, onRename, onUpdate }: StepEditorProps) {
 
       <JointLandmarkDiagram
         selectedJointIds={selectedJointIds}
+        onSelectionChange={handleStepJointSelectionChange}
         titleKey="jointDiagram.stepTitle"
         helpKey="jointDiagram.stepHelp"
         dataTestId="cb-joint-diagram-step"

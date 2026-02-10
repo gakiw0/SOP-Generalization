@@ -70,15 +70,20 @@ test('scenario_4_joint_diagram_step_and_toggle', async ({ page }) => {
   await expect(page.getByTestId('cb-joint-diagram-step')).toBeVisible()
   await expect(page.getByTestId('cb-joint-diagram-checkpoint')).toBeVisible()
 
-  await page.getByTestId('cb-steps-joints-of-interest').fill('1,8,12')
+  const stepLegend = page.locator('[data-testid="cb-joint-diagram-step"] .cb-joint-legend')
+  await stepLegend.locator('[data-point-id="1"]').click()
+  await stepLegend.locator('[data-point-id="8"]').click()
+  await stepLegend.locator('[data-point-id="12"]').click()
+
+  await expect(page.getByTestId('cb-steps-joints-of-interest')).toHaveValue('1, 8, 12')
   await expect(
-    page.locator('[data-testid="cb-joint-diagram-step"] [data-point-id="1"][data-selected="true"]')
+    stepLegend.locator('[data-point-id="1"][data-selected="true"]')
   ).toBeVisible()
   await expect(
-    page.locator('[data-testid="cb-joint-diagram-step"] [data-point-id="8"][data-selected="true"]')
+    stepLegend.locator('[data-point-id="8"][data-selected="true"]')
   ).toBeVisible()
   await expect(
-    page.locator('[data-testid="cb-joint-diagram-step"] [data-point-id="12"][data-selected="true"]')
+    stepLegend.locator('[data-point-id="12"][data-selected="true"]')
   ).toBeVisible()
 
   await page.getByTestId('cb-joint-diagram-toggle').click()
@@ -96,20 +101,29 @@ test('scenario_5_joint_diagram_expert_condition_highlight', async ({ page }) => 
 
   await page.getByTestId('cb-checkpoints-new-condition-type').selectOption('angle')
   await page.getByRole('button', { name: 'Add condition' }).click()
-  await page.getByTestId('cb-condition-angle-joints').fill('1,2,3')
+  const angleJointDiagram = page.getByTestId('cb-joint-diagram-condition').first()
+  const angleLegend = angleJointDiagram.locator('.cb-joint-legend')
+  await angleLegend.locator('[data-point-id="1"]').click()
+  await angleLegend.locator('[data-point-id="2"]').click()
+  await angleLegend.locator('[data-point-id="3"]').click()
+  await expect(page.getByTestId('cb-condition-angle-joints')).toHaveValue('1, 2, 3')
 
   await expect(
-    page.locator('[data-testid="cb-joint-diagram-condition"] [data-point-id="2"][data-selected="true"]').first()
+    angleLegend.locator('[data-point-id="2"][data-selected="true"]')
   ).toBeVisible()
 
   await page.getByTestId('cb-checkpoints-new-condition-type').selectOption('distance')
   await page.getByRole('button', { name: 'Add condition' }).click()
-  await page.getByTestId('cb-condition-distance-pair').fill('11,14')
+  const distanceJointDiagram = page.getByTestId('cb-joint-diagram-condition').nth(1)
+  const distanceLegend = distanceJointDiagram.locator('.cb-joint-legend')
+  await distanceLegend.locator('[data-point-id="11"]').click()
+  await distanceLegend.locator('[data-point-id="14"]').click()
+  await expect(page.getByTestId('cb-condition-distance-pair')).toHaveValue('11, 14')
 
   await expect(
-    page.locator('[data-testid="cb-joint-diagram-condition"] [data-point-id="11"][data-selected="true"]').first()
+    distanceLegend.locator('[data-point-id="11"][data-selected="true"]')
   ).toBeVisible()
   await expect(
-    page.locator('[data-testid="cb-joint-diagram-condition"] [data-point-id="14"][data-selected="true"]').first()
+    distanceLegend.locator('[data-point-id="14"][data-selected="true"]')
   ).toBeVisible()
 })

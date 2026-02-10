@@ -115,6 +115,8 @@
     "show": "図を表示",
     "hide": "図を隠す",
     "svgLabel": "OpenPose 25 関節図",
+    "interactiveHint": "点をクリックして関節IDを選択/解除できます。",
+    "interactiveMaxHint": "点をクリックして関節IDを選択/解除できます（最大{{count}}）。",
     "stepTitle": "このステップの関節マップ",
     "stepHelp": "ハイライトは joints_of_interest の入力値を示します。",
     "checkpointTitle": "このチェックポイントの関節マップ",

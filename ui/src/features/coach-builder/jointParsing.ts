@@ -16,5 +16,8 @@ export const parseJointIdsCsv = (value: string): number[] => {
     uniqueIds.add(jointId)
   })
 
-  return [...uniqueIds]
+  return [...uniqueIds].sort((a, b) => a - b)
 }
+
+export const formatJointIdsCsv = (jointIds: number[]): string =>
+  [...new Set(jointIds)].sort((a, b) => a - b).join(', ')

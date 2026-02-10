@@ -115,6 +115,8 @@
     "show": "显示关节图",
     "hide": "隐藏关节图",
     "svgLabel": "OpenPose 25 关节点示意图",
+    "interactiveHint": "可点击节点进行选择/取消选择。",
+    "interactiveMaxHint": "可点击节点进行选择/取消选择（最多 {{count}} 个）。",
     "stepTitle": "当前步骤关节点图",
     "stepHelp": "高亮点表示 joints_of_interest 中填写的关节 ID。",
     "checkpointTitle": "当前检查点关节点图",

@@ -115,6 +115,8 @@
     "show": "Show diagram",
     "hide": "Hide diagram",
     "svgLabel": "OpenPose 25 body landmark diagram",
+    "interactiveHint": "Click points to select/unselect joints.",
+    "interactiveMaxHint": "Click points to select/unselect joints (max {{count}}).",
     "stepTitle": "Joint map for this step",
     "stepHelp": "Highlighted points reflect joints_of_interest values.",
     "checkpointTitle": "Joint map for this checkpoint",

@@ -461,6 +461,12 @@
   font-size: 0.82rem;
 }
 
+.cb-joint-diagram-note {
+  margin: 0.28rem 0 0;
+  color: var(--ink-500) !important;
+  font-size: 0.74rem !important;
+}
+
 .cb-joint-diagram-layout {
   margin-top: 0.6rem;
   display: grid;
@@ -488,6 +494,10 @@
   fill: #ffffff;
   stroke: #3d5b87;
   stroke-width: 1.7;
+}
+
+.cb-joint-point.is-clickable {
+  cursor: pointer;
 }
 
 .cb-joint-point text {
@@ -528,6 +538,10 @@
   display: flex;
   align-items: center;
   gap: 0.3rem;
+}
+
+.cb-joint-legend li.is-clickable {
+  cursor: pointer;
 }
 
 .cb-joint-legend li.is-selected {

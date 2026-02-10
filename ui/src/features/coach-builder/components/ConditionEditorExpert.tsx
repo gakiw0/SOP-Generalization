@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import type { ConditionDraft } from '../draftTypes'
-import { parseJointIdsCsv } from '../jointParsing'
+import { formatJointIdsCsv, parseJointIdsCsv } from '../jointParsing'
 import { JointLandmarkDiagram } from './JointLandmarkDiagram'
 
 type ExpertConditionType = 'event_exists' | 'trend' | 'angle' | 'distance'
@@ -21,6 +21,14 @@ export function ConditionEditorExpert({ condition, onUpdate, onRemove }: Conditi
       : condition.type === 'distance'
         ? parseJointIdsCsv(condition.pair)
         : []
+
+  const handleAngleJointSelectionChange = (nextJointIds: number[]) => {
+    onUpdate({ joints: formatJointIdsCsv(nextJointIds) })
+  }
+
+  const handleDistancePairSelectionChange = (nextJointIds: number[]) => {
+    onUpdate({ pair: formatJointIdsCsv(nextJointIds) })
+  }
 
   return (
     <article className="cb-condition-card cb-condition-expert">
@@ -196,6 +204,8 @@ export function ConditionEditorExpert({ condition, onUpdate, onRemove }: Conditi
             <div className="cb-full-width">
               <JointLandmarkDiagram
                 selectedJointIds={selectedJointIds}
+                maxSelectable={3}
+                onSelectionChange={handleAngleJointSelectionChange}
                 titleKey="jointDiagram.conditionTitle"
                 helpKey="jointDiagram.conditionHelp"
                 dataTestId="cb-joint-diagram-condition"
@@ -262,6 +272,8 @@ export function ConditionEditorExpert({ condition, onUpdate, onRemove }: Conditi
             <div className="cb-full-width">
               <JointLandmarkDiagram
                 selectedJointIds={selectedJointIds}
+                maxSelectable={2}
+                onSelectionChange={handleDistancePairSelectionChange}
                 titleKey="jointDiagram.conditionTitle"
                 helpKey="jointDiagram.conditionHelp"
                 dataTestId="cb-joint-diagram-condition"
