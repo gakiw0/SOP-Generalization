@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { StepDraft } from '../draftTypes'
 import { formatJointIdsCsv, parseJointIdsCsv } from '../jointParsing'
@@ -14,11 +15,12 @@ type StepEditorProps = {
 
 export function StepEditor({ step, metricCandidates, onRename, onUpdate }: StepEditorProps) {
   const { t } = useTranslation()
+  const [showTechnicalFields, setShowTechnicalFields] = useState(false)
   const jointPresets = [
-    { key: 'head', value: '0' },
-    { key: 'arms', value: '5, 6, 7, 8, 9, 10' },
-    { key: 'torso', value: '5, 6, 11, 12' },
-    { key: 'lowerBody', value: '11, 12, 13, 14, 15, 16' },
+    { key: 'head', value: '0, 1, 15, 16, 17, 18' },
+    { key: 'arms', value: '2, 3, 4, 5, 6, 7' },
+    { key: 'torso', value: '1, 2, 5, 8, 9, 12' },
+    { key: 'lowerBody', value: '9, 10, 11, 12, 13, 14, 19, 20, 21, 22, 23, 24' },
   ]
 
   if (!step) {
@@ -45,18 +47,29 @@ export function StepEditor({ step, metricCandidates, onRename, onUpdate }: StepE
 
       <div className="cb-editor-sections">
         <section className="cb-editor-block">
-          <h3>{t('step.fields.label')}</h3>
+          <div className="cb-editor-block-header">
+            <h3>{t('step.fields.label')}</h3>
+            <button
+              type="button"
+              onClick={() => setShowTechnicalFields((value) => !value)}
+              data-testid="cb-steps-toggle-advanced"
+            >
+              {showTechnicalFields ? t('common.hideAdvanced') : t('common.showAdvanced')}
+            </button>
+          </div>
           <div className="cb-field-grid">
-            <label>
-              {t('step.fields.id')}
-              <input
-                type="text"
-                value={step.id}
-                data-testid="cb-steps-id"
-                onChange={(event) => onRename(event.target.value)}
-                placeholder={t('step.placeholders.id')}
-              />
-            </label>
+            {showTechnicalFields ? (
+              <label>
+                {t('step.fields.id')}
+                <input
+                  type="text"
+                  value={step.id}
+                  data-testid="cb-steps-id"
+                  onChange={(event) => onRename(event.target.value)}
+                  placeholder={t('step.placeholders.id')}
+                />
+              </label>
+            ) : null}
 
             <label>
               {t('step.fields.label')}

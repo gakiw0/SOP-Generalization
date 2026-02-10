@@ -10,7 +10,9 @@
     "exportJson": "匯出 JSON",
     "validate": "驗證",
     "language": "語言",
-    "none": "無"
+    "none": "無",
+    "showAdvanced": "顯示進階欄位",
+    "hideAdvanced": "隱藏進階欄位"
   },
   "language": {
     "ja": "日本語",

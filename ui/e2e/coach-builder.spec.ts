@@ -16,6 +16,7 @@ test('scenario_1_setup_gate', async ({ page }) => {
   await setEnglishLocale(page)
   await page.goto('/')
 
+  await page.getByTestId('cb-setup-toggle-advanced').click()
   await page.getByTestId('cb-setup-rule-set-id').fill('')
   await page.getByTestId('cb-setup-sport').fill('')
   await page.getByTestId('cb-setup-sport-version').fill('')

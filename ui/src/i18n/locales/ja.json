@@ -10,7 +10,9 @@
     "exportJson": "JSONを書き出す",
     "validate": "検証",
     "language": "言語",
-    "none": "なし"
+    "none": "なし",
+    "showAdvanced": "上級項目を表示",
+    "hideAdvanced": "上級項目を隠す"
   },
   "language": {
     "ja": "日本語",

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { ConditionDraft } from '../draftTypes'
 import { formatJointIdsCsv, parseJointIdsCsv } from '../jointParsing'
@@ -25,6 +26,7 @@ export function ConditionEditorExpert({
   onRemove,
 }: ConditionEditorExpertProps) {
   const { t } = useTranslation()
+  const [showTechnicalFields, setShowTechnicalFields] = useState(false)
   const expertTypes =
     supportedTypes && supportedTypes.length > 0 ? supportedTypes : EXPERT_TYPES
   const metrics =
@@ -60,16 +62,27 @@ export function ConditionEditorExpert({
         </button>
       </div>
       <p className="cb-card-help-text">{t('condition.expertHelp')}</p>
+      <div className="cb-inline-actions cb-condition-technical-toggle">
+        <button
+          type="button"
+          onClick={() => setShowTechnicalFields((value) => !value)}
+          data-testid="cb-condition-toggle-advanced"
+        >
+          {showTechnicalFields ? t('common.hideAdvanced') : t('common.showAdvanced')}
+        </button>
+      </div>
 
       <div className="cb-field-grid cb-condition-grid">
-        <label>
-          {t('condition.fields.id')}
-          <input
-            type="text"
-            value={condition.id}
-            onChange={(event) => onUpdate({ id: event.target.value })}
-          />
-        </label>
+        {showTechnicalFields ? (
+          <label>
+            {t('condition.fields.id')}
+            <input
+              type="text"
+              value={condition.id}
+              onChange={(event) => onUpdate({ id: event.target.value })}
+            />
+          </label>
+        ) : null}
 
         <label>
           {t('condition.fields.type')}

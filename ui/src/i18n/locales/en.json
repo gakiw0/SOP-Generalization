@@ -10,7 +10,9 @@
     "exportJson": "Export JSON",
     "validate": "Validate",
     "language": "Language",
-    "none": "None"
+    "none": "None",
+    "showAdvanced": "Show advanced fields",
+    "hideAdvanced": "Hide advanced fields"
   },
   "language": {
     "ja": "日本語",

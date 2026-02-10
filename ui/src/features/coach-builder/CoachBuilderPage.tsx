@@ -54,6 +54,7 @@ export function CoachBuilderPage() {
   const [statusMessage, setStatusMessage] = useState<StatusMessage | null>(null)
   const [hasValidated, setHasValidated] = useState(false)
   const [workflowStage, setWorkflowStage] = useState<WorkflowStage>('setup')
+  const [showSetupAdvanced, setShowSetupAdvanced] = useState(false)
   const [importedSchemaMajor, setImportedSchemaMajor] = useState<number | null>(null)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const suppressValidationResetRef = useRef(false)
@@ -406,17 +407,6 @@ export function CoachBuilderPage() {
                 <p className="cb-card-help-text">{t('workflow.setup.description')}</p>
                 <div className="cb-field-grid">
                   <label>
-                    {t('metadata.ruleSetId')}
-                    <input
-                      type="text"
-                      value={state.draft.metadata.ruleSetId}
-                      data-testid="cb-setup-rule-set-id"
-                      onChange={(event) =>
-                        dispatch({ type: 'meta/set', field: 'ruleSetId', value: event.target.value })
-                      }
-                    />
-                  </label>
-                  <label>
                     {t('metadata.title')}
                     <input
                       type="text"
@@ -449,6 +439,28 @@ export function CoachBuilderPage() {
                       }
                     />
                   </label>
+                  <label className="cb-full-width cb-advanced-toggle-row">
+                    <button
+                      type="button"
+                      onClick={() => setShowSetupAdvanced((value) => !value)}
+                      data-testid="cb-setup-toggle-advanced"
+                    >
+                      {showSetupAdvanced ? t('common.hideAdvanced') : t('common.showAdvanced')}
+                    </button>
+                  </label>
+                  {showSetupAdvanced ? (
+                    <label>
+                      {t('metadata.ruleSetId')}
+                      <input
+                        type="text"
+                        value={state.draft.metadata.ruleSetId}
+                        data-testid="cb-setup-rule-set-id"
+                        onChange={(event) =>
+                          dispatch({ type: 'meta/set', field: 'ruleSetId', value: event.target.value })
+                        }
+                      />
+                    </label>
+                  ) : null}
                 </div>
               </section>
 

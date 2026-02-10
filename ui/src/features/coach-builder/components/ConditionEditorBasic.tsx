@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { BasicConditionType, ConditionDraft } from '../draftTypes'
 import { getMetricCatalogEntry } from '../metricCatalog'
@@ -23,6 +24,7 @@ export function ConditionEditorBasic({
   onRemove,
 }: ConditionEditorBasicProps) {
   const { t } = useTranslation()
+  const [showTechnicalFields, setShowTechnicalFields] = useState(false)
   const availableRefIds = allConditionIds.filter((id) => id !== condition.id)
   const selectableRefIds = Array.from(
     new Set([
@@ -50,16 +52,27 @@ export function ConditionEditorBasic({
         </button>
       </div>
       <p className="cb-card-help-text">{t('condition.basicHelp')}</p>
+      <div className="cb-inline-actions cb-condition-technical-toggle">
+        <button
+          type="button"
+          onClick={() => setShowTechnicalFields((value) => !value)}
+          data-testid="cb-condition-toggle-advanced"
+        >
+          {showTechnicalFields ? t('common.hideAdvanced') : t('common.showAdvanced')}
+        </button>
+      </div>
 
       <div className="cb-field-grid cb-condition-grid">
-        <label>
-          {t('condition.fields.id')}
-          <input
-            type="text"
-            value={condition.id}
-            onChange={(event) => onUpdate({ id: event.target.value })}
-          />
-        </label>
+        {showTechnicalFields ? (
+          <label>
+            {t('condition.fields.id')}
+            <input
+              type="text"
+              value={condition.id}
+              onChange={(event) => onUpdate({ id: event.target.value })}
+            />
+          </label>
+        ) : null}
 
         <label>
           {t('condition.fields.type')}
