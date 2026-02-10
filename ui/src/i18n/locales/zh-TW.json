@@ -343,6 +343,7 @@
     }
   },
   "import": {
+    "v1_badge": "已匯入 v1：目前草稿將以 schema v2 匯出。",
     "success": "匯入成功：已從 schema v1 JSON 載入草稿。",
     "validation_failed": "匯入失敗：找到 {{count}} 個驗證問題。",
     "invalid_json": "匯入失敗：JSON 檔案格式錯誤。",

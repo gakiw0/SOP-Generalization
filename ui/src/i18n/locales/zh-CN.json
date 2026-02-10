@@ -343,6 +343,7 @@
     }
   },
   "import": {
+    "v1_badge": "已导入 v1：当前草稿将按 schema v2 导出。",
     "success": "导入成功：已从 schema v1 JSON 加载草稿。",
     "validation_failed": "导入失败：发现 {{count}} 个校验问题。",
     "invalid_json": "导入失败：JSON 文件格式错误。",

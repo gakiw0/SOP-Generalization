@@ -399,7 +399,7 @@ export const toRuleSetSchemaV2 = (draft: CoachDraft): RuleSetV2 => {
   const metadata = draft.metadata
 
   return {
-    schema_version: metadata.schemaVersion || '2.0.0',
+    schema_version: '2.0.0',
     rule_set_id: metadata.ruleSetId,
     metric_profile: {
       id: metadata.metricProfileId || 'generic_core',

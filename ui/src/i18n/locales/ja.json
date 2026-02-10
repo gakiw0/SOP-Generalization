@@ -343,6 +343,7 @@
     }
   },
   "import": {
+    "v1_badge": "v1 読み込みモード: この下書きは schema v2 として書き出されます。",
     "success": "インポート成功: schema v1 JSON から下書きを読み込みました。",
     "validation_failed": "インポート失敗: 検証エラーが {{count}} 件あります。",
     "invalid_json": "インポート失敗: JSON形式が不正です。",

@@ -8,7 +8,7 @@ import {
 import { getProfileCapability } from './capabilities'
 import { downloadRuleSetJson } from './export'
 import { importDraftFromFile, type ImportMessageKey } from './import'
-import { toRuleSetSchemaV1 } from './mappers'
+import { toRuleSetForExport } from './mappers'
 import { coachDraftReducer } from './reducer'
 import type { ValidationError } from './schemaTypes'
 import { validateRuleSet } from './validation'
@@ -53,6 +53,7 @@ export function CoachBuilderPage() {
   const [statusMessage, setStatusMessage] = useState<StatusMessage | null>(null)
   const [hasValidated, setHasValidated] = useState(false)
   const [workflowStage, setWorkflowStage] = useState<WorkflowStage>('setup')
+  const [importedSchemaMajor, setImportedSchemaMajor] = useState<number | null>(null)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const suppressValidationResetRef = useRef(false)
 
@@ -123,7 +124,7 @@ export function CoachBuilderPage() {
   }, [state.draft])
 
   const runValidation = () => {
-    const ruleSet = toRuleSetSchemaV1(normalizeDraftForExport(state.draft))
+    const ruleSet = toRuleSetForExport(normalizeDraftForExport(state.draft))
     const errors = validateRuleSet(ruleSet, activeCapability)
     setValidationErrors(errors)
     setValidationStatus(errors.length === 0 ? 'pass' : 'fail')
@@ -137,7 +138,7 @@ export function CoachBuilderPage() {
     if (errors.length > 0) return
 
     const normalizedDraft = normalizeDraftForExport(state.draft)
-    const ruleSet = toRuleSetSchemaV1(normalizedDraft)
+    const ruleSet = toRuleSetForExport(normalizedDraft)
     const fileName = normalizedDraft.metadata.ruleSetId || 'rule_set'
     downloadRuleSetJson(ruleSet, fileName)
   }
@@ -156,9 +157,10 @@ export function CoachBuilderPage() {
       setValidationStatus(imported.errors.length === 0 ? 'pass' : 'fail')
       setStatusMessage({ key: imported.messageKey, params: imported.messageParams })
       setHasValidated(true)
+      setImportedSchemaMajor(imported.sourceSchemaMajor ?? null)
 
       if (imported.draft) {
-        const importedRuleSet = toRuleSetSchemaV1(normalizeDraftForExport(imported.draft))
+        const importedRuleSet = toRuleSetForExport(normalizeDraftForExport(imported.draft))
         const importedCapability = getProfileCapability(
           imported.draft.metadata.metricProfileId.trim()
         )
@@ -247,12 +249,22 @@ export function CoachBuilderPage() {
             <button type="button" onClick={handleImportClick} data-testid="cb-header-import">
               {t('common.importJson')}
             </button>
-            <button type="button" onClick={() => dispatch({ type: 'draft/reset' })} data-testid="cb-header-reset">
+            <button
+              type="button"
+              onClick={() => {
+                setImportedSchemaMajor(null)
+                dispatch({ type: 'draft/reset' })
+              }}
+              data-testid="cb-header-reset"
+            >
               {t('common.reset')}
             </button>
           </div>
         </div>
         <p>{t('page.subtitle')}</p>
+        {importedSchemaMajor === 1 ? (
+          <p className="cb-status-text">{t('import.v1_badge')}</p>
+        ) : null}
         {statusMessage ? <p className="cb-status-text">{t(statusMessage.key, statusMessage.params)}</p> : null}
         <input
           ref={fileInputRef}

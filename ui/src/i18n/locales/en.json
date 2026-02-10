@@ -343,6 +343,7 @@
     }
   },
   "import": {
+    "v1_badge": "Imported v1 mode: this draft will be exported as schema v2.",
     "success": "Import successful. Draft loaded from schema v1 JSON.",
     "validation_failed": "Import failed. {{count}} validation issue(s) found.",
     "invalid_json": "Import failed. The JSON file is malformed.",
