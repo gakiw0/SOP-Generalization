@@ -1,0 +1,64 @@
+{
+  "version": 1,
+  "metric_space": "core_v1",
+  "keypoints_format": "openpose25",
+  "metrics": [
+    {
+      "id": "cg_z_delta_mean",
+      "label": "Center of gravity Z delta (mean)",
+      "unit": "ratio",
+      "value_kind": "scalar",
+      "supported_condition_types": ["threshold", "range", "boolean"],
+      "description": "Mean absolute difference ratio of center-of-gravity Z between student and coach."
+    },
+    {
+      "id": "cg_z_delta_series",
+      "label": "Center of gravity Z delta (series)",
+      "unit": "ratio",
+      "value_kind": "series",
+      "supported_condition_types": ["trend"]
+    },
+    {
+      "id": "head_displacement_delta_mean",
+      "label": "Head displacement delta (mean)",
+      "unit": "ratio",
+      "value_kind": "scalar",
+      "supported_condition_types": ["threshold", "range", "boolean"]
+    },
+    {
+      "id": "head_displacement_delta_series",
+      "label": "Head displacement delta (series)",
+      "unit": "ratio",
+      "value_kind": "series",
+      "supported_condition_types": ["trend"]
+    },
+    {
+      "id": "shoulder_tilt_delta_mean",
+      "label": "Shoulder tilt delta (mean)",
+      "unit": "degrees",
+      "value_kind": "scalar",
+      "supported_condition_types": ["threshold", "range", "boolean"]
+    },
+    {
+      "id": "hip_yaw_delta_mean",
+      "label": "Hip yaw delta (mean)",
+      "unit": "degrees",
+      "value_kind": "scalar",
+      "supported_condition_types": ["threshold", "range", "boolean"]
+    },
+    {
+      "id": "root_speed_delta_mean",
+      "label": "Root speed delta (mean)",
+      "unit": "units/frame",
+      "value_kind": "scalar",
+      "supported_condition_types": ["threshold", "range", "boolean"]
+    },
+    {
+      "id": "root_speed_delta_series",
+      "label": "Root speed delta (series)",
+      "unit": "units/frame",
+      "value_kind": "series",
+      "supported_condition_types": ["trend"]
+    }
+  ]
+}
