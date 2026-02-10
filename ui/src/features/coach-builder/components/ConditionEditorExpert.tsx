@@ -1,5 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import type { ConditionDraft } from '../draftTypes'
+import { parseJointIdsCsv } from '../jointParsing'
+import { JointLandmarkDiagram } from './JointLandmarkDiagram'
 
 type ExpertConditionType = 'event_exists' | 'trend' | 'angle' | 'distance'
 
@@ -13,6 +15,12 @@ type ConditionEditorExpertProps = {
 
 export function ConditionEditorExpert({ condition, onUpdate, onRemove }: ConditionEditorExpertProps) {
   const { t } = useTranslation()
+  const selectedJointIds =
+    condition.type === 'angle'
+      ? parseJointIdsCsv(condition.joints)
+      : condition.type === 'distance'
+        ? parseJointIdsCsv(condition.pair)
+        : []
 
   return (
     <article className="cb-condition-card cb-condition-expert">
@@ -136,6 +144,7 @@ export function ConditionEditorExpert({ condition, onUpdate, onRemove }: Conditi
               <input
                 type="text"
                 value={condition.joints}
+                data-testid="cb-condition-angle-joints"
                 onChange={(event) => onUpdate({ joints: event.target.value })}
                 placeholder={t('condition.placeholders.joints')}
               />
@@ -183,6 +192,15 @@ export function ConditionEditorExpert({ condition, onUpdate, onRemove }: Conditi
                 onChange={(event) => onUpdate({ tolerance: event.target.value })}
               />
             </label>
+
+            <div className="cb-full-width">
+              <JointLandmarkDiagram
+                selectedJointIds={selectedJointIds}
+                titleKey="jointDiagram.conditionTitle"
+                helpKey="jointDiagram.conditionHelp"
+                dataTestId="cb-joint-diagram-condition"
+              />
+            </div>
           </>
         )}
 
@@ -193,6 +211,7 @@ export function ConditionEditorExpert({ condition, onUpdate, onRemove }: Conditi
               <input
                 type="text"
                 value={condition.pair}
+                data-testid="cb-condition-distance-pair"
                 onChange={(event) => onUpdate({ pair: event.target.value })}
                 placeholder={t('condition.placeholders.pair')}
               />
@@ -239,6 +258,15 @@ export function ConditionEditorExpert({ condition, onUpdate, onRemove }: Conditi
                 onChange={(event) => onUpdate({ tolerance: event.target.value })}
               />
             </label>
+
+            <div className="cb-full-width">
+              <JointLandmarkDiagram
+                selectedJointIds={selectedJointIds}
+                titleKey="jointDiagram.conditionTitle"
+                helpKey="jointDiagram.conditionHelp"
+                dataTestId="cb-joint-diagram-condition"
+              />
+            </div>
           </>
         )}
       </div>

@@ -7,8 +7,10 @@ import {
   type ConditionType,
   type StepDraft,
 } from '../draftTypes'
+import { parseJointIdsCsv } from '../jointParsing'
 import { ConditionEditorBasic } from './ConditionEditorBasic'
 import { ConditionEditorExpert } from './ConditionEditorExpert'
+import { JointLandmarkDiagram } from './JointLandmarkDiagram'
 
 type CheckpointEditorProps = {
   step: StepDraft | null
@@ -63,6 +65,20 @@ export function CheckpointEditor({
     step.checkpoints.find((checkpoint) => checkpoint.id === selectedCheckpointId) ?? step.checkpoints[0] ?? null
 
   const allowedTypes = expertEnabled ? [...BASIC_TYPES, ...EXPERT_TYPES] : [...BASIC_TYPES]
+  const highlightedJointIds: number[] = []
+  if (selectedCheckpoint) {
+    const jointSet = new Set<number>()
+    selectedCheckpoint.conditions.forEach((condition) => {
+      const nextIds =
+        condition.type === 'angle'
+          ? parseJointIdsCsv(condition.joints)
+          : condition.type === 'distance'
+            ? parseJointIdsCsv(condition.pair)
+            : []
+      nextIds.forEach((jointId) => jointSet.add(jointId))
+    })
+    highlightedJointIds.push(...jointSet)
+  }
 
   if (!selectedCheckpoint) {
     return (
@@ -297,19 +313,12 @@ export function CheckpointEditor({
         )}
       </div>
 
-      <div className="cb-body-guide">
-        <h3>{t('checkpoint.bodyGuide.title')}</h3>
-        <p>{t('checkpoint.bodyGuide.help')}</p>
-        <div className="cb-body-guide-grid">
-          <span>{t('checkpoint.bodyGuide.head')}</span>
-          <span>{t('checkpoint.bodyGuide.shoulder')}</span>
-          <span>{t('checkpoint.bodyGuide.elbow')}</span>
-          <span>{t('checkpoint.bodyGuide.wrist')}</span>
-          <span>{t('checkpoint.bodyGuide.hip')}</span>
-          <span>{t('checkpoint.bodyGuide.knee')}</span>
-          <span>{t('checkpoint.bodyGuide.ankle')}</span>
-        </div>
-      </div>
+      <JointLandmarkDiagram
+        selectedJointIds={highlightedJointIds}
+        titleKey="jointDiagram.checkpointTitle"
+        helpKey="jointDiagram.checkpointHelp"
+        dataTestId="cb-joint-diagram-checkpoint"
+      />
 
       <div className="cb-inline-actions">
         <label className="cb-checkbox-label">
@@ -339,6 +348,7 @@ export function CheckpointEditor({
           <div className="cb-add-condition-row">
             <select
               value={newConditionType}
+              data-testid="cb-checkpoints-new-condition-type"
               onChange={(event) => setNewConditionType(event.target.value as ConditionType)}
             >
               {allowedTypes.map((type) => (

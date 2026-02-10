@@ -61,3 +61,55 @@ test('scenario_3_export_guard', async ({ page }) => {
   await page.getByTestId('cb-review-validate').click()
   await expect(page.getByTestId('cb-review-export')).toBeEnabled()
 })
+
+test('scenario_4_joint_diagram_step_and_toggle', async ({ page }) => {
+  await setEnglishLocale(page)
+  await page.goto('/')
+  await page.getByTestId('cb-nav-continue').click()
+
+  await expect(page.getByTestId('cb-joint-diagram-step')).toBeVisible()
+  await expect(page.getByTestId('cb-joint-diagram-checkpoint')).toBeVisible()
+
+  await page.getByTestId('cb-steps-joints-of-interest').fill('1,8,12')
+  await expect(
+    page.locator('[data-testid="cb-joint-diagram-step"] [data-point-id="1"][data-selected="true"]')
+  ).toBeVisible()
+  await expect(
+    page.locator('[data-testid="cb-joint-diagram-step"] [data-point-id="8"][data-selected="true"]')
+  ).toBeVisible()
+  await expect(
+    page.locator('[data-testid="cb-joint-diagram-step"] [data-point-id="12"][data-selected="true"]')
+  ).toBeVisible()
+
+  await page.getByTestId('cb-joint-diagram-toggle').click()
+  await expect(page.locator('[data-testid="cb-joint-diagram-step"] svg')).toHaveCount(0)
+  await page.getByTestId('cb-joint-diagram-toggle').click()
+  await expect(page.locator('[data-testid="cb-joint-diagram-step"] svg')).toHaveCount(1)
+})
+
+test('scenario_5_joint_diagram_expert_condition_highlight', async ({ page }) => {
+  await setEnglishLocale(page)
+  await page.goto('/')
+  await page.getByTestId('cb-nav-continue').click()
+
+  await page.getByLabel('Enable expert condition types').check()
+
+  await page.getByTestId('cb-checkpoints-new-condition-type').selectOption('angle')
+  await page.getByRole('button', { name: 'Add condition' }).click()
+  await page.getByTestId('cb-condition-angle-joints').fill('1,2,3')
+
+  await expect(
+    page.locator('[data-testid="cb-joint-diagram-condition"] [data-point-id="2"][data-selected="true"]').first()
+  ).toBeVisible()
+
+  await page.getByTestId('cb-checkpoints-new-condition-type').selectOption('distance')
+  await page.getByRole('button', { name: 'Add condition' }).click()
+  await page.getByTestId('cb-condition-distance-pair').fill('11,14')
+
+  await expect(
+    page.locator('[data-testid="cb-joint-diagram-condition"] [data-point-id="11"][data-selected="true"]').first()
+  ).toBeVisible()
+  await expect(
+    page.locator('[data-testid="cb-joint-diagram-condition"] [data-point-id="14"][data-selected="true"]').first()
+  ).toBeVisible()
+})

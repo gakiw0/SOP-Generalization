@@ -1,5 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import type { StepDraft } from '../draftTypes'
+import { parseJointIdsCsv } from '../jointParsing'
+import { JointLandmarkDiagram } from './JointLandmarkDiagram'
 
 type StepEditorProps = {
   step: StepDraft | null
@@ -24,6 +26,8 @@ export function StepEditor({ step, onRename, onUpdate }: StepEditorProps) {
       </section>
     )
   }
+
+  const selectedJointIds = parseJointIdsCsv(step.jointsOfInterest)
 
   return (
     <section className="cb-panel">
@@ -140,6 +144,7 @@ export function StepEditor({ step, onRename, onUpdate }: StepEditorProps) {
           <input
             type="text"
             value={step.jointsOfInterest}
+            data-testid="cb-steps-joints-of-interest"
             onChange={(event) => onUpdate({ jointsOfInterest: event.target.value })}
             placeholder={t('step.placeholders.jointsOfInterest')}
           />
@@ -156,13 +161,16 @@ export function StepEditor({ step, onRename, onUpdate }: StepEditorProps) {
               </button>
             ))}
           </div>
-          <div className="cb-joint-map">
-            <span>{t('step.jointGuide.head')}</span>
-            <span>{t('step.jointGuide.upperBody')}</span>
-            <span>{t('step.jointGuide.lowerBody')}</span>
-          </div>
         </label>
       </div>
+
+      <JointLandmarkDiagram
+        selectedJointIds={selectedJointIds}
+        titleKey="jointDiagram.stepTitle"
+        helpKey="jointDiagram.stepHelp"
+        dataTestId="cb-joint-diagram-step"
+        toggleTestId="cb-joint-diagram-toggle"
+      />
     </section>
   )
 }
