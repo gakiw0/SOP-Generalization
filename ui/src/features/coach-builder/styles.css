@@ -831,11 +831,21 @@
 
 .cb-joint-point.is-clickable {
   cursor: pointer;
-  transition: transform 120ms ease;
+  transition: filter 120ms ease;
+}
+
+.cb-joint-point.is-clickable:focus,
+.cb-joint-point.is-clickable:focus-visible {
+  outline: none;
 }
 
 .cb-joint-point.is-clickable:hover {
-  transform: scale(1.02);
+  filter: drop-shadow(0 2px 5px rgba(23, 56, 95, 0.22));
+}
+
+.cb-joint-point.is-clickable:hover circle {
+  stroke: #204f82;
+  stroke-width: 2.2;
 }
 
 .cb-joint-point.is-clickable:focus-visible circle {
