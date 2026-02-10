@@ -1,5 +1,116 @@
 {
-  "version": 1,
+  "version": 2,
+  "default_profile_id": "generic_core",
+  "metric_catalog": {
+    "id": "core_metric_catalog_v1",
+    "metric_space": "core_v1",
+    "available_metric_ids": [
+      "cg_z_delta_mean",
+      "cg_z_delta_series",
+      "head_displacement_delta_mean",
+      "head_displacement_delta_series",
+      "hip_yaw_delta_mean",
+      "root_speed_delta_mean",
+      "root_speed_delta_series",
+      "shoulder_tilt_delta_mean"
+    ]
+  },
+  "profiles": {
+    "baseball": {
+      "id": "baseball",
+      "plugin": "baseball",
+      "type": "preset",
+      "preset_id": "baseball_starter",
+      "metric_space": "core_v1",
+      "supported_condition_types": [
+        "boolean",
+        "composite",
+        "range",
+        "threshold"
+      ],
+      "metrics_by_phase": {
+        "step1": [
+          "cg_z_avg_ratio_or_flag",
+          "stance_angle_diff_ratio"
+        ],
+        "step2": [
+          "cg_z_end_ratio_or_flag",
+          "head_move_diff_ratio",
+          "shoulder_xz_angle_diff_ratio",
+          "stride_z_class"
+        ],
+        "step3": [
+          "cg_z_end_diff_class",
+          "shoulder_height_diff_class"
+        ],
+        "step4": [
+          "cg_z_std_diff_ratio",
+          "hip_yaw_angle_diff_ratio_or_clamp"
+        ]
+      },
+      "available_metric_ids": [
+        "cg_z_avg_ratio_or_flag",
+        "cg_z_delta_mean",
+        "cg_z_delta_series",
+        "cg_z_end_diff_class",
+        "cg_z_end_ratio_or_flag",
+        "cg_z_std_diff_ratio",
+        "head_displacement_delta_mean",
+        "head_displacement_delta_series",
+        "head_move_diff_ratio",
+        "hip_yaw_angle_diff_ratio_or_clamp",
+        "hip_yaw_delta_mean",
+        "root_speed_delta_mean",
+        "root_speed_delta_series",
+        "shoulder_height_diff_class",
+        "shoulder_tilt_delta_mean",
+        "shoulder_xz_angle_diff_ratio",
+        "stance_angle_diff_ratio",
+        "stride_z_class"
+      ],
+      "metric_catalog_ref": "core_metric_catalog_v1"
+    },
+    "generic_core": {
+      "id": "generic_core",
+      "plugin": "generic_core",
+      "type": "generic",
+      "preset_id": null,
+      "metric_space": "core_v1",
+      "supported_condition_types": [
+        "angle",
+        "boolean",
+        "composite",
+        "distance",
+        "event_exists",
+        "range",
+        "threshold",
+        "trend"
+      ],
+      "metrics_by_phase": {
+        "*": [
+          "cg_z_delta_mean",
+          "cg_z_delta_series",
+          "head_displacement_delta_mean",
+          "head_displacement_delta_series",
+          "hip_yaw_delta_mean",
+          "root_speed_delta_mean",
+          "root_speed_delta_series",
+          "shoulder_tilt_delta_mean"
+        ]
+      },
+      "available_metric_ids": [
+        "cg_z_delta_mean",
+        "cg_z_delta_series",
+        "head_displacement_delta_mean",
+        "head_displacement_delta_series",
+        "hip_yaw_delta_mean",
+        "root_speed_delta_mean",
+        "root_speed_delta_series",
+        "shoulder_tilt_delta_mean"
+      ],
+      "metric_catalog_ref": "core_metric_catalog_v1"
+    }
+  },
   "plugins": {
     "baseball": {
       "supported_condition_types": [
@@ -39,6 +150,40 @@
         "shoulder_xz_angle_diff_ratio",
         "stance_angle_diff_ratio",
         "stride_z_class"
+      ]
+    },
+    "generic_core": {
+      "supported_condition_types": [
+        "angle",
+        "boolean",
+        "composite",
+        "distance",
+        "event_exists",
+        "range",
+        "threshold",
+        "trend"
+      ],
+      "metrics_by_phase": {
+        "*": [
+          "cg_z_delta_mean",
+          "cg_z_delta_series",
+          "head_displacement_delta_mean",
+          "head_displacement_delta_series",
+          "hip_yaw_delta_mean",
+          "root_speed_delta_mean",
+          "root_speed_delta_series",
+          "shoulder_tilt_delta_mean"
+        ]
+      },
+      "all_metrics": [
+        "cg_z_delta_mean",
+        "cg_z_delta_series",
+        "head_displacement_delta_mean",
+        "head_displacement_delta_series",
+        "hip_yaw_delta_mean",
+        "root_speed_delta_mean",
+        "root_speed_delta_series",
+        "shoulder_tilt_delta_mean"
       ]
     }
   }
