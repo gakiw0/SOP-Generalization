@@ -1,20 +1,22 @@
 # Coach JSON Builder (UI)
 
-This UI is a coach-friendly editor for creating `schema v1` rule-set JSON files used by the comparison system.
+This UI is a coach-friendly editor for creating rule-set JSON used by the comparison system.
 
 ## What This Page Does
 - Uses **step / checkpoint** language instead of raw schema terms.
-- Produces JSON compatible with: `Engine/configs/rules/schema/v1.json`.
+- Export default: `schema v2` (`Engine/configs/rules/schema/v2.json`).
+- Backward compatibility: can import legacy `schema v1` and continue editing.
 - Assumes a **1v1 comparison flow** (one player vs one coach) for this MVP.
 - Supports:
   - Metadata editing
+  - Metric profile-first setup (`generic_core` default)
   - Step (phase) editing
   - Checkpoint (rule) editing
   - Runtime-supported condition types (capability-driven)
   - Metric selection from runtime capability candidates
   - Validation with error navigation
-  - Import existing schema v1 JSON
-  - Export validated JSON
+  - Import existing schema v1/v2 JSON
+  - Export validated schema v2 JSON
   - Multi-language UI (`ja`, `en`, `zh-CN`, `zh-TW`)
 
 ## Runtime Capability Source
@@ -26,11 +28,27 @@ This UI is a coach-friendly editor for creating `schema v1` rule-set JSON files 
 - Generated UI data:
   - `ui/src/generated/pluginCapabilities.json`
 
-For current built-in `baseball` plugin, runtime-supported condition types are:
+Capabilities are resolved by **metric profile** (not sport text).
+
+For current built-in profiles:
+- `generic_core`: supports all condition types (`threshold/range/boolean/event_exists/composite/trend/angle/distance`)
+- `baseball` preset profile: supports legacy parity subset (`threshold/range/boolean/composite`)
+
+For the current built-in `baseball` plugin, runtime-supported condition types are:
 - `threshold`
 - `range`
 - `boolean`
 - `composite`
+
+## Schema v1/v2 Coexistence
+- Existing v1 runtime/CLI behavior is kept for compatibility.
+- New authoring flow in UI exports v2 by default.
+- Importing v1 in UI shows a compatibility badge and exports as v2 after editing.
+
+Migration CLI:
+```bash
+python Engine/scripts/migrate_ruleset_v1_to_v2.py Engine/configs/rules/baseball_swing_v1.json
+```
 
 ## Run
 ```bash
@@ -102,7 +120,7 @@ Artifacts on failure:
 - Locale-dependent text should not be used as the primary selector in tests.
 
 ## Workflow
-1. Fill metadata (`rule_set_id`, sport, version, title).
+1. Fill metadata (`rule_set_id`, metric profile, optional sport tag/version, title).
 2. Add/edit steps.
 3. Add/edit checkpoints inside each step.
 4. Add conditions.
@@ -146,5 +164,5 @@ Export is disabled when any validation error remains, including capability error
 - Signal and condition sections map directly to schema fields.
 
 ## Notes
-- Dominant hand is intentionally not included in exported JSON because it is not part of schema v1.
+- Dominant hand is intentionally not included in exported JSON because it is not part of schema.
 - Capability-restricted condition types are intentionally blocked or locked in UI to match runtime behavior.

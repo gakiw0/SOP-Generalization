@@ -1,5 +1,14 @@
-﻿# エンジン汎用化（他スポーツ対応）実装計画
+# エンジン汎用化（他スポーツ対応）実装計画
 
+## 2026-02 実装更新（Generic 1v1）
+- schema v2 を追加し、metric_profile をランタイム解決の起点に変更
+- schema v1 は互換運用として維持（validator/runnerで併存）
+- generic_core plugin を追加し、scalar + series メトリクスを提供
+- evaluator は8条件タイプ（threshold/range/boolean/event_exists/composite/trend/angle/distance）を実行可能化
+- capability export は profile ベース（ui/src/generated/pluginCapabilities.json）へ更新
+- v1→v2移行スクリプト: Engine/scripts/migrate_ruleset_v1_to_v2.py
+
+---
 ## 目的（この計画のスコープ）
 - 「野球以外のスポーツにも同じエンジン構造で適用できる」状態に近づける
 - 競技ごとの違いは **rule-set（JSON）** と **plugin（メトリクス計算）** の差し替えで吸収できること
@@ -124,3 +133,4 @@
 ## 完了判定（Definition of Done）
 - 新規スポーツ（例: tennis）の rule-set + plugin を追加して、runner/engine/evaluatorの改修無しで実行できる
 - 既存の野球 rule-set（`baseball_swing_v1.json`）が同じ結果を出す（少なくとも形式と主要スコアが変わらない）
+

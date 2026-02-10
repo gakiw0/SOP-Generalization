@@ -1,5 +1,13 @@
-﻿# スコアリングJSON作成UI（React）: 実装計画（JSON作成に絞る）
+# スコアリングJSON作成UI（React）: 実装計画（JSON作成に絞る）
 
+## 2026-02 Update: Generic Core + Schema v2
+- デフォルト出力を schema v2 に更新（metric_profile 必須）
+- schema v1 はインポート互換として維持
+- capability参照キーを sport から metric profile に変更
+- Runtime未対応メトリクス/条件タイプは Validate でブロック
+- v1読み込み時に互換バッジを表示し、再書き出しは v2 に統一
+
+---
 ## ゴール（MVP）
 - UIから「ルールセットJSON（schema v1準拠）」を新規作成できる
 - UI上で編集し、バリデーション（最低限）を実行できる
@@ -130,3 +138,4 @@
 ## Done（MVP完了条件）
 - UIで `phases` と `rules` を作成でき、ExportでJSONが出力できる
 - Step4のValidateでスキーマ/参照整合性のエラーが検出できる（最低限）
+
