@@ -318,9 +318,12 @@ export function CoachBuilderPage() {
 
   return (
     <main className="coach-builder-page" data-testid="cb-page-root">
-      <header className="coach-builder-header cb-panel">
+      <header className="coach-builder-header cb-panel cb-shell-hero">
         <div className="cb-panel-header">
-          <h1>{t('page.title')}</h1>
+          <div className="cb-hero-copy">
+            <h1>{t('page.title')}</h1>
+            <p>{t('page.subtitle')}</p>
+          </div>
           <div className="cb-export-actions">
             <label className="cb-language-select" htmlFor="locale-select">
               {t('common.language')}
@@ -347,11 +350,14 @@ export function CoachBuilderPage() {
             </button>
           </div>
         </div>
-        <p>{t('page.subtitle')}</p>
-        {importedSchemaMajor === 1 ? (
-          <p className="cb-status-text">{t('import.v1_badge')}</p>
-        ) : null}
-        {statusMessage ? <p className="cb-status-text">{t(statusMessage.key, statusMessage.params)}</p> : null}
+        <div className="cb-hero-status">
+          {importedSchemaMajor === 1 ? (
+            <p className="cb-status-text">{t('import.v1_badge')}</p>
+          ) : null}
+          {statusMessage ? (
+            <p className="cb-status-text">{t(statusMessage.key, statusMessage.params)}</p>
+          ) : null}
+        </div>
         <input
           ref={fileInputRef}
           type="file"
@@ -361,7 +367,7 @@ export function CoachBuilderPage() {
         />
       </header>
 
-      <section className="cb-panel cb-stage-strip">
+      <section className="cb-panel cb-stage-strip cb-shell-stage">
         <div className="cb-stage-track">
           {WORKFLOW_STAGES.map((stage, index) => {
             const isCurrent = stage === workflowStage
@@ -383,7 +389,7 @@ export function CoachBuilderPage() {
             )
           })}
         </div>
-        <p>{t(`workflow.${workflowStage}.description`)}</p>
+        <p className="cb-stage-description">{t(`workflow.${workflowStage}.description`)}</p>
       </section>
 
       {workflowStage === 'setup' && (
@@ -638,7 +644,7 @@ export function CoachBuilderPage() {
         </>
       )}
 
-      <section className="cb-panel cb-workflow-footer">
+      <section className="cb-panel cb-workflow-footer cb-shell-footer">
         <div className="cb-workflow-footer-top">
           <div className="cb-workflow-nav">
             <button
@@ -660,7 +666,7 @@ export function CoachBuilderPage() {
             )}
           </div>
         </div>
-        <p className="cb-hint-text">{t(`workflow.${workflowStage}.footerHint`)}</p>
+        <p className="cb-hint-text cb-footer-hint">{t(`workflow.${workflowStage}.footerHint`)}</p>
       </section>
     </main>
   )
