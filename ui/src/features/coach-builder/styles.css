@@ -21,11 +21,11 @@
 .coach-builder-header {
   position: relative;
   overflow: hidden;
-  border-color: #ebd892;
+  border-color: #a8dbe2;
   background:
-    radial-gradient(28rem 16rem at 16% -20%, rgba(255, 235, 156, 0.78) 0%, transparent 62%),
-    radial-gradient(24rem 16rem at 94% -10%, rgba(189, 214, 255, 0.56) 0%, transparent 64%),
-    linear-gradient(155deg, #fffdf4 0%, #fff8d8 42%, #f8f9ff 100%);
+    radial-gradient(28rem 18rem at 14% -20%, rgba(88, 216, 205, 0.44) 0%, transparent 63%),
+    radial-gradient(24rem 16rem at 92% -10%, rgba(166, 208, 255, 0.54) 0%, transparent 65%),
+    linear-gradient(152deg, #f6fffd 0%, #ebfbf8 44%, #f4f9ff 100%);
   box-shadow: var(--shadow-panel);
   animation: cbFadeIn 360ms ease-out both;
 }
@@ -38,7 +38,7 @@
   width: 220px;
   height: 220px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(245, 213, 77, 0.44) 0%, rgba(250, 227, 108, 0) 72%);
+  background: radial-gradient(circle, rgba(42, 187, 175, 0.29) 0%, rgba(66, 206, 194, 0) 72%);
 }
 
 .coach-builder-header::before {
@@ -49,7 +49,7 @@
   width: 230px;
   height: 230px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(173, 205, 255, 0.25) 0%, rgba(173, 205, 255, 0) 70%);
+  background: radial-gradient(circle, rgba(107, 183, 255, 0.24) 0%, rgba(107, 183, 255, 0) 70%);
 }
 
 .coach-builder-header h1 {
@@ -84,10 +84,10 @@
   font-size: 0.84rem;
   font-weight: 600;
   padding: 0.24rem 0.56rem;
-  border: 1px solid #e4d8aa;
+  border: 1px solid #b6dce1;
   border-radius: 999px;
-  background: rgba(255, 250, 230, 0.8);
-  color: #5a4700;
+  background: rgba(236, 255, 251, 0.82);
+  color: #0d5551;
 }
 
 .cb-hint-text {
@@ -128,7 +128,7 @@
 .cb-add-condition-row button,
 .cb-validation-list button,
 .cb-export-actions button {
-  border: 1px solid #c8d3e1;
+  border: 1px solid #c5d4e5;
   background: linear-gradient(180deg, #ffffff 0%, #f5f8fc 100%);
   color: var(--ink-900);
   border-radius: var(--radius-sm);
@@ -147,8 +147,8 @@
 .cb-panel-header button,
 .cb-add-condition-row button,
 .cb-export-actions .cb-primary {
-  background: linear-gradient(180deg, #ffe893 0%, var(--brand) 100%);
-  border-color: #d7b232;
+  background: linear-gradient(180deg, #7be3d8 0%, var(--brand) 100%);
+  border-color: #22ad9f;
   color: var(--brand-ink);
   font-weight: 600;
 }
@@ -156,7 +156,7 @@
 .cb-panel-header button:hover,
 .cb-add-condition-row button:hover,
 .cb-export-actions .cb-primary:hover {
-  background: linear-gradient(180deg, #ffe38a 0%, var(--brand-deep) 100%);
+  background: linear-gradient(180deg, #6ad9ce 0%, var(--brand-deep) 100%);
 }
 
 .cb-danger {
@@ -204,9 +204,9 @@
 }
 
 .cb-setup-card {
-  border: 1px solid #d4deeb;
+  border: 1px solid #cad8e9;
   border-radius: var(--radius-md);
-  background: linear-gradient(180deg, #ffffff 0%, #f6f9ff 100%);
+  background: linear-gradient(180deg, #ffffff 0%, #f3f8ff 100%);
   padding: 0.9rem;
   box-shadow: 0 8px 22px rgba(28, 45, 71, 0.06);
 }
@@ -277,15 +277,15 @@
 }
 
 .cb-stage-pill.is-current {
-  border-color: #dfb728;
-  background: linear-gradient(180deg, #fff4c7 0%, #ffedaa 100%);
-  color: #4b3a00;
-  box-shadow: 0 8px 16px rgba(229, 186, 40, 0.25);
+  border-color: #25af9f;
+  background: linear-gradient(180deg, #d7f9f4 0%, #bbf1e8 100%);
+  color: #0d4c46;
+  box-shadow: 0 8px 16px rgba(33, 172, 158, 0.24);
 }
 
 .cb-stage-pill.is-done {
-  border-color: #9fc6ab;
-  background: linear-gradient(180deg, #eff9f3 0%, #e7f4eb 100%);
+  border-color: #9cc9dc;
+  background: linear-gradient(180deg, #eef6ff 0%, #e6f0fb 100%);
 }
 
 .cb-stage-pill:disabled {
@@ -395,9 +395,9 @@
   min-width: 1.2rem;
   height: 1.2rem;
   border-radius: 999px;
-  background: #eaf1fc;
-  border: 1px solid #d2dcec;
-  color: #2d4669;
+  background: #e5f6f4;
+  border: 1px solid #bfe4df;
+  color: #0d5751;
   font-size: 0.68rem;
   font-weight: 700;
   display: inline-flex;
@@ -406,9 +406,9 @@
 }
 
 .cb-step-list li.is-selected .cb-step-card {
-  border-color: #e2b92a;
-  background: linear-gradient(180deg, #fffef3 0%, #fff8d4 100%);
-  box-shadow: 0 9px 20px rgba(213, 171, 37, 0.26);
+  border-color: #22ae9e;
+  background: linear-gradient(180deg, #f2fffd 0%, #e4faf7 100%);
+  box-shadow: 0 9px 20px rgba(36, 170, 157, 0.24);
 }
 
 .cb-step-title {
@@ -465,9 +465,9 @@
 }
 
 .cb-checkpoint-tabs button.is-selected {
-  border-color: #ddb72d;
-  background: linear-gradient(180deg, #fff8d8 0%, #ffefb7 100%);
-  color: #4a3700;
+  border-color: #21ab9d;
+  background: linear-gradient(180deg, #defaf5 0%, #c6f3ec 100%);
+  color: #0b524d;
 }
 
 .cb-inline-actions {
@@ -562,8 +562,8 @@
 .cb-condition-type-chip {
   border: 1px solid #d3dceb;
   border-radius: 999px;
-  background: #f2f6fd;
-  color: #304a71;
+  background: #ebf6ff;
+  color: #1f4a72;
   font-size: 0.74rem;
   font-weight: 700;
   padding: 0.16rem 0.52rem;
@@ -574,13 +574,13 @@
 }
 
 .cb-condition-expert {
-  border-color: #d7be61;
-  background: linear-gradient(180deg, #fffdf4 0%, #fff7df 100%);
+  border-color: #9dd7cf;
+  background: linear-gradient(180deg, #f7fffd 0%, #edfdf9 100%);
 }
 
 .cb-condition-locked {
   border-color: #bfaf83;
-  background: linear-gradient(180deg, #fcf8ec 0%, #f8f2dd 100%);
+  background: linear-gradient(180deg, #f6f8fa 0%, #eff3f7 100%);
 }
 
 .cb-ok-text {
@@ -616,8 +616,8 @@
 }
 
 .cb-validation-summary.is-pass {
-  border-color: #b2d6be;
-  background: linear-gradient(180deg, #f1fbf5 0%, #eaf7ef 100%);
+  border-color: #99d6cc;
+  background: linear-gradient(180deg, #effcf9 0%, #e5f8f3 100%);
 }
 
 .cb-validation-list li {
@@ -741,7 +741,7 @@
   min-width: 2rem;
   height: 1.4rem;
   border-radius: 999px;
-  border: 1px solid #d2dcec;
+  border: 1px solid #bfe4df;
   background: #eff4fc;
   color: #2f486d;
   padding: 0 0.45rem;
@@ -821,13 +821,13 @@
 }
 
 .cb-joint-point.is-selected circle {
-  fill: #ffe87a;
-  stroke: #d29d07;
+  fill: #66dfd1;
+  stroke: #0b8c80;
   stroke-width: 2.2;
 }
 
 .cb-joint-point.is-selected text {
-  fill: #4d3900;
+  fill: #054741;
 }
 
 .cb-joint-legend {
@@ -867,9 +867,9 @@
 }
 
 .cb-joint-legend li.is-selected {
-  border-color: #d6a00f;
-  background: #fff7cf;
-  color: #4b3900;
+  border-color: #20a698;
+  background: #e7fbf7;
+  color: #0a4e49;
 }
 
 .cb-joint-legend-id {
@@ -1010,3 +1010,4 @@
     align-items: stretch;
   }
 }
+

@@ -1,20 +1,20 @@
 :root {
-  --ink-900: #17202b;
-  --ink-700: #374557;
-  --ink-500: #5f7188;
-  --ink-350: #8898ab;
-  --line: #d7e0ea;
-  --line-strong: #c4cfdd;
-  --surface: #f7faff;
-  --surface-soft: #f1f6fd;
+  --ink-900: #102033;
+  --ink-700: #2f435a;
+  --ink-500: #57708b;
+  --ink-350: #8399b1;
+  --line: #d3deea;
+  --line-strong: #c0cede;
+  --surface: #f4f8fc;
+  --surface-soft: #edf4fb;
   --surface-strong: #ffffff;
-  --brand: #f2cb3b;
-  --brand-deep: #e3b320;
-  --brand-ink: #3f3100;
-  --ok: #0f7f45;
+  --brand: #24c4b4;
+  --brand-deep: #16a899;
+  --brand-ink: #04332f;
+  --ok: #0e8d55;
   --error: #aa2035;
-  --warn: #c27500;
-  --focus: #2a70d2;
+  --warn: #be6d00;
+  --focus: #116bd6;
   --radius-sm: 10px;
   --radius-md: 14px;
   --radius-lg: 18px;
@@ -44,9 +44,9 @@ body {
   min-width: 320px;
   min-height: 100vh;
   background:
-    radial-gradient(56rem 32rem at 8% -14%, rgba(251, 220, 112, 0.53) 0%, transparent 58%),
-    radial-gradient(48rem 30rem at 97% -6%, rgba(188, 214, 255, 0.52) 0%, transparent 57%),
-    linear-gradient(180deg, #f4f8fc 0%, #edf3f9 47%, #e8eff6 100%);
+    radial-gradient(58rem 36rem at 4% -16%, rgba(66, 214, 202, 0.29) 0%, transparent 58%),
+    radial-gradient(52rem 30rem at 100% -8%, rgba(147, 202, 255, 0.42) 0%, transparent 58%),
+    linear-gradient(180deg, #f2f7fc 0%, #eaf1f9 49%, #e3ecf5 100%);
   color: var(--ink-900);
 }
 
