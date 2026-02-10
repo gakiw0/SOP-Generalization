@@ -33,6 +33,7 @@ export function JointLandmarkDiagram({
 
   const selectedIds = useMemo(() => new Set(selectedJointIds), [selectedJointIds])
   const interactive = typeof onSelectionChange === 'function'
+  const selectionCount = selectedJointIds.length
 
   const handleToggleJoint = (jointId: number) => {
     if (!onSelectionChange) return
@@ -50,6 +51,12 @@ export function JointLandmarkDiagram({
     onSelectionChange(nextIds.sort((a, b) => a - b))
   }
 
+  const handleKeyToggle = (event: React.KeyboardEvent<SVGGElement | HTMLLIElement>, jointId: number) => {
+    if (event.key !== 'Enter' && event.key !== ' ') return
+    event.preventDefault()
+    handleToggleJoint(jointId)
+  }
+
   return (
     <section className="cb-joint-diagram" data-testid={dataTestId}>
       <div className="cb-joint-diagram-header">
@@ -64,14 +71,22 @@ export function JointLandmarkDiagram({
             </p>
           ) : null}
         </div>
-        <button
-          type="button"
-          onClick={() => setExpanded((value) => !value)}
-          aria-expanded={expanded}
-          data-testid={toggleTestId}
-        >
-          {expanded ? t('jointDiagram.hide') : t('jointDiagram.show')}
-        </button>
+        <div className="cb-joint-diagram-actions">
+          {interactive ? (
+            <span className="cb-joint-diagram-status">
+              {selectionCount}
+              {maxSelectable != null ? ` / ${maxSelectable}` : ''}
+            </span>
+          ) : null}
+          <button
+            type="button"
+            onClick={() => setExpanded((value) => !value)}
+            aria-expanded={expanded}
+            data-testid={toggleTestId}
+          >
+            {expanded ? t('jointDiagram.hide') : t('jointDiagram.show')}
+          </button>
+        </div>
       </div>
 
       {expanded ? (
@@ -107,7 +122,11 @@ export function JointLandmarkDiagram({
                   className={`${selected ? 'cb-joint-point is-selected' : 'cb-joint-point'}${interactive ? ' is-clickable' : ''}`}
                   data-point-id={point.id}
                   data-selected={selected ? 'true' : 'false'}
+                  role={interactive ? 'button' : undefined}
+                  aria-pressed={interactive ? selected : undefined}
+                  tabIndex={interactive ? 0 : undefined}
                   onClick={() => handleToggleJoint(point.id)}
+                  onKeyDown={(event) => handleKeyToggle(event, point.id)}
                 >
                   <circle cx={point.x} cy={point.y} r={selected ? 7 : 5} />
                   <text x={point.x + 8} y={point.y - 8}>
@@ -127,7 +146,11 @@ export function JointLandmarkDiagram({
                   className={`${selected ? 'is-selected' : ''}${interactive ? ' is-clickable' : ''}`}
                   data-point-id={point.id}
                   data-selected={selected ? 'true' : 'false'}
+                  role={interactive ? 'button' : undefined}
+                  aria-pressed={interactive ? selected : undefined}
+                  tabIndex={interactive ? 0 : undefined}
                   onClick={() => handleToggleJoint(point.id)}
+                  onKeyDown={(event) => handleKeyToggle(event, point.id)}
                 >
                   <span className="cb-joint-legend-id">{point.id}</span>
                   <span>{t(`openpose25.point.${point.id}`)}</span>

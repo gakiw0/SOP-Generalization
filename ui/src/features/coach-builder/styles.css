@@ -718,9 +718,9 @@
 
 .cb-joint-diagram {
   margin-top: 0.9rem;
-  border: 1px solid #d6deea;
-  border-radius: 12px;
-  background: #f8fbff;
+  border: 1px solid #d4ddec;
+  border-radius: 13px;
+  background: linear-gradient(180deg, #fbfdff 0%, #f3f8ff 100%);
   padding: 0.72rem;
 }
 
@@ -729,6 +729,27 @@
   justify-content: space-between;
   gap: 0.6rem;
   align-items: flex-start;
+}
+
+.cb-joint-diagram-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42rem;
+}
+
+.cb-joint-diagram-status {
+  min-width: 2rem;
+  height: 1.4rem;
+  border-radius: 999px;
+  border: 1px solid #d2dcec;
+  background: #eff4fc;
+  color: #2f486d;
+  padding: 0 0.45rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .cb-joint-diagram-header h3 {
@@ -759,7 +780,7 @@
   width: 100%;
   max-width: 360px;
   background: #ffffff;
-  border: 1px solid #dbe3ef;
+  border: 1px solid #d2ddea;
   border-radius: 10px;
   padding: 0.25rem;
 }
@@ -778,6 +799,16 @@
 
 .cb-joint-point.is-clickable {
   cursor: pointer;
+  transition: transform 120ms ease;
+}
+
+.cb-joint-point.is-clickable:hover {
+  transform: scale(1.02);
+}
+
+.cb-joint-point.is-clickable:focus-visible circle {
+  stroke: var(--focus);
+  stroke-width: 2.4;
 }
 
 .cb-joint-point text {
@@ -822,6 +853,17 @@
 
 .cb-joint-legend li.is-clickable {
   cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+.cb-joint-legend li.is-clickable:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(34, 49, 72, 0.12);
+}
+
+.cb-joint-legend li.is-clickable:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
 }
 
 .cb-joint-legend li.is-selected {
