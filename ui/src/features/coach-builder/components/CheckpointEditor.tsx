@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
+  type BasicConditionType,
   conditionTypeIsBasic,
   type CheckpointDraft,
   type ConditionDraft,
@@ -33,8 +34,10 @@ type CheckpointEditorProps = {
   onRemoveCondition: (checkpointId: string, conditionId: string) => void
 }
 
-const BASIC_TYPES: ConditionType[] = ['threshold', 'range', 'boolean', 'composite']
-const EXPERT_TYPES: ConditionType[] = ['event_exists', 'trend', 'angle', 'distance']
+type ExpertConditionType = 'event_exists' | 'trend' | 'angle' | 'distance'
+
+const BASIC_TYPES: BasicConditionType[] = ['threshold', 'range', 'boolean', 'composite']
+const EXPERT_TYPES: ExpertConditionType[] = ['event_exists', 'trend', 'angle', 'distance']
 
 export function CheckpointEditor({
   step,
@@ -58,22 +61,22 @@ export function CheckpointEditor({
       ? supportedConditionTypes
       : [...BASIC_TYPES, ...EXPERT_TYPES]
   const supportedTypeSet = new Set(effectiveSupportedTypes)
-  const allowedBasicTypes = BASIC_TYPES.filter((type) => supportedTypeSet.has(type))
-  const allowedExpertTypes = EXPERT_TYPES.filter((type) => supportedTypeSet.has(type))
+  const allowedBasicTypes: BasicConditionType[] = BASIC_TYPES.filter((type) =>
+    supportedTypeSet.has(type)
+  )
+  const allowedExpertTypes: ExpertConditionType[] = EXPERT_TYPES.filter((type) =>
+    supportedTypeSet.has(type)
+  )
   const allowedTypes = expertEnabled
     ? [...allowedBasicTypes, ...allowedExpertTypes]
     : [...allowedBasicTypes]
   const [newConditionType, setNewConditionType] = useState<ConditionType>(
     allowedTypes[0] ?? 'threshold'
   )
+  const selectedNewConditionType = allowedTypes.includes(newConditionType)
+    ? newConditionType
+    : (allowedTypes[0] ?? 'threshold')
   const [showTechnicalFields, setShowTechnicalFields] = useState(false)
-
-  useEffect(() => {
-    if (allowedTypes.length === 0) return
-    if (!allowedTypes.includes(newConditionType)) {
-      setNewConditionType(allowedTypes[0])
-    }
-  }, [allowedTypes, newConditionType])
 
   if (!step) {
     return (
@@ -369,7 +372,7 @@ export function CheckpointEditor({
           <h3>{t('checkpoint.conditionsTitle')}</h3>
           <div className="cb-add-condition-row">
             <select
-              value={newConditionType}
+              value={selectedNewConditionType}
               data-testid="cb-checkpoints-new-condition-type"
               onChange={(event) => setNewConditionType(event.target.value as ConditionType)}
             >
@@ -382,7 +385,7 @@ export function CheckpointEditor({
             <button
               type="button"
               disabled={allowedTypes.length === 0}
-              onClick={() => onAddCondition(selectedCheckpoint.id, newConditionType)}
+              onClick={() => onAddCondition(selectedCheckpoint.id, selectedNewConditionType)}
             >
               {t('condition.addButton')}
             </button>
