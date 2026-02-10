@@ -24,8 +24,8 @@
   "workflow": {
     "setup": {
       "label": "準備",
-      "description": "1対1比較用の競技とルール識別情報を設定します。",
-      "footerHint": "1対1比較の基本設定を終えてからステップ定義へ進んでください。"
+      "description": "1対1比較用のプロファイル/ランタイム識別情報を設定します。",
+      "footerHint": "先にメトリクスプロファイルを選択してからステップ定義へ進んでください。"
     },
     "steps": {
       "label": "ステップ",
@@ -59,6 +59,9 @@
     "sectionTitle": "ルールセット情報",
     "help": "このルールセットを識別する基本情報を入力します。",
     "ruleSetId": "ルールセットID",
+    "metricProfileId": "メトリクスプロファイルID",
+    "metricProfileType": "メトリクスプロファイル種別",
+    "metricPresetId": "メトリクスプリセットID",
     "sport": "競技",
     "ruleVersion": "ルールバージョン",
     "title": "タイトル"
@@ -308,9 +311,9 @@
       "condition_required": "条件を1件以上追加してください。",
       "duplicate_condition_id": "condition id '{{id}}' が重複しています。",
       "condition_type_invalid": "未対応の condition type '{{type}}' です。",
-      "unsupported_condition_type": "condition type '{{type}}' はこの競技ランタイムで未対応です。",
+      "unsupported_condition_type": "condition type '{{type}}' は現在のプロファイル/ランタイムでは未対応です。",
       "metric_required": "metric は必須です。",
-      "unsupported_metric": "metric '{{metric}}' はこの競技の phase '{{phase}}' では利用できません。",
+      "unsupported_metric": "metric '{{metric}}' は現在のプロファイル/ランタイムの phase '{{phase}}' では利用できません。",
       "op_invalid": "演算子が不正です。",
       "value_number_required": "値は数値で指定してください。",
       "value_pair_required": "値は [最小, 最大] のペアで指定してください。",

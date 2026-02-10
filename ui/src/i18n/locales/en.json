@@ -24,8 +24,8 @@
   "workflow": {
     "setup": {
       "label": "Setup",
-      "description": "Set sport and rule identity for a single player-vs-coach comparison.",
-      "footerHint": "Set 1v1 comparison basics first, then continue to motion steps."
+      "description": "Set profile/runtime identity for a single player-vs-coach comparison.",
+      "footerHint": "Select metric profile first, then continue to motion steps."
     },
     "steps": {
       "label": "Step",
@@ -59,6 +59,9 @@
     "sectionTitle": "Rule set metadata",
     "help": "Enter core information that identifies this rule set.",
     "ruleSetId": "Rule set ID",
+    "metricProfileId": "Metric profile ID",
+    "metricProfileType": "Metric profile type",
+    "metricPresetId": "Metric preset ID",
     "sport": "Sport",
     "ruleVersion": "Rule version",
     "title": "Title"
@@ -308,9 +311,9 @@
       "condition_required": "At least one condition is required.",
       "duplicate_condition_id": "Duplicate condition id '{{id}}'.",
       "condition_type_invalid": "Unsupported condition type '{{type}}'.",
-      "unsupported_condition_type": "Condition type '{{type}}' is not supported by runtime for this sport.",
+      "unsupported_condition_type": "Condition type '{{type}}' is not supported by the active profile/runtime.",
       "metric_required": "Metric is required.",
-      "unsupported_metric": "Metric '{{metric}}' is not available for phase '{{phase}}' in this sport runtime.",
+      "unsupported_metric": "Metric '{{metric}}' is not available for phase '{{phase}}' in the active profile/runtime.",
       "op_invalid": "Operator is invalid.",
       "value_number_required": "Value must be a number.",
       "value_pair_required": "Value must be a number pair [min, max].",

@@ -452,12 +452,54 @@ export const validateRuleSet = (
   capability?: PluginCapability | null
 ): ValidationError[] => {
   const errors: ValidationError[] = []
+  const schemaMajor = isSemver(ruleSet.schema_version)
+    ? Number(ruleSet.schema_version.split('.')[0])
+    : NaN
+  const isV2 = Number.isFinite(schemaMajor)
+    ? schemaMajor >= 2
+    : 'metric_profile' in ruleSet
 
   if (!isSemver(ruleSet.schema_version)) pushError(errors, 'schema_version', 'invalid_semver')
   if (!isNonEmptyString(ruleSet.rule_set_id)) pushError(errors, 'rule_set_id', 'required')
-  if (!isNonEmptyString(ruleSet.sport)) pushError(errors, 'sport', 'required')
-  if (!isSemver(ruleSet.sport_version)) pushError(errors, 'sport_version', 'invalid_semver')
   if (!isNonEmptyString(ruleSet.metadata?.title)) pushError(errors, 'metadata.title', 'required')
+
+  if (isV2) {
+    const metricProfile = (ruleSet as { metric_profile?: unknown }).metric_profile as
+      | {
+          id?: unknown
+          type?: unknown
+          metric_space?: unknown
+          preset_id?: unknown
+        }
+      | undefined
+    if (!metricProfile || typeof metricProfile !== 'object') {
+      pushError(errors, 'metric_profile', 'required')
+    } else {
+      if (!isNonEmptyString(metricProfile.id)) {
+        pushError(errors, 'metric_profile.id', 'required')
+      }
+      if (!['generic', 'preset'].includes(String(metricProfile.type ?? ''))) {
+        pushError(errors, 'metric_profile.type', 'required')
+      }
+      if (String(metricProfile.metric_space ?? '') !== 'core_v1') {
+        pushError(errors, 'metric_profile.metric_space', 'required')
+      }
+      if (String(metricProfile.type ?? '') === 'preset' && !isNonEmptyString(metricProfile.preset_id)) {
+        pushError(errors, 'metric_profile.preset_id', 'required')
+      }
+    }
+
+    if (
+      ruleSet.sport_version != null &&
+      String(ruleSet.sport_version).trim().length > 0 &&
+      !isSemver(ruleSet.sport_version)
+    ) {
+      pushError(errors, 'sport_version', 'invalid_semver')
+    }
+  } else {
+    if (!isNonEmptyString(ruleSet.sport)) pushError(errors, 'sport', 'required')
+    if (!isSemver(ruleSet.sport_version)) pushError(errors, 'sport_version', 'invalid_semver')
+  }
 
   if (!Array.isArray(ruleSet.phases) || ruleSet.phases.length === 0) {
     pushError(errors, 'phases', 'phases_required')

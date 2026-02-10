@@ -24,8 +24,8 @@
   "workflow": {
     "setup": {
       "label": "准备",
-      "description": "为单个选手与单个教练的比较设置运动项目与规则标识。",
-      "footerHint": "先完成 1v1 比较的基础设置，再进入动作步骤。"
+      "description": "为单个选手与单个教练比较设置 profile/runtime 标识。",
+      "footerHint": "先选择指标 profile，再进入动作步骤。"
     },
     "steps": {
       "label": "步骤",
@@ -59,6 +59,9 @@
     "sectionTitle": "规则集信息",
     "help": "填写识别该规则集的基础信息。",
     "ruleSetId": "规则集 ID",
+    "metricProfileId": "指标 Profile ID",
+    "metricProfileType": "指标 Profile 类型",
+    "metricPresetId": "指标 Preset ID",
     "sport": "运动项目",
     "ruleVersion": "规则版本",
     "title": "标题"
@@ -308,9 +311,9 @@
       "condition_required": "至少需要一个条件。",
       "duplicate_condition_id": "condition id '{{id}}' 重复。",
       "condition_type_invalid": "不支持的 condition type '{{type}}'。",
-      "unsupported_condition_type": "condition type '{{type}}' 不受该运动项目运行时支持。",
+      "unsupported_condition_type": "condition type '{{type}}' 不受当前 profile/runtime 支持。",
       "metric_required": "metric 为必填项。",
-      "unsupported_metric": "metric '{{metric}}' 在该运动项目的 phase '{{phase}}' 中不可用。",
+      "unsupported_metric": "metric '{{metric}}' 在当前 profile/runtime 的 phase '{{phase}}' 中不可用。",
       "op_invalid": "运算符不合法。",
       "value_number_required": "值必须为数字。",
       "value_pair_required": "值必须为数字对 [min, max]。",

@@ -24,8 +24,8 @@
   "workflow": {
     "setup": {
       "label": "準備",
-      "description": "設定單一選手與單一教練比較的運動項目與規則識別資訊。",
-      "footerHint": "先完成 1v1 比較基本設定，再進入動作步驟。"
+      "description": "設定單一選手與單一教練比較的 profile/runtime 識別資訊。",
+      "footerHint": "先選擇指標 profile，再進入動作步驟。"
     },
     "steps": {
       "label": "步驟",
@@ -59,6 +59,9 @@
     "sectionTitle": "規則集資訊",
     "help": "填寫識別此規則集的基本資訊。",
     "ruleSetId": "規則集 ID",
+    "metricProfileId": "指標 Profile ID",
+    "metricProfileType": "指標 Profile 類型",
+    "metricPresetId": "指標 Preset ID",
     "sport": "運動項目",
     "ruleVersion": "規則版本",
     "title": "標題"
@@ -308,9 +311,9 @@
       "condition_required": "至少需要一個條件。",
       "duplicate_condition_id": "condition id '{{id}}' 重複。",
       "condition_type_invalid": "不支援的 condition type '{{type}}'。",
-      "unsupported_condition_type": "condition type '{{type}}' 不受此運動項目執行階段支援。",
+      "unsupported_condition_type": "condition type '{{type}}' 不受目前 profile/runtime 支援。",
       "metric_required": "metric 為必填。",
-      "unsupported_metric": "metric '{{metric}}' 在此運動項目的 phase '{{phase}}' 中不可用。",
+      "unsupported_metric": "metric '{{metric}}' 在目前 profile/runtime 的 phase '{{phase}}' 中不可用。",
       "op_invalid": "運算子不合法。",
       "value_number_required": "值必須是數字。",
       "value_pair_required": "值必須是數字對 [min, max]。",

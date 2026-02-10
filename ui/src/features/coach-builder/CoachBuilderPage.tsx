@@ -319,7 +319,7 @@ export function CoachBuilderPage() {
               </label>
 
               <label>
-                Metric profile ID
+                {t('metadata.metricProfileId')}
                 <input
                   type="text"
                   value={state.draft.metadata.metricProfileId}
@@ -331,7 +331,7 @@ export function CoachBuilderPage() {
               </label>
 
               <label>
-                Metric profile type
+                {t('metadata.metricProfileType')}
                 <select
                   value={state.draft.metadata.metricProfileType}
                   data-testid="cb-setup-profile-type"
@@ -350,7 +350,7 @@ export function CoachBuilderPage() {
 
               {state.draft.metadata.metricProfileType === 'preset' && (
                 <label>
-                  Metric preset ID
+                  {t('metadata.metricPresetId')}
                   <input
                     type="text"
                     value={state.draft.metadata.metricPresetId}
