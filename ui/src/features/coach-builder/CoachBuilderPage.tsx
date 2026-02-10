@@ -131,6 +131,24 @@ export function CoachBuilderPage() {
       ),
     [state.draft.steps]
   )
+  const stepLabels = useMemo(
+    () =>
+      state.draft.steps.map((step, index) =>
+        step.label.trim().length > 0 ? step.label : `Step ${index + 1} (${step.id})`
+      ),
+    [state.draft.steps]
+  )
+  const checkpointLabels = useMemo(
+    () =>
+      state.draft.steps.flatMap((step, stepIndex) =>
+        step.checkpoints.map((checkpoint, checkpointIndex) =>
+          checkpoint.label.trim().length > 0
+            ? checkpoint.label
+            : `Step ${stepIndex + 1} checkpoint ${checkpointIndex + 1} (${checkpoint.id})`
+        )
+      ),
+    [state.draft.steps]
+  )
 
   const currentLocale =
     normalizeLocale(i18n.resolvedLanguage ?? i18n.language) ?? 'en'
@@ -594,6 +612,8 @@ export function CoachBuilderPage() {
           <ValidationPanel
             errors={validationErrors}
             status={validationStatus}
+            stepLabels={stepLabels}
+            checkpointLabels={checkpointLabels}
             onValidate={runValidation}
             onNavigateError={navigateFromPath}
           />

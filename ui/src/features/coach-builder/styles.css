@@ -402,6 +402,16 @@
   padding: 0.08rem 0.3rem;
 }
 
+.cb-validation-technical {
+  margin-top: 0.28rem;
+}
+
+.cb-validation-technical summary {
+  cursor: pointer;
+  color: #60758f;
+  font-size: 0.76rem;
+}
+
 .cb-export-actions {
   display: flex;
   flex-wrap: wrap;
