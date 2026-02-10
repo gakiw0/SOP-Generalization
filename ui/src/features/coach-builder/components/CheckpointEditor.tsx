@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   conditionTypeIsBasic,
@@ -15,6 +15,7 @@ import { JointLandmarkDiagram } from './JointLandmarkDiagram'
 type CheckpointEditorProps = {
   step: StepDraft | null
   stepIds: string[]
+  supportedConditionTypes?: ConditionType[]
   selectedCheckpointId: string | null
   expertEnabled: boolean
   onToggleExpert: (enabled: boolean) => void
@@ -37,6 +38,7 @@ const EXPERT_TYPES: ConditionType[] = ['event_exists', 'trend', 'angle', 'distan
 export function CheckpointEditor({
   step,
   stepIds,
+  supportedConditionTypes,
   selectedCheckpointId,
   expertEnabled,
   onToggleExpert,
@@ -49,8 +51,27 @@ export function CheckpointEditor({
   onRemoveCondition,
 }: CheckpointEditorProps) {
   const { t } = useTranslation()
-  const [newConditionType, setNewConditionType] = useState<ConditionType>('threshold')
+  const effectiveSupportedTypes =
+    supportedConditionTypes && supportedConditionTypes.length > 0
+      ? supportedConditionTypes
+      : [...BASIC_TYPES, ...EXPERT_TYPES]
+  const supportedTypeSet = new Set(effectiveSupportedTypes)
+  const allowedBasicTypes = BASIC_TYPES.filter((type) => supportedTypeSet.has(type))
+  const allowedExpertTypes = EXPERT_TYPES.filter((type) => supportedTypeSet.has(type))
+  const allowedTypes = expertEnabled
+    ? [...allowedBasicTypes, ...allowedExpertTypes]
+    : [...allowedBasicTypes]
+  const [newConditionType, setNewConditionType] = useState<ConditionType>(
+    allowedTypes[0] ?? 'threshold'
+  )
   const [showTechnicalFields, setShowTechnicalFields] = useState(false)
+
+  useEffect(() => {
+    if (allowedTypes.length === 0) return
+    if (!allowedTypes.includes(newConditionType)) {
+      setNewConditionType(allowedTypes[0])
+    }
+  }, [allowedTypes, newConditionType])
 
   if (!step) {
     return (
@@ -64,7 +85,6 @@ export function CheckpointEditor({
   const selectedCheckpoint =
     step.checkpoints.find((checkpoint) => checkpoint.id === selectedCheckpointId) ?? step.checkpoints[0] ?? null
 
-  const allowedTypes = expertEnabled ? [...BASIC_TYPES, ...EXPERT_TYPES] : [...BASIC_TYPES]
   const highlightedJointIds: number[] = []
   if (selectedCheckpoint) {
     const jointSet = new Set<number>()
@@ -359,6 +379,7 @@ export function CheckpointEditor({
             </select>
             <button
               type="button"
+              disabled={allowedTypes.length === 0}
               onClick={() => onAddCondition(selectedCheckpoint.id, newConditionType)}
             >
               {t('condition.addButton')}
@@ -367,7 +388,7 @@ export function CheckpointEditor({
         </div>
         <p>{t('checkpoint.conditionsHelp')}</p>
         <div className="cb-chip-row">
-          {BASIC_TYPES.map((type) => (
+          {allowedBasicTypes.map((type) => (
             <button key={type} type="button" className="cb-chip-button" onClick={() => setNewConditionType(type)}>
               {t(`condition.type.${type}`)}
             </button>
@@ -381,13 +402,15 @@ export function CheckpointEditor({
                 key={condition.id}
                 condition={condition}
                 allConditionIds={selectedCheckpoint.conditions.map((item) => item.id)}
+                supportedTypes={allowedBasicTypes}
                 onUpdate={(patch) => onUpdateCondition(selectedCheckpoint.id, condition.id, patch)}
                 onRemove={() => onRemoveCondition(selectedCheckpoint.id, condition.id)}
               />
             )
           }
 
-          if (!expertEnabled) {
+          const expertTypeSupported = allowedExpertTypes.includes(condition.type)
+          if (!expertEnabled || !expertTypeSupported) {
             return (
               <article key={condition.id} className="cb-condition-card cb-condition-locked">
                 <div className="cb-condition-header">
@@ -409,6 +432,7 @@ export function CheckpointEditor({
             <ConditionEditorExpert
               key={condition.id}
               condition={condition}
+              supportedTypes={allowedExpertTypes}
               onUpdate={(patch) => onUpdateCondition(selectedCheckpoint.id, condition.id, patch)}
               onRemove={() => onRemoveCondition(selectedCheckpoint.id, condition.id)}
             />

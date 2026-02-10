@@ -4,6 +4,7 @@ import type { BasicConditionType, ConditionDraft } from '../draftTypes'
 type ConditionEditorBasicProps = {
   condition: ConditionDraft
   allConditionIds: string[]
+  supportedTypes?: BasicConditionType[]
   onUpdate: (patch: Partial<ConditionDraft>) => void
   onRemove: () => void
 }
@@ -13,11 +14,13 @@ const BASIC_TYPES: BasicConditionType[] = ['threshold', 'range', 'boolean', 'com
 export function ConditionEditorBasic({
   condition,
   allConditionIds,
+  supportedTypes,
   onUpdate,
   onRemove,
 }: ConditionEditorBasicProps) {
   const { t } = useTranslation()
   const availableRefIds = allConditionIds.filter((id) => id !== condition.id)
+  const basicTypes = supportedTypes && supportedTypes.length > 0 ? supportedTypes : BASIC_TYPES
 
   return (
     <article className="cb-condition-card">
@@ -58,7 +61,7 @@ export function ConditionEditorBasic({
               })
             }}
           >
-            {BASIC_TYPES.map((type) => (
+            {basicTypes.map((type) => (
               <option key={type} value={type}>
                 {t(`condition.type.${type}`)}
               </option>

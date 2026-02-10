@@ -9,12 +9,20 @@ const EXPERT_TYPES: ExpertConditionType[] = ['event_exists', 'trend', 'angle', '
 
 type ConditionEditorExpertProps = {
   condition: ConditionDraft
+  supportedTypes?: ExpertConditionType[]
   onUpdate: (patch: Partial<ConditionDraft>) => void
   onRemove: () => void
 }
 
-export function ConditionEditorExpert({ condition, onUpdate, onRemove }: ConditionEditorExpertProps) {
+export function ConditionEditorExpert({
+  condition,
+  supportedTypes,
+  onUpdate,
+  onRemove,
+}: ConditionEditorExpertProps) {
   const { t } = useTranslation()
+  const expertTypes =
+    supportedTypes && supportedTypes.length > 0 ? supportedTypes : EXPERT_TYPES
   const selectedJointIds =
     condition.type === 'angle'
       ? parseJointIdsCsv(condition.joints)
@@ -62,7 +70,7 @@ export function ConditionEditorExpert({ condition, onUpdate, onRemove }: Conditi
               })
             }}
           >
-            {EXPERT_TYPES.map((type) => (
+            {expertTypes.map((type) => (
               <option key={type} value={type}>
                 {t(`condition.type.${type}`)}
               </option>
