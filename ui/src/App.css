@@ -51,7 +51,7 @@
 
 .content {
   display: grid;
-  grid-template-columns: minmax(280px, 1fr) minmax(320px, 1.2fr);
+  grid-template-columns: 1fr;
   gap: 2rem;
 }
 
