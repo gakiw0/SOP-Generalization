@@ -16,19 +16,24 @@ export function StepList({ steps, selectedStepId, onSelect, onAdd, onRemove }: S
     <section className="cb-panel">
       <div className="cb-panel-header">
         <h2>{t('step.listTitle')}</h2>
-        <button type="button" onClick={onAdd}>
+        <button type="button" onClick={onAdd} data-testid="cb-steps-add">
           {t('step.addButton')}
         </button>
       </div>
       <p>{t('step.listHelp')}</p>
 
       <ul className="cb-step-list">
-        {steps.map((step) => {
+        {steps.map((step, index) => {
           const selected = step.id === selectedStepId
           const checkpointCount = step.checkpoints.length
           return (
             <li key={step.id} className={selected ? 'is-selected' : undefined}>
-              <button type="button" onClick={() => onSelect(step.id)} className="cb-step-card">
+              <button
+                type="button"
+                onClick={() => onSelect(step.id)}
+                className="cb-step-card"
+                data-testid={`cb-steps-select-${index}`}
+              >
                 <span className="cb-step-title">{step.label || step.id}</span>
                 <span className="cb-step-meta">{step.category || t('step.uncategorized')}</span>
                 <span className="cb-step-submeta">
@@ -40,6 +45,7 @@ export function StepList({ steps, selectedStepId, onSelect, onAdd, onRemove }: S
                 className="cb-danger"
                 onClick={() => onRemove(step.id)}
                 disabled={steps.length <= 1}
+                data-testid={`cb-steps-remove-${index}`}
               >
                 {t('common.remove')}
               </button>

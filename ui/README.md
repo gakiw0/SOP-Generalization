@@ -23,12 +23,67 @@ npm ci
 npm run dev
 ```
 
+## Codex MCP Setup (Playwright)
+Register the Playwright MCP server globally in Codex CLI and prepare Chromium:
+
+```bash
+cd ui
+npm run mcp:register
+npm run mcp:check
+npm run mcp:prep
+```
+
+Start local UI for Codex-operated browser verification (single command):
+
+```bash
+cd ui
+npm run mcp:start
+```
+
+- MCP server name is fixed as `playwright`.
+- The local app server is fixed at `http://127.0.0.1:4173`.
+
 ## Build and Lint
 ```bash
 cd ui
 npm run lint
 npm run build
 ```
+
+## E2E (Playwright, Chromium)
+Run the automated scenarios:
+
+```bash
+cd ui
+npm run test:e2e
+```
+
+Headed mode:
+
+```bash
+cd ui
+npm run test:e2e:headed
+```
+
+Full UI quality gate:
+
+```bash
+cd ui
+npm run verify:ui
+```
+
+The Playwright suite currently includes:
+- `scenario_1_setup_gate`
+- `scenario_2_validation_navigation`
+- `scenario_3_export_guard`
+
+Artifacts on failure:
+- `ui/playwright-report`
+- `ui/test-results`
+
+## Codex Operation Notes
+- Stable selectors for MCP and E2E use `data-testid="cb-..."`.
+- Locale-dependent text should not be used as the primary selector in tests.
 
 ## Workflow
 1. Fill metadata (`rule_set_id`, sport, version, title).

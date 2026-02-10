@@ -27,7 +27,6 @@ type StatusMessage = {
 }
 
 type WorkflowStage = 'setup' | 'steps' | 'checkpoints' | 'review'
-type DominantHand = 'right' | 'left'
 
 const WORKFLOW_STAGES: WorkflowStage[] = ['setup', 'steps', 'checkpoints', 'review']
 
@@ -39,7 +38,6 @@ export function CoachBuilderPage() {
   const [statusMessage, setStatusMessage] = useState<StatusMessage | null>(null)
   const [hasValidated, setHasValidated] = useState(false)
   const [workflowStage, setWorkflowStage] = useState<WorkflowStage>('setup')
-  const [dominantHand, setDominantHand] = useState<DominantHand>('right')
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const suppressValidationResetRef = useRef(false)
 
@@ -195,14 +193,14 @@ export function CoachBuilderPage() {
   }
 
   return (
-    <main className="coach-builder-page">
+    <main className="coach-builder-page" data-testid="cb-page-root">
       <header className="coach-builder-header cb-panel">
         <div className="cb-panel-header">
           <h1>{t('page.title')}</h1>
           <div className="cb-export-actions">
             <label className="cb-language-select" htmlFor="locale-select">
               {t('common.language')}
-              <select id="locale-select" value={currentLocale} onChange={handleLocaleChange}>
+              <select id="locale-select" value={currentLocale} onChange={handleLocaleChange} data-testid="cb-header-locale">
                 {SUPPORTED_LOCALES.map((locale) => (
                   <option key={locale} value={locale}>
                     {t(`language.${locale}`)}
@@ -210,10 +208,10 @@ export function CoachBuilderPage() {
                 ))}
               </select>
             </label>
-            <button type="button" onClick={handleImportClick}>
+            <button type="button" onClick={handleImportClick} data-testid="cb-header-import">
               {t('common.importJson')}
             </button>
-            <button type="button" onClick={() => dispatch({ type: 'draft/reset' })}>
+            <button type="button" onClick={() => dispatch({ type: 'draft/reset' })} data-testid="cb-header-reset">
               {t('common.reset')}
             </button>
           </div>
@@ -243,6 +241,7 @@ export function CoachBuilderPage() {
                 className={`cb-stage-pill${isCurrent ? ' is-current' : ''}${isDone ? ' is-done' : ''}`}
                 onClick={() => moveStage(stage)}
                 disabled={!isEnabled}
+                data-testid={`cb-stage-${stage}`}
               >
                 <span className="cb-stage-index">{index + 1}</span>
                 <span>{t(`workflow.${stage}.label`)}</span>
@@ -256,30 +255,6 @@ export function CoachBuilderPage() {
       {workflowStage === 'setup' && (
         <>
           <section className="cb-panel">
-            <div className="cb-panel-header">
-              <h2>{t('setup.handednessTitle')}</h2>
-            </div>
-            <p>{t('setup.handednessHelp')}</p>
-            <div className="cb-choice-row">
-              <button
-                type="button"
-                className={`cb-choice-card${dominantHand === 'right' ? ' is-selected' : ''}`}
-                onClick={() => setDominantHand('right')}
-              >
-                {t('setup.rightHanded')}
-              </button>
-              <button
-                type="button"
-                className={`cb-choice-card${dominantHand === 'left' ? ' is-selected' : ''}`}
-                onClick={() => setDominantHand('left')}
-              >
-                {t('setup.leftHanded')}
-              </button>
-            </div>
-            <p className="cb-hint-text">{t('setup.handednessNote')}</p>
-          </section>
-
-          <section className="cb-panel">
             <h2>{t('metadata.sectionTitle')}</h2>
             <p>{t('metadata.help')}</p>
             <div className="cb-field-grid">
@@ -288,6 +263,7 @@ export function CoachBuilderPage() {
                 <input
                   type="text"
                   value={state.draft.metadata.ruleSetId}
+                  data-testid="cb-setup-rule-set-id"
                   onChange={(event) =>
                     dispatch({ type: 'meta/set', field: 'ruleSetId', value: event.target.value })
                   }
@@ -299,6 +275,7 @@ export function CoachBuilderPage() {
                 <input
                   type="text"
                   value={state.draft.metadata.sport}
+                  data-testid="cb-setup-sport"
                   onChange={(event) =>
                     dispatch({ type: 'meta/set', field: 'sport', value: event.target.value })
                   }
@@ -310,6 +287,7 @@ export function CoachBuilderPage() {
                 <input
                   type="text"
                   value={state.draft.metadata.sportVersion}
+                  data-testid="cb-setup-sport-version"
                   onChange={(event) =>
                     dispatch({ type: 'meta/set', field: 'sportVersion', value: event.target.value })
                   }
@@ -321,6 +299,7 @@ export function CoachBuilderPage() {
                 <input
                   type="text"
                   value={state.draft.metadata.title}
+                  data-testid="cb-setup-title"
                   onChange={(event) =>
                     dispatch({ type: 'meta/set', field: 'title', value: event.target.value })
                   }
@@ -458,6 +437,7 @@ export function CoachBuilderPage() {
                   className="cb-primary"
                   disabled={!hasValidated || validationErrors.length > 0}
                   onClick={handleExport}
+                  data-testid="cb-review-export"
                 >
                   {t('common.exportJson')}
                 </button>
@@ -475,15 +455,16 @@ export function CoachBuilderPage() {
               type="button"
               onClick={goToPreviousStage}
               disabled={currentStageIndex <= 0}
+              data-testid="cb-nav-back"
             >
               {t('common.back')}
             </button>
             {workflowStage !== 'review' ? (
-              <button type="button" className="cb-primary cb-next-button" onClick={goToNextStage} disabled={!canContinue}>
+              <button type="button" className="cb-primary cb-next-button" onClick={goToNextStage} disabled={!canContinue} data-testid="cb-nav-continue">
                 {t('common.continue')}
               </button>
             ) : (
-              <button type="button" onClick={runValidation}>
+              <button type="button" onClick={runValidation} data-testid="cb-nav-revalidate">
                 {t('common.revalidate')}
               </button>
             )}

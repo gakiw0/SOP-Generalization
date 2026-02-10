@@ -72,6 +72,7 @@ export function ConditionEditorBasic({
             <input
               type="text"
               value={condition.metric}
+              data-testid="cb-condition-metric"
               onChange={(event) => onUpdate({ metric: event.target.value })}
               placeholder={t('condition.placeholders.metric')}
             />

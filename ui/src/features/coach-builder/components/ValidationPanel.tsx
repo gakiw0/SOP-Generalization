@@ -29,7 +29,7 @@ export function ValidationPanel({
     <section className="cb-panel">
       <div className="cb-panel-header">
         <h2>{t('validation.title')}</h2>
-        <button type="button" onClick={onValidate}>
+        <button type="button" onClick={onValidate} data-testid="cb-review-validate">
           {t('common.validate')}
         </button>
       </div>
@@ -41,7 +41,12 @@ export function ValidationPanel({
         <ul className="cb-validation-list">
           {errors.map((error, index) => (
             <li key={`${error.path}_${error.code}_${index}`}>
-              <button type="button" onClick={() => onNavigateError(error.path)}>
+              <button
+                type="button"
+                onClick={() => onNavigateError(error.path)}
+                data-testid={`cb-validation-error-${index}`}
+                data-error-path={error.path}
+              >
                 <code>{error.path}</code>: {t(`validation.code.${error.code}`, error.params)}
               </button>
             </li>

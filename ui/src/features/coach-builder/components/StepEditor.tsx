@@ -36,6 +36,7 @@ export function StepEditor({ step, onRename, onUpdate }: StepEditorProps) {
           <input
             type="text"
             value={step.id}
+            data-testid="cb-steps-id"
             onChange={(event) => onRename(event.target.value)}
             placeholder={t('step.placeholders.id')}
           />
@@ -46,6 +47,7 @@ export function StepEditor({ step, onRename, onUpdate }: StepEditorProps) {
           <input
             type="text"
             value={step.label}
+            data-testid="cb-steps-label"
             onChange={(event) => onUpdate({ label: event.target.value })}
             placeholder={t('step.placeholders.label')}
           />
@@ -56,6 +58,7 @@ export function StepEditor({ step, onRename, onUpdate }: StepEditorProps) {
           <input
             type="text"
             value={step.category}
+            data-testid="cb-steps-category"
             onChange={(event) => onUpdate({ category: event.target.value })}
             placeholder={t('step.placeholders.category')}
           />

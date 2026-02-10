@@ -69,7 +69,7 @@ export function CheckpointEditor({
       <section className="cb-panel">
         <div className="cb-panel-header">
           <h2>{t('checkpoint.editorTitle')}</h2>
-          <button type="button" onClick={onAddCheckpoint}>
+          <button type="button" onClick={onAddCheckpoint} data-testid="cb-checkpoints-add">
             {t('checkpoint.addButton')}
           </button>
         </div>
@@ -82,19 +82,20 @@ export function CheckpointEditor({
     <section className="cb-panel">
       <div className="cb-panel-header">
         <h2>{t('checkpoint.editorTitle')}</h2>
-        <button type="button" onClick={onAddCheckpoint}>
+        <button type="button" onClick={onAddCheckpoint} data-testid="cb-checkpoints-add">
           {t('checkpoint.addButton')}
         </button>
       </div>
       <p>{t('checkpoint.editorHelp')}</p>
 
       <div className="cb-checkpoint-tabs">
-        {step.checkpoints.map((checkpoint) => (
+        {step.checkpoints.map((checkpoint, index) => (
           <button
             key={checkpoint.id}
             type="button"
             className={checkpoint.id === selectedCheckpoint.id ? 'is-selected' : ''}
             onClick={() => onSelectCheckpoint(checkpoint.id)}
+            data-testid={`cb-checkpoints-tab-${index}`}
           >
             {checkpoint.label || checkpoint.id}
           </button>
@@ -107,6 +108,7 @@ export function CheckpointEditor({
           <input
             type="text"
             value={selectedCheckpoint.label}
+            data-testid="cb-checkpoints-label"
             onChange={(event) =>
               onUpdateCheckpoint(selectedCheckpoint.id, {
                 label: event.target.value,
@@ -283,6 +285,7 @@ export function CheckpointEditor({
               <input
                 type="text"
                 value={selectedCheckpoint.category}
+                data-testid="cb-checkpoints-category"
                 onChange={(event) =>
                   onUpdateCheckpoint(selectedCheckpoint.id, {
                     category: event.target.value,
@@ -320,6 +323,7 @@ export function CheckpointEditor({
         <button
           type="button"
           onClick={() => setShowTechnicalFields((value) => !value)}
+          data-testid="cb-checkpoints-toggle-technical"
         >
           {showTechnicalFields ? t('checkpoint.hideTechnical') : t('checkpoint.showTechnical')}
         </button>

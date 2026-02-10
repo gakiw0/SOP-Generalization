@@ -5,9 +5,20 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:fixed": "vite --host 127.0.0.1 --port 4173 --strictPort",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "mcp:register": "node ./scripts/mcp/register-codex-mcp.mjs",
+    "mcp:check": "node ./scripts/mcp/check-codex-mcp.mjs",
+    "mcp:prep": "playwright install chromium",
+    "mcp:up": "npm run dev:fixed",
+    "mcp:start": "npm run mcp:register && npm run mcp:prep && npm run mcp:up",
+    "mcp:ready": "wait-on http://127.0.0.1:4173",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:local": "concurrently -k -s first -n app,e2e \"npm run mcp:up\" \"npm run mcp:ready && npm run test:e2e\"",
+    "verify:ui": "npm run lint && npm run build && npm run test:e2e"
   },
   "dependencies": {
     "i18next": "^25.8.4",
@@ -17,6 +28,8 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
+    "@playwright/mcp": "latest",
+    "@playwright/test": "^1.49.1",
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
@@ -25,8 +38,10 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
+    "concurrently": "^9.1.2",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",
-    "vite": "^7.2.4"
+    "vite": "^7.2.4",
+    "wait-on": "^8.0.4"
   }
 }
