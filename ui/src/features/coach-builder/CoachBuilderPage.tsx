@@ -1,6 +1,11 @@
 import { useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { createInitialState, normalizeDraftForExport } from './draftTypes'
+import {
+  createInitialState,
+  normalizeDraftForExport,
+  type ConditionType,
+} from './draftTypes'
+import { getPluginCapability } from './capabilities'
 import { downloadRuleSetJson } from './export'
 import { importDraftFromFile, type ImportMessageKey } from './import'
 import { toRuleSetSchemaV1 } from './mappers'
@@ -29,6 +34,16 @@ type StatusMessage = {
 type WorkflowStage = 'setup' | 'steps' | 'review'
 
 const WORKFLOW_STAGES: WorkflowStage[] = ['setup', 'steps', 'review']
+const KNOWN_CONDITION_TYPES: ConditionType[] = [
+  'threshold',
+  'range',
+  'boolean',
+  'event_exists',
+  'composite',
+  'trend',
+  'angle',
+  'distance',
+]
 
 export function CoachBuilderPage() {
   const { t, i18n } = useTranslation()
@@ -45,6 +60,19 @@ export function CoachBuilderPage() {
     () => state.draft.steps.find((step) => step.id === state.selectedStepId) ?? null,
     [state.draft.steps, state.selectedStepId]
   )
+  const activeCapability = useMemo(
+    () => getPluginCapability(state.draft.metadata.sport.trim()),
+    [state.draft.metadata.sport]
+  )
+  const supportedConditionTypes = useMemo(() => {
+    if (!activeCapability) return KNOWN_CONDITION_TYPES
+    const typeSet = new Set(activeCapability.supported_condition_types)
+    return KNOWN_CONDITION_TYPES.filter((type) => typeSet.has(type))
+  }, [activeCapability])
+  const stepMetricCandidates = useMemo(() => {
+    if (!selectedStep || !activeCapability) return []
+    return activeCapability.metrics_by_phase[selectedStep.id] ?? activeCapability.all_metrics
+  }, [activeCapability, selectedStep])
 
   const checkpointLocator = useMemo(
     () =>
@@ -98,7 +126,7 @@ export function CoachBuilderPage() {
 
   const runValidation = () => {
     const ruleSet = toRuleSetSchemaV1(normalizeDraftForExport(state.draft))
-    const errors = validateRuleSet(ruleSet)
+    const errors = validateRuleSet(ruleSet, activeCapability)
     setValidationErrors(errors)
     setValidationStatus(errors.length === 0 ? 'pass' : 'fail')
     setHasValidated(true)
@@ -132,6 +160,16 @@ export function CoachBuilderPage() {
       setHasValidated(true)
 
       if (imported.draft) {
+        const importedRuleSet = toRuleSetSchemaV1(normalizeDraftForExport(imported.draft))
+        const importedCapability = getPluginCapability(imported.draft.metadata.sport.trim())
+        const capabilityErrors = validateRuleSet(importedRuleSet, importedCapability)
+        setValidationErrors(capabilityErrors)
+        setValidationStatus(capabilityErrors.length === 0 ? 'pass' : 'fail')
+        setStatusMessage(
+          capabilityErrors.length === 0
+            ? { key: 'import.success' }
+            : { key: 'import.validation_failed', params: { count: capabilityErrors.length } }
+        )
         suppressValidationResetRef.current = true
         dispatch({ type: 'draft/replace', draft: imported.draft })
       }
@@ -321,6 +359,7 @@ export function CoachBuilderPage() {
           <div className="cb-step-workspace">
             <StepEditor
               step={selectedStep}
+              metricCandidates={stepMetricCandidates}
               onRename={(nextId) => {
                 if (!selectedStep) return
                 dispatch({ type: 'step/rename', stepId: selectedStep.id, nextId })
@@ -349,6 +388,8 @@ export function CoachBuilderPage() {
             <CheckpointEditor
               step={selectedStep}
               stepIds={state.draft.steps.map((step) => step.id)}
+              supportedConditionTypes={supportedConditionTypes}
+              metricCandidates={stepMetricCandidates}
               selectedCheckpointId={state.selectedCheckpointId}
               expertEnabled={
                 state.selectedCheckpointId != null &&

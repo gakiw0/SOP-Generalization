@@ -19,13 +19,13 @@
   },
   "page": {
     "title": "Coach JSON Builder",
-    "subtitle": "Build your comparison logic in a guided coach workflow."
+    "subtitle": "Build 1v1 player-vs-coach comparison logic in a guided workflow."
   },
   "workflow": {
     "setup": {
       "label": "Setup",
-      "description": "Start with basic information before editing details.",
-      "footerHint": "Set basic info first, then continue to motion steps."
+      "description": "Set sport and rule identity for a single player-vs-coach comparison.",
+      "footerHint": "Set 1v1 comparison basics first, then continue to motion steps."
     },
     "steps": {
       "label": "Step",
@@ -39,8 +39,8 @@
     },
     "review": {
       "label": "Review",
-      "description": "Validate and export only when all required fields are ready.",
-      "footerHint": "Fix validation issues if needed, then export JSON."
+      "description": "Validate and export only when schema and runtime capability checks pass.",
+      "footerHint": "Fix validation issues first. Export is disabled while capability errors remain."
     },
     "summary": {
       "steps": "Total steps",
@@ -70,6 +70,8 @@
     "checkpointCount": "{{count}} checkpoint(s)",
     "editorTitle": "Step editor",
     "editorHelp": "Each step is a motion phase (for example: prepare, load, swing, finish).",
+    "metricCandidatesTitle": "Available metrics for this step",
+    "metricCandidatesEmpty": "No metric candidates found for this step.",
     "emptySelect": "Select a step to edit.",
     "uncategorized": "uncategorized",
     "fields": {
@@ -306,7 +308,9 @@
       "condition_required": "At least one condition is required.",
       "duplicate_condition_id": "Duplicate condition id '{{id}}'.",
       "condition_type_invalid": "Unsupported condition type '{{type}}'.",
+      "unsupported_condition_type": "Condition type '{{type}}' is not supported by runtime for this sport.",
       "metric_required": "Metric is required.",
+      "unsupported_metric": "Metric '{{metric}}' is not available for phase '{{phase}}' in this sport runtime.",
       "op_invalid": "Operator is invalid.",
       "value_number_required": "Value must be a number.",
       "value_pair_required": "Value must be a number pair [min, max].",

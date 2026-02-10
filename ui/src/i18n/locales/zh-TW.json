@@ -19,13 +19,13 @@
   },
   "page": {
     "title": "Coach JSON Builder",
-    "subtitle": "以教練工作流程逐步建立比較用 JSON。"
+    "subtitle": "透過引導流程建立選手1對教練1的比較 JSON。"
   },
   "workflow": {
     "setup": {
       "label": "準備",
-      "description": "先填寫基本資訊，再進入細節編輯。",
-      "footerHint": "完成基本資訊後，請繼續到動作步驟。"
+      "description": "設定單一選手與單一教練比較的運動項目與規則識別資訊。",
+      "footerHint": "先完成 1v1 比較基本設定，再進入動作步驟。"
     },
     "steps": {
       "label": "步驟",
@@ -39,8 +39,8 @@
     },
     "review": {
       "label": "確認",
-      "description": "先驗證，無錯誤時再匯出 JSON。",
-      "footerHint": "若有錯誤先修正，再執行匯出。"
+      "description": "僅在 schema 驗證與執行能力驗證都通過時才可匯出 JSON。",
+      "footerHint": "若仍有能力錯誤將無法匯出，請先修正後再匯出。"
     },
     "summary": {
       "steps": "步驟總數",
@@ -70,6 +70,8 @@
     "checkpointCount": "{{count}} 個檢查點",
     "editorTitle": "步驟編輯",
     "editorHelp": "一個步驟代表一個動作階段（例如：準備、啟動、揮棒、收尾）。",
+    "metricCandidatesTitle": "此步驟可用指標",
+    "metricCandidatesEmpty": "此步驟找不到可用指標候選。",
     "emptySelect": "請先選擇要編輯的步驟。",
     "uncategorized": "未分類",
     "fields": {
@@ -306,7 +308,9 @@
       "condition_required": "至少需要一個條件。",
       "duplicate_condition_id": "condition id '{{id}}' 重複。",
       "condition_type_invalid": "不支援的 condition type '{{type}}'。",
+      "unsupported_condition_type": "condition type '{{type}}' 不受此運動項目執行階段支援。",
       "metric_required": "metric 為必填。",
+      "unsupported_metric": "metric '{{metric}}' 在此運動項目的 phase '{{phase}}' 中不可用。",
       "op_invalid": "運算子不合法。",
       "value_number_required": "值必須是數字。",
       "value_pair_required": "值必須是數字對 [min, max]。",

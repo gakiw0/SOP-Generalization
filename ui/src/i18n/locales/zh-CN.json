@@ -19,13 +19,13 @@
   },
   "page": {
     "title": "Coach JSON Builder",
-    "subtitle": "通过教练工作流逐步生成比较用 JSON。"
+    "subtitle": "通过引导式流程生成选手1对教练1的比较 JSON。"
   },
   "workflow": {
     "setup": {
       "label": "准备",
-      "description": "先填写基础信息，再进入详细编辑。",
-      "footerHint": "完成基础信息后，继续到动作步骤。"
+      "description": "为单个选手与单个教练的比较设置运动项目与规则标识。",
+      "footerHint": "先完成 1v1 比较的基础设置，再进入动作步骤。"
     },
     "steps": {
       "label": "步骤",
@@ -39,8 +39,8 @@
     },
     "review": {
       "label": "检查",
-      "description": "先校验，再在无错误时导出 JSON。",
-      "footerHint": "如有错误先修复，再导出 JSON。"
+      "description": "仅当 schema 校验与运行时能力校验都通过时才可导出 JSON。",
+      "footerHint": "仍有能力错误时无法导出，请先修复后再导出。"
     },
     "summary": {
       "steps": "步骤总数",
@@ -70,6 +70,8 @@
     "checkpointCount": "{{count}} 个检查点",
     "editorTitle": "步骤编辑",
     "editorHelp": "一个步骤就是一个动作阶段（例如：准备、加载、挥棒、收杆）。",
+    "metricCandidatesTitle": "当前步骤可用指标",
+    "metricCandidatesEmpty": "当前步骤未找到可用指标候选。",
     "emptySelect": "请选择一个步骤进行编辑。",
     "uncategorized": "未分类",
     "fields": {
@@ -306,7 +308,9 @@
       "condition_required": "至少需要一个条件。",
       "duplicate_condition_id": "condition id '{{id}}' 重复。",
       "condition_type_invalid": "不支持的 condition type '{{type}}'。",
+      "unsupported_condition_type": "condition type '{{type}}' 不受该运动项目运行时支持。",
       "metric_required": "metric 为必填项。",
+      "unsupported_metric": "metric '{{metric}}' 在该运动项目的 phase '{{phase}}' 中不可用。",
       "op_invalid": "运算符不合法。",
       "value_number_required": "值必须为数字。",
       "value_pair_required": "值必须为数字对 [min, max]。",

@@ -19,13 +19,13 @@
   },
   "page": {
     "title": "Coach JSON Builder",
-    "subtitle": "コーチ向けの作業フローで比較用 JSON を作成します。"
+    "subtitle": "選手1対コーチ1の比較ロジックを作業フローで作成します。"
   },
   "workflow": {
     "setup": {
       "label": "準備",
-      "description": "まず基本情報を入力してから詳細編集に進みます。",
-      "footerHint": "基本情報を入力したら、次にステップ定義へ進んでください。"
+      "description": "1対1比較用の競技とルール識別情報を設定します。",
+      "footerHint": "1対1比較の基本設定を終えてからステップ定義へ進んでください。"
     },
     "steps": {
       "label": "ステップ",
@@ -39,8 +39,8 @@
     },
     "review": {
       "label": "確認",
-      "description": "検証を実行し、問題がなければ JSON を書き出します。",
-      "footerHint": "エラーがあれば修正し、問題がなければ書き出してください。"
+      "description": "スキーマ検証とランタイム能力検証が通過したら JSON を書き出します。",
+      "footerHint": "能力エラーが残っている間は書き出せません。先に修正してください。"
     },
     "summary": {
       "steps": "ステップ数",
@@ -70,6 +70,8 @@
     "checkpointCount": "チェックポイント {{count}} 件",
     "editorTitle": "ステップ編集",
     "editorHelp": "1ステップ = 1つの動作フェーズ（例: 構え、始動、スイング、フォロー）。",
+    "metricCandidatesTitle": "このステップで利用できるメトリクス",
+    "metricCandidatesEmpty": "このステップで利用可能なメトリクス候補が見つかりません。",
     "emptySelect": "編集するステップを選択してください。",
     "uncategorized": "未分類",
     "fields": {
@@ -306,7 +308,9 @@
       "condition_required": "条件を1件以上追加してください。",
       "duplicate_condition_id": "condition id '{{id}}' が重複しています。",
       "condition_type_invalid": "未対応の condition type '{{type}}' です。",
+      "unsupported_condition_type": "condition type '{{type}}' はこの競技ランタイムで未対応です。",
       "metric_required": "metric は必須です。",
+      "unsupported_metric": "metric '{{metric}}' はこの競技の phase '{{phase}}' では利用できません。",
       "op_invalid": "演算子が不正です。",
       "value_number_required": "値は数値で指定してください。",
       "value_pair_required": "値は [最小, 最大] のペアで指定してください。",
