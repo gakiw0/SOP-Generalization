@@ -177,6 +177,29 @@
   gap: 0.5rem !important;
 }
 
+.cb-add-condition-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cb-add-condition-row select {
+  border: 1px solid #c6ceda;
+  border-radius: 8px;
+  padding: 0.35rem 0.5rem;
+  background: #ffffff;
+}
+
+.cb-condition-expert {
+  border-color: #9c7f24;
+  background: #fffbef;
+}
+
+.cb-condition-locked {
+  border-color: #b7a87a;
+  background: #fbf7ea;
+}
+
 @media (max-width: 900px) {
   .cb-layout {
     grid-template-columns: 1fr;

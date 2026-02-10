@@ -96,6 +96,18 @@ export function CoachBuilderPage() {
         step={selectedStep}
         stepIds={state.draft.steps.map((step) => step.id)}
         selectedCheckpointId={state.selectedCheckpointId}
+        expertEnabled={
+          state.selectedCheckpointId != null &&
+          state.expertCheckpointIds.includes(state.selectedCheckpointId)
+        }
+        onToggleExpert={(enabled) => {
+          if (!state.selectedCheckpointId) return
+          dispatch({
+            type: 'checkpoint/toggleExpert',
+            checkpointId: state.selectedCheckpointId,
+            enabled,
+          })
+        }}
         onSelectCheckpoint={(checkpointId) =>
           dispatch({ type: 'checkpoint/select', checkpointId })
         }
@@ -116,9 +128,14 @@ export function CoachBuilderPage() {
             patch,
           })
         }}
-        onAddCondition={(checkpointId) => {
+        onAddCondition={(checkpointId, conditionType) => {
           if (!selectedStep) return
-          dispatch({ type: 'condition/add', stepId: selectedStep.id, checkpointId })
+          dispatch({
+            type: 'condition/add',
+            stepId: selectedStep.id,
+            checkpointId,
+            conditionType,
+          })
         }}
         onUpdateCondition={(checkpointId, conditionId, patch) => {
           if (!selectedStep) return

@@ -1,15 +1,25 @@
-import type { CheckpointDraft, ConditionDraft, StepDraft } from '../draftTypes'
+import { useMemo, useState } from 'react'
+import {
+  conditionTypeIsBasic,
+  type CheckpointDraft,
+  type ConditionDraft,
+  type ConditionType,
+  type StepDraft,
+} from '../draftTypes'
 import { ConditionEditorBasic } from './ConditionEditorBasic'
+import { ConditionEditorExpert } from './ConditionEditorExpert'
 
 type CheckpointEditorProps = {
   step: StepDraft | null
   stepIds: string[]
   selectedCheckpointId: string | null
+  expertEnabled: boolean
+  onToggleExpert: (enabled: boolean) => void
   onSelectCheckpoint: (checkpointId: string) => void
   onAddCheckpoint: () => void
   onRemoveCheckpoint: (checkpointId: string) => void
   onUpdateCheckpoint: (checkpointId: string, patch: Partial<Omit<CheckpointDraft, 'conditions'>>) => void
-  onAddCondition: (checkpointId: string) => void
+  onAddCondition: (checkpointId: string, conditionType?: ConditionType) => void
   onUpdateCondition: (
     checkpointId: string,
     conditionId: string,
@@ -18,10 +28,15 @@ type CheckpointEditorProps = {
   onRemoveCondition: (checkpointId: string, conditionId: string) => void
 }
 
+const BASIC_TYPES: ConditionType[] = ['threshold', 'range', 'boolean', 'composite']
+const EXPERT_TYPES: ConditionType[] = ['event_exists', 'trend', 'angle', 'distance']
+
 export function CheckpointEditor({
   step,
   stepIds,
   selectedCheckpointId,
+  expertEnabled,
+  onToggleExpert,
   onSelectCheckpoint,
   onAddCheckpoint,
   onRemoveCheckpoint,
@@ -30,6 +45,8 @@ export function CheckpointEditor({
   onUpdateCondition,
   onRemoveCondition,
 }: CheckpointEditorProps) {
+  const [newConditionType, setNewConditionType] = useState<ConditionType>('threshold')
+
   if (!step) {
     return (
       <section className="cb-panel">
@@ -41,6 +58,11 @@ export function CheckpointEditor({
 
   const selectedCheckpoint =
     step.checkpoints.find((checkpoint) => checkpoint.id === selectedCheckpointId) ?? step.checkpoints[0] ?? null
+
+  const allowedTypes = useMemo(
+    () => (expertEnabled ? [...BASIC_TYPES, ...EXPERT_TYPES] : [...BASIC_TYPES]),
+    [expertEnabled]
+  )
 
   if (!selectedCheckpoint) {
     return (
@@ -267,6 +289,15 @@ export function CheckpointEditor({
       </div>
 
       <div className="cb-inline-actions">
+        <label className="cb-checkbox-label">
+          <input
+            type="checkbox"
+            checked={expertEnabled}
+            onChange={(event) => onToggleExpert(event.target.checked)}
+          />
+          Enable expert condition types
+        </label>
+
         <button type="button" className="cb-danger" onClick={() => onRemoveCheckpoint(selectedCheckpoint.id)}>
           Remove checkpoint
         </button>
@@ -274,21 +305,69 @@ export function CheckpointEditor({
 
       <div className="cb-panel cb-sub-panel">
         <div className="cb-panel-header">
-          <h3>Conditions (Basic)</h3>
-          <button type="button" onClick={() => onAddCondition(selectedCheckpoint.id)}>
-            Add condition
-          </button>
+          <h3>Conditions</h3>
+          <div className="cb-add-condition-row">
+            <select
+              value={newConditionType}
+              onChange={(event) => setNewConditionType(event.target.value as ConditionType)}
+            >
+              {allowedTypes.map((type) => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
+              ))}
+            </select>
+            <button
+              type="button"
+              onClick={() => onAddCondition(selectedCheckpoint.id, newConditionType)}
+            >
+              Add condition
+            </button>
+          </div>
         </div>
 
-        {selectedCheckpoint.conditions.map((condition) => (
-          <ConditionEditorBasic
-            key={condition.id}
-            condition={condition}
-            allConditionIds={selectedCheckpoint.conditions.map((item) => item.id)}
-            onUpdate={(patch) => onUpdateCondition(selectedCheckpoint.id, condition.id, patch)}
-            onRemove={() => onRemoveCondition(selectedCheckpoint.id, condition.id)}
-          />
-        ))}
+        {selectedCheckpoint.conditions.map((condition) => {
+          if (conditionTypeIsBasic(condition.type)) {
+            return (
+              <ConditionEditorBasic
+                key={condition.id}
+                condition={condition}
+                allConditionIds={selectedCheckpoint.conditions.map((item) => item.id)}
+                onUpdate={(patch) => onUpdateCondition(selectedCheckpoint.id, condition.id, patch)}
+                onRemove={() => onRemoveCondition(selectedCheckpoint.id, condition.id)}
+              />
+            )
+          }
+
+          if (!expertEnabled) {
+            return (
+              <article key={condition.id} className="cb-condition-card cb-condition-locked">
+                <div className="cb-condition-header">
+                  <h4>
+                    Condition ({condition.type})
+                  </h4>
+                  <button
+                    type="button"
+                    className="cb-danger"
+                    onClick={() => onRemoveCondition(selectedCheckpoint.id, condition.id)}
+                  >
+                    Remove
+                  </button>
+                </div>
+                <p>Enable expert mode to edit this condition type.</p>
+              </article>
+            )
+          }
+
+          return (
+            <ConditionEditorExpert
+              key={condition.id}
+              condition={condition}
+              onUpdate={(patch) => onUpdateCondition(selectedCheckpoint.id, condition.id, patch)}
+              onRemove={() => onRemoveCondition(selectedCheckpoint.id, condition.id)}
+            />
+          )
+        })}
       </div>
     </section>
   )
