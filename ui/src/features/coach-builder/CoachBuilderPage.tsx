@@ -394,110 +394,122 @@ export function CoachBuilderPage() {
 
       {workflowStage === 'setup' && (
         <>
-          <section className="cb-panel">
-            <h2>{t('metadata.sectionTitle')}</h2>
-            <p>{t('metadata.help')}</p>
-            <div className="cb-field-grid">
-              <label>
-                {t('metadata.ruleSetId')}
-                <input
-                  type="text"
-                  value={state.draft.metadata.ruleSetId}
-                  data-testid="cb-setup-rule-set-id"
-                  onChange={(event) =>
-                    dispatch({ type: 'meta/set', field: 'ruleSetId', value: event.target.value })
-                  }
-                />
-              </label>
+          <section className="cb-panel cb-stage-section cb-setup-shell">
+            <div className="cb-section-intro">
+              <h2>{t('metadata.sectionTitle')}</h2>
+              <p>{t('metadata.help')}</p>
+            </div>
 
-              <label>
-                {t('metadata.sport')}
-                <input
-                  type="text"
-                  value={state.draft.metadata.sport}
-                  data-testid="cb-setup-sport"
-                  onChange={(event) =>
-                    dispatch({ type: 'meta/set', field: 'sport', value: event.target.value })
-                  }
-                />
-              </label>
+            <div className="cb-setup-grid">
+              <section className="cb-setup-card">
+                <h3>{t('metadata.ruleSetId')}</h3>
+                <p className="cb-card-help-text">{t('workflow.setup.description')}</p>
+                <div className="cb-field-grid">
+                  <label>
+                    {t('metadata.ruleSetId')}
+                    <input
+                      type="text"
+                      value={state.draft.metadata.ruleSetId}
+                      data-testid="cb-setup-rule-set-id"
+                      onChange={(event) =>
+                        dispatch({ type: 'meta/set', field: 'ruleSetId', value: event.target.value })
+                      }
+                    />
+                  </label>
+                  <label>
+                    {t('metadata.title')}
+                    <input
+                      type="text"
+                      value={state.draft.metadata.title}
+                      data-testid="cb-setup-title"
+                      onChange={(event) =>
+                        dispatch({ type: 'meta/set', field: 'title', value: event.target.value })
+                      }
+                    />
+                  </label>
+                  <label>
+                    {t('metadata.sport')}
+                    <input
+                      type="text"
+                      value={state.draft.metadata.sport}
+                      data-testid="cb-setup-sport"
+                      onChange={(event) =>
+                        dispatch({ type: 'meta/set', field: 'sport', value: event.target.value })
+                      }
+                    />
+                  </label>
+                  <label>
+                    {t('metadata.ruleVersion')}
+                    <input
+                      type="text"
+                      value={state.draft.metadata.sportVersion}
+                      data-testid="cb-setup-sport-version"
+                      onChange={(event) =>
+                        dispatch({ type: 'meta/set', field: 'sportVersion', value: event.target.value })
+                      }
+                    />
+                  </label>
+                </div>
+              </section>
 
-              <label>
-                {t('metadata.metricProfileId')}
-                <select
-                  value={state.draft.metadata.metricProfileId}
-                  data-testid="cb-setup-profile-id"
-                  onChange={handleProfileChange}
-                >
-                  {selectableProfileOptions.map((profile) => (
-                    <option key={profile.id} value={profile.id}>
-                      {formatProfileLabel(profile, t).displayName} ({profile.id})
-                    </option>
-                  ))}
-                </select>
-                {selectedProfileOption ? (
-                  <span className="cb-field-help">
-                    {selectedProfileOption.type === 'preset' && selectedProfileOption.preset_id
-                      ? `${selectedProfileTypeLabel} · preset ${selectedProfileOption.preset_id}`
-                      : selectedProfileTypeLabel}
-                  </span>
-                ) : null}
-              </label>
+              <section className="cb-setup-card">
+                <h3>{t('metadata.metricProfileId')}</h3>
+                <p className="cb-card-help-text">{t('workflow.setup.footerHint')}</p>
+                <div className="cb-field-grid">
+                  <label className="cb-full-width">
+                    {t('metadata.metricProfileId')}
+                    <select
+                      value={state.draft.metadata.metricProfileId}
+                      data-testid="cb-setup-profile-id"
+                      onChange={handleProfileChange}
+                    >
+                      {selectableProfileOptions.map((profile) => (
+                        <option key={profile.id} value={profile.id}>
+                          {formatProfileLabel(profile, t).displayName} ({profile.id})
+                        </option>
+                      ))}
+                    </select>
+                    {selectedProfileOption ? (
+                      <span className="cb-field-help">
+                        {selectedProfileOption.type === 'preset' && selectedProfileOption.preset_id
+                          ? `${selectedProfileTypeLabel} · preset ${selectedProfileOption.preset_id}`
+                          : selectedProfileTypeLabel}
+                      </span>
+                    ) : null}
+                  </label>
 
-              <label>
-                {t('metadata.metricProfileType')}
-                <select
-                  value={state.draft.metadata.metricProfileType}
-                  data-testid="cb-setup-profile-type"
-                  disabled
-                >
-                  <option value="generic">{t('metadata.profileType.generic')}</option>
-                  <option value="preset">{t('metadata.profileType.preset')}</option>
-                </select>
-              </label>
+                  <label>
+                    {t('metadata.metricProfileType')}
+                    <select
+                      value={state.draft.metadata.metricProfileType}
+                      data-testid="cb-setup-profile-type"
+                      disabled
+                    >
+                      <option value="generic">{t('metadata.profileType.generic')}</option>
+                      <option value="preset">{t('metadata.profileType.preset')}</option>
+                    </select>
+                  </label>
 
-              {state.draft.metadata.metricProfileType === 'preset' && (
-                <label>
-                  {t('metadata.metricPresetId')}
-                  <select
-                    value={state.draft.metadata.metricPresetId}
-                    data-testid="cb-setup-preset-id"
-                    onChange={(event) =>
-                      dispatch({ type: 'meta/set', field: 'metricPresetId', value: event.target.value })
-                    }
-                  >
-                    {selectablePresetIds.map((presetId) => (
-                      <option key={presetId} value={presetId}>
-                        {t(`presets.${presetId}`, { defaultValue: humanizeIdentifier(presetId) })} ({presetId})
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              )}
-
-              <label>
-                {t('metadata.ruleVersion')}
-                <input
-                  type="text"
-                  value={state.draft.metadata.sportVersion}
-                  data-testid="cb-setup-sport-version"
-                  onChange={(event) =>
-                    dispatch({ type: 'meta/set', field: 'sportVersion', value: event.target.value })
-                  }
-                />
-              </label>
-
-              <label className="cb-full-width">
-                {t('metadata.title')}
-                <input
-                  type="text"
-                  value={state.draft.metadata.title}
-                  data-testid="cb-setup-title"
-                  onChange={(event) =>
-                    dispatch({ type: 'meta/set', field: 'title', value: event.target.value })
-                  }
-                />
-              </label>
+                  {state.draft.metadata.metricProfileType === 'preset' && (
+                    <label>
+                      {t('metadata.metricPresetId')}
+                      <select
+                        value={state.draft.metadata.metricPresetId}
+                        data-testid="cb-setup-preset-id"
+                        onChange={(event) =>
+                          dispatch({ type: 'meta/set', field: 'metricPresetId', value: event.target.value })
+                        }
+                      >
+                        {selectablePresetIds.map((presetId) => (
+                          <option key={presetId} value={presetId}>
+                            {t(`presets.${presetId}`, { defaultValue: humanizeIdentifier(presetId) })} ({presetId})
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  )}
+                </div>
+              </section>
             </div>
           </section>
         </>
