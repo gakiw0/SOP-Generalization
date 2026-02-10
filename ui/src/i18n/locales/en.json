@@ -31,12 +31,12 @@
       "footerHint": "Pick a template, then continue."
     },
     "steps": {
-      "label": "Step",
+      "label": "Steps",
       "description": "Define each step and its checkpoints together in one workspace.",
       "footerHint": "Finish step and checkpoint details, then continue."
     },
     "checkpoints": {
-      "label": "Checkpoint",
+      "label": "Checkpoints",
       "description": "Add pass/fail checkpoints for the selected step.",
       "footerHint": "After checkpoints are set, continue to validation and export."
     },
@@ -110,7 +110,7 @@
     "metricCandidatesTitle": "Available metrics for this step",
     "metricCandidatesEmpty": "No metric candidates found for this step.",
     "emptySelect": "Select a step to edit.",
-    "uncategorized": "uncategorized",
+    "uncategorized": "Uncategorized",
     "fields": {
       "id": "Step ID (internal)",
       "label": "Step label",

@@ -11,8 +11,8 @@
     "validate": "検証",
     "language": "言語",
     "none": "なし",
-    "showAdvanced": "上級項目を表示",
-    "hideAdvanced": "上級項目を隠す"
+    "showAdvanced": "詳細項目を表示",
+    "hideAdvanced": "詳細項目を非表示"
   },
   "language": {
     "ja": "日本語",
@@ -21,19 +21,19 @@
     "zh-TW": "繁體中文"
   },
   "page": {
-    "title": "Coach JSON Builder",
-    "subtitle": "選手1対コーチ1の比較ロジックを作業フローで作成します。"
+    "title": "コーチ用JSONビルダー",
+    "subtitle": "選手とコーチ（1対1）の比較ロジックを、手順に沿って作成します。"
   },
   "workflow": {
     "setup": {
       "label": "準備",
-      "description": "選手1人とコーチ1人を比較するための基本情報を設定します。",
-      "footerHint": "比較テンプレートを選んで次へ進んでください。"
+      "description": "選手とコーチ（1対1）を比較するための基本情報を設定します。",
+      "footerHint": "比較テンプレートを選んで、次へ進んでください。"
     },
     "steps": {
       "label": "ステップ",
-      "description": "この画面でステップとチェックポイントをまとめて編集します。",
-      "footerHint": "入力が終わったら確認へ進んでください。"
+      "description": "ステップとチェックポイントをまとめて編集します。",
+      "footerHint": "入力が終わったら、確認へ進んでください。"
     },
     "checkpoints": {
       "label": "チェックポイント",
@@ -42,21 +42,21 @@
     },
     "review": {
       "label": "確認",
-      "description": "エラーを確認し、問題がなければ JSON を書き出します。",
-      "footerHint": "問題をすべて修正すると書き出しできます。"
+      "description": "エラーを確認し、問題がなければJSONを書き出します。",
+      "footerHint": "すべての問題を修正すると、書き出しできるようになります。"
     },
     "summary": {
       "steps": "ステップ数",
       "checkpoints": "チェックポイント数",
-      "currentStep": "編集中ステップ"
+      "currentStep": "編集中のステップ"
     }
   },
   "setup": {
-    "handednessTitle": "利き手の選択（コーチメモ）",
-    "handednessHelp": "編集中の用語合わせに使う補助です。書き出しJSONには保存されません。",
+    "handednessTitle": "利き手（メモ）",
+    "handednessHelp": "編集中の用語の統一に使う補助です。書き出すJSONには保存されません。",
     "handednessNote": "この情報はセッション内のみ保持されます。",
-    "rightHanded": "右打ち・右利き",
-    "leftHanded": "左打ち・左利き"
+    "rightHanded": "右利き（右打ち）",
+    "leftHanded": "左利き（左打ち）"
   },
   "metadata": {
     "sectionTitle": "比較設定",
@@ -64,7 +64,7 @@
     "ruleSetId": "比較ID（内部用）",
     "metricProfileId": "比較テンプレート",
     "metricProfileType": "テンプレート種別",
-    "metricPresetId": "おすすめ初期設定",
+    "metricPresetId": "スタータープリセット",
     "sport": "競技",
     "ruleVersion": "ルールバージョン",
     "title": "タイトル",
@@ -102,13 +102,13 @@
   },
   "step": {
     "listTitle": "ステップ",
-    "listHelp": "選手動作の順番でステップを作成してください。",
+    "listHelp": "選手の動作の順番でステップを作成してください。",
     "addButton": "ステップ追加",
-    "checkpointCount": "チェックポイント {{count}} 件",
+    "checkpointCount": "チェックポイント：{{count}}件",
     "editorTitle": "ステップ編集",
-    "editorHelp": "1ステップ = 1つの動作フェーズです（例: 構え、始動、スイング、フォロー）。",
-    "metricCandidatesTitle": "このステップで利用できるメトリクス",
-    "metricCandidatesEmpty": "このステップで利用可能なメトリクス候補が見つかりません。",
+    "editorHelp": "1ステップは1つの動作フェーズです（例：構え、始動、スイング、フォロー）。",
+    "metricCandidatesTitle": "このステップで使えるメトリクス",
+    "metricCandidatesEmpty": "このステップで使えるメトリクス候補がありません。",
     "emptySelect": "編集するステップを選択してください。",
     "uncategorized": "未分類",
     "fields": {
@@ -116,20 +116,20 @@
       "label": "ステップ名",
       "category": "カテゴリ",
       "description": "説明",
-      "jointsHelp": "関節IDはカンマ区切りで入力。下のプリセットも使えます。",
-      "rangeType": "範囲タイプ",
+      "jointsHelp": "関節IDはカンマ区切りで入力できます。下のプリセットも使えます。",
+      "rangeType": "範囲の種類",
       "startFrame": "開始フレーム",
       "endFrame": "終了フレーム",
       "eventName": "イベント名",
-      "preWindowMs": "前ウィンドウ(ms)",
-      "postWindowMs": "後ウィンドウ(ms)",
+      "preWindowMs": "前ウィンドウ（ms）",
+      "postWindowMs": "後ウィンドウ（ms）",
       "jointsOfInterest": "注目関節"
     },
     "rangeType": {
       "frame": "フレーム範囲",
       "event": "イベントウィンドウ"
     },
-    "rangeTypeHelp": "初心者にはフレーム範囲がおすすめです。イベントウィンドウは上級向けです。",
+    "rangeTypeHelp": "初めての方には「フレーム範囲」がおすすめです。「イベントウィンドウ」はイベント基準の上級向けです。",
     "presets": {
       "head": "頭部中心",
       "arms": "腕中心",
@@ -152,7 +152,7 @@
   },
   "jointDiagram": {
     "show": "図を表示",
-    "hide": "図を隠す",
+    "hide": "図を非表示",
     "svgLabel": "OpenPose 25 関節図",
     "interactiveHint": "点をクリックして関節IDを選択/解除できます。",
     "interactiveMaxHint": "点をクリックして関節IDを選択/解除できます（最大{{count}}）。",
@@ -194,21 +194,21 @@
   },
   "checkpoint": {
     "editorTitle": "チェックポイント編集",
-    "editorHelp": "チェックポイント = このステップで何を判定するか。",
-    "emptySelectStep": "まずステップを選択してください。",
-    "emptyNoCheckpoints": "チェックポイントがありません。",
+    "editorHelp": "チェックポイントは、このステップで「何を判定するか」を表します。",
+    "emptySelectStep": "まずステップを選んでください。",
+    "emptyNoCheckpoints": "チェックポイントがまだありません。",
     "addButton": "チェックポイント追加",
     "removeButton": "チェックポイント削除",
-    "showTechnical": "上級項目を表示",
-    "hideTechnical": "上級項目を隠す",
-    "enableExpert": "上級条件を有効化",
+    "showTechnical": "詳細項目を表示",
+    "hideTechnical": "詳細項目を非表示",
+    "enableExpert": "上級条件を有効にする",
     "conditionsTitle": "条件",
-    "conditionsHelp": "まずは基本条件タイプから設定し、必要時のみ上級タイプを使ってください。",
-    "lockedTitle": "条件 ({{type}})",
-    "lockedMessage": "この条件タイプを編集するには上級モードを有効化してください。",
+    "conditionsHelp": "まずは基本条件タイプから設定し、必要なときだけ上級タイプを使ってください。",
+    "lockedTitle": "条件（{{type}}）",
+    "lockedMessage": "この条件タイプを編集するには、上級モードを有効にしてください。",
     "bodyGuide": {
       "title": "部位IDクイックガイド",
-      "help": "条件の joints / pair 入力時に使うIDです。",
+      "help": "条件の joints / pair を入力するときに使うIDです。",
       "head": "頭部: 0",
       "shoulder": "肩: 5, 6",
       "elbow": "肘: 7, 8",
@@ -226,11 +226,11 @@
       "signalType": "判定タイミング",
       "signalTypeHelp": "このチェックポイントをいつ評価するかを選びます。",
       "referenceStep": "基準にするステップ",
-      "directStartFrame": "直接指定 開始フレーム",
-      "directEndFrame": "直接指定 終了フレーム",
+      "directStartFrame": "開始フレーム（直接指定）",
+      "directEndFrame": "終了フレーム（直接指定）",
       "event": "イベント",
-      "windowPreMs": "前ウィンドウ ms",
-      "windowPostMs": "後ウィンドウ ms",
+      "windowPreMs": "前ウィンドウ（ms）",
+      "windowPostMs": "後ウィンドウ（ms）",
       "defaultPhase": "代替ステップ（任意）"
     },
     "placeholders": {
@@ -240,26 +240,26 @@
   "condition": {
     "basicTitle": "条件",
     "basicHelp": "通常は基本条件タイプで十分です。",
-    "expertTitle": "条件 (上級)",
-    "expertHelp": "上級条件は詳細なメトリクス設計を行う場合に使います。",
+    "expertTitle": "条件（上級）",
+    "expertHelp": "上級条件は、より細かなメトリクス設計が必要なときに使います。",
     "addButton": "条件追加",
     "fields": {
       "id": "条件ID（内部用）",
       "type": "タイプ",
       "metric": "メトリクス",
-      "metricOptional": "メトリクス (任意)",
-      "operator": "判定ルール",
+      "metricOptional": "メトリクス（任意）",
+      "operator": "演算子",
       "value": "値",
       "tolerance": "許容値",
       "useAbsolute": "絶対値を使用",
       "logic": "組み合わせ方法",
       "conditionRefs": "参照する条件",
       "event": "イベント",
-      "windowPreMs": "前ウィンドウ ms",
-      "windowPostMs": "後ウィンドウ ms",
+      "windowPreMs": "前ウィンドウ（ms）",
+      "windowPostMs": "後ウィンドウ（ms）",
       "windowFrames": "ウィンドウフレーム数",
-      "joints": "関節点（2または3）",
-      "pair": "関節ペア",
+      "joints": "関節ID（2つまたは3つ）",
+      "pair": "関節IDペア",
       "reference": "参照"
     },
     "type": {
@@ -278,7 +278,7 @@
       "none": "どれも満たさない"
     },
     "reference": {
-      "global": "全体座標基準",
+      "global": "グローバル座標基準",
       "local": "ローカル座標基準"
     },
     "op": {
@@ -310,19 +310,19 @@
     }
   },
   "severity": {
-    "info": "参考",
-    "warn": "注意",
-    "fail": "重要"
+    "info": "情報",
+    "warn": "警告",
+    "fail": "重大"
   },
   "signalType": {
-    "frame_range_ref": "選択ステップの時間帯を使う",
-    "direct": "フレーム範囲を直接指定する",
-    "event_window": "イベント前後の時間帯を使う"
+    "frame_range_ref": "選択中ステップのタイミングを使う",
+    "direct": "フレーム範囲を直接指定",
+    "event_window": "イベント前後のタイミングを使う"
   },
   "validation": {
     "title": "検証",
     "help": "問題項目をクリックすると修正箇所へ移動できます。",
-    "technicalDetails": "技術パスを表示",
+    "technicalDetails": "技術的なパスを表示",
     "location": {
       "setup": "準備",
       "step": "ステップ: {{name}}",
@@ -345,51 +345,51 @@
       "sport": "競技"
     },
     "summary": {
-      "idle": "未検証です。",
+      "idle": "まだ検証していません。",
       "pass": "検証に成功しました。",
       "fail": "検証で {{count}} 件の問題が見つかりました。"
     },
     "code": {
       "required": "必須項目です。",
-      "invalid_semver": "セマンティックバージョン (x.y.z) 形式で入力してください。",
-      "invalid_id_format": "ID形式が不正です。",
-      "duplicate_phase_id": "phase id '{{id}}' が重複しています。",
-      "duplicate_rule_id": "rule id '{{id}}' が重複しています。",
-      "unknown_phase": "phase '{{id}}' が見つかりません。",
-      "phase_range_mode_required": "frame_range または event_window のどちらか1つを指定してください。",
-      "frame_range_invalid": "frame_range は [開始, 終了] の整数(0以上)で指定してください。",
+      "invalid_semver": "セマンティックバージョン（x.y.z）形式で入力してください。",
+      "invalid_id_format": "IDの形式が正しくありません。",
+      "duplicate_phase_id": "ステップID '{{id}}' が重複しています。",
+      "duplicate_rule_id": "チェックポイントID '{{id}}' が重複しています。",
+      "unknown_phase": "ステップ '{{id}}' が見つかりません。",
+      "phase_range_mode_required": "frame_range か event_window のどちらか1つを指定してください。",
+      "frame_range_invalid": "frame_range は [開始, 終了] の整数（0以上）で指定してください。",
       "window_ms_invalid": "window_ms は [pre, post] の数値で指定してください。",
       "integer_array_non_negative": "0以上の整数配列を指定してください。",
-      "signal_ref_required": "signal ref は必須です。",
-      "signal_ref_format": "signal ref は 'phase:<id>' 形式で指定してください。",
-      "signal_type_invalid": "未対応の signal type '{{type}}' です。",
-      "signal_event_required": "signal event は必須です。",
+      "signal_ref_required": "タイミング参照（signal_ref）は必須です。",
+      "signal_ref_format": "タイミング参照（signal_ref）は 'phase:<id>' 形式で指定してください。",
+      "signal_type_invalid": "未対応の signal_type '{{type}}' です。",
+      "signal_event_required": "イベント名（event）は必須です。",
       "condition_required": "条件を1件以上追加してください。",
-      "duplicate_condition_id": "condition id '{{id}}' が重複しています。",
-      "condition_type_invalid": "未対応の condition type '{{type}}' です。",
-      "unsupported_condition_type": "condition type '{{type}}' は現在のプロファイル/ランタイムでは未対応です。",
-      "metric_required": "metric は必須です。",
-      "unsupported_metric": "metric '{{metric}}' は現在のプロファイル/ランタイムの phase '{{phase}}' では利用できません。",
+      "duplicate_condition_id": "条件ID '{{id}}' が重複しています。",
+      "condition_type_invalid": "未対応の条件タイプ '{{type}}' です。",
+      "unsupported_condition_type": "条件タイプ '{{type}}' は、選択中テンプレートでは使えません。",
+      "metric_required": "メトリクスは必須です。",
+      "unsupported_metric": "メトリクス '{{metric}}' は、現在のテンプレートのステップ '{{phase}}' では使えません。",
       "op_invalid": "演算子が不正です。",
       "value_number_required": "値は数値で指定してください。",
       "value_pair_required": "値は [最小, 最大] のペアで指定してください。",
-      "tolerance_number_required": "tolerance は数値で指定してください。",
-      "event_required": "event は必須です。",
+      "tolerance_number_required": "許容値は数値で指定してください。",
+      "event_required": "イベントは必須です。",
       "window_frames_invalid": "window_frames は1以上の整数で指定してください。",
       "joints_invalid": "joints は0以上の整数を2つまたは3つ指定してください。",
       "pair_invalid": "pair は0以上の整数を2つ指定してください。",
-      "logic_invalid": "logic が不正です。",
+      "logic_invalid": "組み合わせ方法が不正です。",
       "condition_refs_required": "composite には参照条件を1件以上指定してください。",
-      "unknown_condition_ref": "condition id '{{id}}' が存在しません。",
-      "score_required": "score 設定は必須です。",
-      "score_mode_invalid": "score mode が不正です。",
-      "pass_score_invalid": "pass_score は数値で指定してください。",
-      "max_score_invalid": "max_score は0以上の数値で指定してください。",
-      "weighted_requires_weights": "score mode が weighted の場合は weights が必要です。",
-      "feedback_condition_ids_required": "feedback.condition_ids は1件以上必要です。",
-      "feedback_unknown_condition": "feedback が未知の condition '{{id}}' を参照しています。",
-      "feedback_message_required": "feedback message は必須です。",
-      "severity_invalid": "severity が不正です。",
+      "unknown_condition_ref": "参照先の条件ID '{{id}}' が存在しません。",
+      "score_required": "スコア設定は必須です。",
+      "score_mode_invalid": "スコア方式（score_mode）が不正です。",
+      "pass_score_invalid": "合格スコア（pass_score）は数値で指定してください。",
+      "max_score_invalid": "最大スコア（max_score）は0以上の数値で指定してください。",
+      "weighted_requires_weights": "スコア方式が weighted の場合は weights が必要です。",
+      "feedback_condition_ids_required": "feedback.condition_ids は1件以上指定してください。",
+      "feedback_unknown_condition": "feedback が存在しない条件 '{{id}}' を参照しています。",
+      "feedback_message_required": "フィードバックメッセージは必須です。",
+      "severity_invalid": "重要度が不正です。",
       "attach_to_ts_invalid": "attach_to_ts は event:<name> または frame:<index> 形式で指定してください。",
       "phases_required": "ステップを1件以上追加してください。",
       "rules_required": "チェックポイントを1件以上追加してください。",
@@ -399,15 +399,15 @@
     }
   },
   "import": {
-    "v1_badge": "v1 読み込みモード: この下書きは schema v2 として書き出されます。",
-    "success": "インポート成功: schema v1 JSON から下書きを読み込みました。",
-    "validation_failed": "インポート失敗: 検証エラーが {{count}} 件あります。",
-    "invalid_json": "インポート失敗: JSON形式が不正です。",
-    "invalid_json_root": "インポート失敗: JSONルートはオブジェクトである必要があります。",
-    "unexpected_error": "インポート失敗: 予期しないエラーが発生しました。"
+    "v1_badge": "v1 互換読み込み: この下書きは schema v2 として書き出されます。",
+    "success": "インポートしました（schema v1 JSON から下書きを作成）。",
+    "validation_failed": "インポートできませんでした：検証エラーが {{count}} 件あります。",
+    "invalid_json": "インポートできませんでした：JSONの形式が正しくありません。",
+    "invalid_json_root": "インポートできませんでした：JSONルートはオブジェクトである必要があります。",
+    "unexpected_error": "インポートできませんでした：予期しないエラーが発生しました。"
   },
   "export": {
     "sectionTitle": "書き出し",
-    "description": "先に検証を実行してください。検証エラーが0件の場合のみ JSON 書き出しが有効になります。"
+    "description": "まず検証を実行してください。検証エラーが0件のときだけ、JSONの書き出しが有効になります。"
   }
 }

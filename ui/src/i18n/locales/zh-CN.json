@@ -21,8 +21,8 @@
     "zh-TW": "繁體中文"
   },
   "page": {
-    "title": "Coach JSON Builder",
-    "subtitle": "通过引导式流程生成选手1对教练1的比较 JSON。"
+    "title": "教练 JSON 构建器",
+    "subtitle": "通过引导式流程创建选手与教练（1对1）的比较 JSON。"
   },
   "workflow": {
     "setup": {
