@@ -25,8 +25,8 @@
   "workflow": {
     "setup": {
       "label": "Setup",
-      "description": "Set profile/runtime identity for a single player-vs-coach comparison.",
-      "footerHint": "Select metric profile first, then continue to motion steps."
+      "description": "Set basic comparison information for one athlete and one coach.",
+      "footerHint": "Choose a comparison template first, then continue to motion steps."
     },
     "steps": {
       "label": "Step",
@@ -40,8 +40,8 @@
     },
     "review": {
       "label": "Review",
-      "description": "Validate and export only when schema and runtime capability checks pass.",
-      "footerHint": "Fix validation issues first. Export is disabled while capability errors remain."
+      "description": "Check for issues before exporting your comparison settings.",
+      "footerHint": "Fix all issues first. Export is disabled until validation passes."
     },
     "summary": {
       "steps": "Total steps",
@@ -57,12 +57,12 @@
     "leftHanded": "Left-handed player"
   },
   "metadata": {
-    "sectionTitle": "Rule set metadata",
-    "help": "Enter core information that identifies this rule set.",
-    "ruleSetId": "Rule set ID",
-    "metricProfileId": "Metric profile ID",
-    "metricProfileType": "Metric profile type",
-    "metricPresetId": "Metric preset ID",
+    "sectionTitle": "Comparison setup",
+    "help": "Enter the basic information for this coaching comparison.",
+    "ruleSetId": "Comparison ID (internal)",
+    "metricProfileId": "Comparison template",
+    "metricProfileType": "Template type",
+    "metricPresetId": "Starter preset",
     "sport": "Sport",
     "ruleVersion": "Rule version",
     "title": "Title"
@@ -79,7 +79,7 @@
     "emptySelect": "Select a step to edit.",
     "uncategorized": "uncategorized",
     "fields": {
-      "id": "Step ID",
+      "id": "Step ID (internal)",
       "label": "Step label",
       "category": "Category",
       "description": "Description",
@@ -90,7 +90,7 @@
       "eventName": "Event name",
       "preWindowMs": "Pre-window (ms)",
       "postWindowMs": "Post-window (ms)",
-      "jointsOfInterest": "Joints of interest (CSV)"
+      "jointsOfInterest": "Focus joints"
     },
     "rangeType": {
       "frame": "Frame range",
@@ -166,9 +166,9 @@
     "emptyNoCheckpoints": "No checkpoints yet.",
     "addButton": "Add checkpoint",
     "removeButton": "Remove checkpoint",
-    "showTechnical": "Show technical fields",
-    "hideTechnical": "Hide technical fields",
-    "enableExpert": "Enable expert condition types",
+    "showTechnical": "Show advanced fields",
+    "hideTechnical": "Hide advanced fields",
+    "enableExpert": "Enable advanced condition types",
     "conditionsTitle": "Conditions",
     "conditionsHelp": "Start with basic condition types. Expert types are optional.",
     "lockedTitle": "Condition ({{type}})",
@@ -185,20 +185,20 @@
       "ankle": "Ankles: 15, 16"
     },
     "fields": {
-      "id": "Checkpoint ID",
+      "id": "Checkpoint ID (internal)",
       "label": "Label",
       "category": "Category",
       "severity": "Severity",
       "description": "Description",
-      "signalType": "Signal type",
-      "signalTypeHelp": "Choose when this checkpoint should be evaluated.",
-      "referenceStep": "Reference step",
+      "signalType": "Timing source",
+      "signalTypeHelp": "Choose how this checkpoint decides its evaluation timing.",
+      "referenceStep": "Timing based on step",
       "directStartFrame": "Direct start frame",
       "directEndFrame": "Direct end frame",
       "event": "Event",
       "windowPreMs": "Window pre ms",
       "windowPostMs": "Window post ms",
-      "defaultPhase": "Default phase (optional)"
+      "defaultPhase": "Fallback step (optional)"
     },
     "placeholders": {
       "description": "Describe what good/bad motion looks like."
@@ -206,60 +206,60 @@
   },
   "condition": {
     "basicTitle": "Condition",
-    "basicHelp": "Basic condition type is recommended for most coach workflows.",
+    "basicHelp": "Start with simple checks. Use advanced checks only when needed.",
     "expertTitle": "Condition (Expert)",
-    "expertHelp": "Expert conditions are intended for advanced metric definitions.",
+    "expertHelp": "Advanced checks are for precise analysis and technical review.",
     "addButton": "Add condition",
     "fields": {
-      "id": "Condition ID",
+      "id": "Condition ID (internal)",
       "type": "Type",
       "metric": "Metric",
       "metricOptional": "Metric (optional)",
-      "operator": "Operator",
+      "operator": "Judgment rule",
       "value": "Value",
       "tolerance": "Tolerance",
       "useAbsolute": "Use absolute value",
-      "logic": "Logic",
-      "conditionRefs": "Condition refs (CSV)",
+      "logic": "How to combine checks",
+      "conditionRefs": "Referenced checks",
       "event": "Event",
       "windowPreMs": "Window pre ms",
       "windowPostMs": "Window post ms",
       "windowFrames": "Window frames",
-      "joints": "Joints (2 or 3, CSV)",
-      "pair": "Pair (CSV)",
+      "joints": "Joint points (2 or 3)",
+      "pair": "Joint pair",
       "reference": "Reference"
     },
     "type": {
-      "threshold": "Threshold",
-      "range": "Range",
-      "boolean": "Boolean",
-      "composite": "Composite",
-      "event_exists": "Event exists",
-      "trend": "Trend",
-      "angle": "Angle",
-      "distance": "Distance"
+      "threshold": "Above / below a value",
+      "range": "Within a range",
+      "boolean": "True / false check",
+      "composite": "Combine multiple checks",
+      "event_exists": "Event happened",
+      "trend": "Moving up / down trend",
+      "angle": "Joint angle check",
+      "distance": "Distance between joints"
     },
     "logic": {
-      "all": "all",
-      "any": "any",
-      "none": "none"
+      "all": "All selected checks",
+      "any": "Any selected check",
+      "none": "None of selected checks"
     },
     "reference": {
-      "global": "global",
-      "local": "local"
+      "global": "Global body axis",
+      "local": "Local body axis"
     },
     "op": {
-      "gte": "gte",
-      "gt": "gt",
-      "lte": "lte",
-      "lt": "lt",
-      "eq": "eq",
-      "neq": "neq",
-      "between": "between",
-      "is_true": "is_true",
-      "is_false": "is_false",
-      "increasing": "increasing",
-      "decreasing": "decreasing"
+      "gte": "Greater than or equal to",
+      "gt": "Greater than",
+      "lte": "Less than or equal to",
+      "lt": "Less than",
+      "eq": "Equal to",
+      "neq": "Not equal to",
+      "between": "Between two values",
+      "is_true": "Condition is true",
+      "is_false": "Condition is false",
+      "increasing": "Increasing",
+      "decreasing": "Decreasing"
     },
     "placeholders": {
       "metric": "head_move_diff_ratio",
@@ -277,18 +277,19 @@
     }
   },
   "severity": {
-    "info": "info",
-    "warn": "warn",
-    "fail": "fail"
+    "info": "Info",
+    "warn": "Warning",
+    "fail": "Critical"
   },
   "signalType": {
-    "frame_range_ref": "frame_range_ref",
-    "direct": "direct",
-    "event_window": "event_window"
+    "frame_range_ref": "Use selected step timing",
+    "direct": "Use fixed frame range",
+    "event_window": "Use event timing window"
   },
   "validation": {
     "title": "Validation",
-    "help": "Click each issue to jump directly to the related step/checkpoint.",
+    "help": "Click each issue to jump to the field that needs fixing.",
+    "technicalDetails": "Show technical path",
     "summary": {
       "idle": "Not validated yet.",
       "pass": "Validation passed.",
@@ -298,23 +299,23 @@
       "required": "This field is required.",
       "invalid_semver": "Must be semantic version format (x.y.z).",
       "invalid_id_format": "ID format is invalid.",
-      "duplicate_phase_id": "Duplicate phase id '{{id}}'.",
+      "duplicate_phase_id": "Step ID '{{id}}' is duplicated.",
       "duplicate_rule_id": "Duplicate rule id '{{id}}'.",
-      "unknown_phase": "Unknown phase '{{id}}'.",
+      "unknown_phase": "Referenced step '{{id}}' was not found.",
       "phase_range_mode_required": "Specify either frame_range or event_window.",
       "frame_range_invalid": "Frame range must be [start, end] with integers >= 0.",
       "window_ms_invalid": "window_ms must be [pre, post] numbers.",
       "integer_array_non_negative": "Values must be integers >= 0.",
       "signal_ref_required": "Signal reference is required.",
-      "signal_ref_format": "Signal ref must use format 'phase:<id>'.",
+      "signal_ref_format": "Timing reference format is invalid.",
       "signal_type_invalid": "Unsupported signal type '{{type}}'.",
       "signal_event_required": "Signal event is required.",
       "condition_required": "At least one condition is required.",
       "duplicate_condition_id": "Duplicate condition id '{{id}}'.",
-      "condition_type_invalid": "Unsupported condition type '{{type}}'.",
-      "unsupported_condition_type": "Condition type '{{type}}' is not supported by the active profile/runtime.",
+      "condition_type_invalid": "This check type '{{type}}' cannot be used.",
+      "unsupported_condition_type": "This check type '{{type}}' is not available in the selected template.",
       "metric_required": "Metric is required.",
-      "unsupported_metric": "Metric '{{metric}}' is not available for phase '{{phase}}' in the active profile/runtime.",
+      "unsupported_metric": "Metric '{{metric}}' is not available for step '{{phase}}' in the selected template.",
       "op_invalid": "Operator is invalid.",
       "value_number_required": "Value must be a number.",
       "value_pair_required": "Value must be a number pair [min, max].",
@@ -324,7 +325,7 @@
       "joints_invalid": "Joints must contain 2 or 3 integers >= 0.",
       "pair_invalid": "Pair must contain 2 integers >= 0.",
       "logic_invalid": "Logic is invalid.",
-      "condition_refs_required": "Composite condition requires at least one reference.",
+      "condition_refs_required": "Combined check needs at least one referenced check.",
       "unknown_condition_ref": "Unknown condition id '{{id}}'.",
       "score_required": "Score settings are required.",
       "score_mode_invalid": "Score mode is invalid.",
@@ -336,8 +337,8 @@
       "feedback_message_required": "Feedback message is required.",
       "severity_invalid": "Severity is invalid.",
       "attach_to_ts_invalid": "attach_to_ts must be event:<name> or frame:<index>.",
-      "phases_required": "Add at least one step/phase.",
-      "rules_required": "Add at least one checkpoint/rule.",
+      "phases_required": "Add at least one step.",
+      "rules_required": "Add at least one checkpoint.",
       "import_invalid_json": "JSON format is invalid.",
       "import_invalid_json_root": "JSON root must be an object.",
       "import_unexpected_error": "Unexpected import error occurred."

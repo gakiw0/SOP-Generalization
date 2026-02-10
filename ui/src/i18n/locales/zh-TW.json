@@ -25,8 +25,8 @@
   "workflow": {
     "setup": {
       "label": "準備",
-      "description": "設定單一選手與單一教練比較的 profile/runtime 識別資訊。",
-      "footerHint": "先選擇指標 profile，再進入動作步驟。"
+      "description": "設定選手與教練一對一比較所需的基本資訊。",
+      "footerHint": "先選擇比較模板，再進入動作步驟。"
     },
     "steps": {
       "label": "步驟",
@@ -40,8 +40,8 @@
     },
     "review": {
       "label": "確認",
-      "description": "僅在 schema 驗證與執行能力驗證都通過時才可匯出 JSON。",
-      "footerHint": "若仍有能力錯誤將無法匯出，請先修正後再匯出。"
+      "description": "先確認問題，沒有錯誤後再匯出 JSON。",
+      "footerHint": "所有問題修正前，匯出會保持停用。"
     },
     "summary": {
       "steps": "步驟總數",
@@ -57,12 +57,12 @@
     "leftHanded": "左手/左打選手"
   },
   "metadata": {
-    "sectionTitle": "規則集資訊",
-    "help": "填寫識別此規則集的基本資訊。",
-    "ruleSetId": "規則集 ID",
-    "metricProfileId": "指標 Profile ID",
-    "metricProfileType": "指標 Profile 類型",
-    "metricPresetId": "指標 Preset ID",
+    "sectionTitle": "比較設定",
+    "help": "填寫本次教練比較的基本資訊。",
+    "ruleSetId": "比較 ID（內部）",
+    "metricProfileId": "比較模板",
+    "metricProfileType": "模板類型",
+    "metricPresetId": "推薦預設",
     "sport": "運動項目",
     "ruleVersion": "規則版本",
     "title": "標題"
@@ -79,7 +79,7 @@
     "emptySelect": "請先選擇要編輯的步驟。",
     "uncategorized": "未分類",
     "fields": {
-      "id": "步驟 ID",
+      "id": "步驟 ID（內部）",
       "label": "步驟名稱",
       "category": "分類",
       "description": "說明",
@@ -90,7 +90,7 @@
       "eventName": "事件名稱",
       "preWindowMs": "前視窗(ms)",
       "postWindowMs": "後視窗(ms)",
-      "jointsOfInterest": "關注關節 (CSV)"
+      "jointsOfInterest": "關注關節"
     },
     "rangeType": {
       "frame": "影格範圍",
@@ -166,9 +166,9 @@
     "emptyNoCheckpoints": "目前沒有檢查點。",
     "addButton": "新增檢查點",
     "removeButton": "刪除檢查點",
-    "showTechnical": "顯示技術欄位",
-    "hideTechnical": "隱藏技術欄位",
-    "enableExpert": "啟用進階條件類型",
+    "showTechnical": "顯示進階欄位",
+    "hideTechnical": "隱藏進階欄位",
+    "enableExpert": "啟用進階條件",
     "conditionsTitle": "條件",
     "conditionsHelp": "建議先使用基本條件類型，必要時再啟用進階類型。",
     "lockedTitle": "條件 ({{type}})",
@@ -185,20 +185,20 @@
       "ankle": "腳踝: 15, 16"
     },
     "fields": {
-      "id": "檢查點 ID",
+      "id": "檢查點 ID（內部）",
       "label": "標籤",
       "category": "分類",
       "severity": "嚴重等級",
       "description": "說明",
-      "signalType": "訊號類型",
-      "signalTypeHelp": "選擇此檢查點的判定時機。",
-      "referenceStep": "參照步驟",
+      "signalType": "判定時機來源",
+      "signalTypeHelp": "選擇此檢查點應該在何時評估。",
+      "referenceStep": "依據哪個步驟時機",
       "directStartFrame": "直接範圍起始影格",
       "directEndFrame": "直接範圍結束影格",
       "event": "事件",
       "windowPreMs": "前視窗 ms",
       "windowPostMs": "後視窗 ms",
-      "defaultPhase": "預設 phase（可選）"
+      "defaultPhase": "備援步驟（可選）"
     },
     "placeholders": {
       "description": "描述何謂好動作與需修正動作。"
@@ -211,55 +211,55 @@
     "expertHelp": "進階條件適合較複雜的指標定義。",
     "addButton": "新增條件",
     "fields": {
-      "id": "條件 ID",
+      "id": "條件 ID（內部）",
       "type": "類型",
       "metric": "指標",
       "metricOptional": "指標（可選）",
-      "operator": "運算子",
+      "operator": "判定規則",
       "value": "值",
       "tolerance": "容差",
       "useAbsolute": "使用絕對值",
-      "logic": "邏輯",
-      "conditionRefs": "條件參照 (CSV)",
+      "logic": "組合方式",
+      "conditionRefs": "參照條件",
       "event": "事件",
       "windowPreMs": "前視窗 ms",
       "windowPostMs": "後視窗 ms",
       "windowFrames": "視窗影格數",
-      "joints": "關節（2 或 3 個，CSV）",
-      "pair": "關節對 (CSV)",
+      "joints": "關節點（2 或 3 個）",
+      "pair": "關節點對",
       "reference": "參考系"
     },
     "type": {
-      "threshold": "閾值",
-      "range": "範圍",
-      "boolean": "布林",
-      "composite": "組合",
-      "event_exists": "事件存在",
-      "trend": "趨勢",
-      "angle": "角度",
-      "distance": "距離"
+      "threshold": "閾值判定",
+      "range": "範圍判定",
+      "boolean": "真假判定",
+      "composite": "組合多個條件",
+      "event_exists": "事件發生判定",
+      "trend": "增減趨勢判定",
+      "angle": "角度判定",
+      "distance": "距離判定"
     },
     "logic": {
-      "all": "all",
-      "any": "any",
-      "none": "none"
+      "all": "全部滿足",
+      "any": "任一滿足",
+      "none": "全部不滿足"
     },
     "reference": {
-      "global": "global",
-      "local": "local"
+      "global": "全域座標",
+      "local": "區域座標"
     },
     "op": {
-      "gte": "gte",
-      "gt": "gt",
-      "lte": "lte",
-      "lt": "lt",
-      "eq": "eq",
-      "neq": "neq",
-      "between": "between",
-      "is_true": "is_true",
-      "is_false": "is_false",
-      "increasing": "increasing",
-      "decreasing": "decreasing"
+      "gte": "大於等於",
+      "gt": "大於",
+      "lte": "小於等於",
+      "lt": "小於",
+      "eq": "等於",
+      "neq": "不等於",
+      "between": "位於區間內",
+      "is_true": "為真",
+      "is_false": "為假",
+      "increasing": "上升趨勢",
+      "decreasing": "下降趨勢"
     },
     "placeholders": {
       "metric": "head_move_diff_ratio",
@@ -277,18 +277,19 @@
     }
   },
   "severity": {
-    "info": "info",
-    "warn": "warn",
-    "fail": "fail"
+    "info": "提示",
+    "warn": "警示",
+    "fail": "嚴重"
   },
   "signalType": {
-    "frame_range_ref": "frame_range_ref",
-    "direct": "direct",
-    "event_window": "event_window"
+    "frame_range_ref": "使用所選步驟時段",
+    "direct": "直接指定影格範圍",
+    "event_window": "使用事件前後視窗"
   },
   "validation": {
     "title": "驗證",
-    "help": "點擊問題可直接跳到對應步驟/檢查點。",
+    "help": "點擊問題可直接跳到需要修正的位置。",
+    "technicalDetails": "顯示技術路徑",
     "summary": {
       "idle": "尚未驗證。",
       "pass": "驗證通過。",
@@ -336,8 +337,8 @@
       "feedback_message_required": "feedback message 為必填。",
       "severity_invalid": "severity 不合法。",
       "attach_to_ts_invalid": "attach_to_ts 必須是 event:<name> 或 frame:<index> 格式。",
-      "phases_required": "請至少新增一個 step/phase。",
-      "rules_required": "請至少新增一個 checkpoint/rule。",
+      "phases_required": "請至少新增一個步驟。",
+      "rules_required": "請至少新增一個檢查點。",
       "import_invalid_json": "JSON 格式不正確。",
       "import_invalid_json_root": "JSON 根節點必須是物件。",
       "import_unexpected_error": "匯入時發生未知錯誤。"

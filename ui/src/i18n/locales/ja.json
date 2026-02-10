@@ -25,8 +25,8 @@
   "workflow": {
     "setup": {
       "label": "準備",
-      "description": "1対1比較用のプロファイル/ランタイム識別情報を設定します。",
-      "footerHint": "先にメトリクスプロファイルを選択してからステップ定義へ進んでください。"
+      "description": "選手1人とコーチ1人を比較するための基本情報を設定します。",
+      "footerHint": "先に比較テンプレートを選んでからステップ編集へ進んでください。"
     },
     "steps": {
       "label": "ステップ",
@@ -40,8 +40,8 @@
     },
     "review": {
       "label": "確認",
-      "description": "スキーマ検証とランタイム能力検証が通過したら JSON を書き出します。",
-      "footerHint": "能力エラーが残っている間は書き出せません。先に修正してください。"
+      "description": "エラーを確認し、問題がなければ JSON を書き出します。",
+      "footerHint": "すべて修正されるまで書き出しは無効です。"
     },
     "summary": {
       "steps": "ステップ数",
@@ -57,12 +57,12 @@
     "leftHanded": "左打ち・左利き"
   },
   "metadata": {
-    "sectionTitle": "ルールセット情報",
-    "help": "このルールセットを識別する基本情報を入力します。",
-    "ruleSetId": "ルールセットID",
-    "metricProfileId": "メトリクスプロファイルID",
-    "metricProfileType": "メトリクスプロファイル種別",
-    "metricPresetId": "メトリクスプリセットID",
+    "sectionTitle": "比較設定",
+    "help": "コーチ比較に必要な基本情報を入力します。",
+    "ruleSetId": "比較ID（内部用）",
+    "metricProfileId": "比較テンプレート",
+    "metricProfileType": "テンプレート種別",
+    "metricPresetId": "おすすめ初期設定",
     "sport": "競技",
     "ruleVersion": "ルールバージョン",
     "title": "タイトル"
@@ -79,7 +79,7 @@
     "emptySelect": "編集するステップを選択してください。",
     "uncategorized": "未分類",
     "fields": {
-      "id": "ステップID",
+      "id": "ステップID（内部用）",
       "label": "ステップ名",
       "category": "カテゴリ",
       "description": "説明",
@@ -90,7 +90,7 @@
       "eventName": "イベント名",
       "preWindowMs": "前ウィンドウ(ms)",
       "postWindowMs": "後ウィンドウ(ms)",
-      "jointsOfInterest": "注目関節 (CSV)"
+      "jointsOfInterest": "注目関節"
     },
     "rangeType": {
       "frame": "フレーム範囲",
@@ -166,9 +166,9 @@
     "emptyNoCheckpoints": "チェックポイントがありません。",
     "addButton": "チェックポイント追加",
     "removeButton": "チェックポイント削除",
-    "showTechnical": "技術項目を表示",
-    "hideTechnical": "技術項目を隠す",
-    "enableExpert": "上級条件タイプを有効化",
+    "showTechnical": "上級項目を表示",
+    "hideTechnical": "上級項目を隠す",
+    "enableExpert": "上級条件を有効化",
     "conditionsTitle": "条件",
     "conditionsHelp": "まずは基本条件タイプから設定し、必要時のみ上級タイプを使ってください。",
     "lockedTitle": "条件 ({{type}})",
@@ -185,20 +185,20 @@
       "ankle": "足首: 15, 16"
     },
     "fields": {
-      "id": "チェックポイントID",
+      "id": "チェックポイントID（内部用）",
       "label": "ラベル",
       "category": "カテゴリ",
       "severity": "重要度",
       "description": "説明",
-      "signalType": "シグナルタイプ",
-      "signalTypeHelp": "このチェックポイントを評価するタイミングを選びます。",
-      "referenceStep": "参照ステップ",
+      "signalType": "判定タイミング",
+      "signalTypeHelp": "このチェックポイントをいつ評価するかを選びます。",
+      "referenceStep": "基準にするステップ",
       "directStartFrame": "直接指定 開始フレーム",
       "directEndFrame": "直接指定 終了フレーム",
       "event": "イベント",
       "windowPreMs": "前ウィンドウ ms",
       "windowPostMs": "後ウィンドウ ms",
-      "defaultPhase": "デフォルトphase (任意)"
+      "defaultPhase": "代替ステップ（任意）"
     },
     "placeholders": {
       "description": "良い動作・悪い動作の基準を記述してください。"
@@ -211,55 +211,55 @@
     "expertHelp": "上級条件は詳細なメトリクス設計を行う場合に使います。",
     "addButton": "条件追加",
     "fields": {
-      "id": "条件ID",
+      "id": "条件ID（内部用）",
       "type": "タイプ",
       "metric": "メトリクス",
       "metricOptional": "メトリクス (任意)",
-      "operator": "演算子",
+      "operator": "判定ルール",
       "value": "値",
       "tolerance": "許容値",
       "useAbsolute": "絶対値を使用",
-      "logic": "ロジック",
-      "conditionRefs": "条件参照 (CSV)",
+      "logic": "組み合わせ方法",
+      "conditionRefs": "参照する条件",
       "event": "イベント",
       "windowPreMs": "前ウィンドウ ms",
       "windowPostMs": "後ウィンドウ ms",
       "windowFrames": "ウィンドウフレーム数",
-      "joints": "関節 (2または3, CSV)",
-      "pair": "ペア (CSV)",
+      "joints": "関節点（2または3）",
+      "pair": "関節ペア",
       "reference": "参照"
     },
     "type": {
-      "threshold": "しきい値",
-      "range": "範囲",
-      "boolean": "真偽",
-      "composite": "複合",
-      "event_exists": "イベント存在",
-      "trend": "トレンド",
-      "angle": "角度",
-      "distance": "距離"
+      "threshold": "しきい値判定",
+      "range": "範囲判定",
+      "boolean": "真偽判定",
+      "composite": "複数条件の組み合わせ",
+      "event_exists": "イベント発生判定",
+      "trend": "増減トレンド判定",
+      "angle": "角度判定",
+      "distance": "距離判定"
     },
     "logic": {
-      "all": "all",
-      "any": "any",
-      "none": "none"
+      "all": "すべて満たす",
+      "any": "いずれかを満たす",
+      "none": "どれも満たさない"
     },
     "reference": {
-      "global": "global",
-      "local": "local"
+      "global": "全体座標基準",
+      "local": "ローカル座標基準"
     },
     "op": {
-      "gte": "gte",
-      "gt": "gt",
-      "lte": "lte",
-      "lt": "lt",
-      "eq": "eq",
-      "neq": "neq",
-      "between": "between",
-      "is_true": "is_true",
-      "is_false": "is_false",
-      "increasing": "increasing",
-      "decreasing": "decreasing"
+      "gte": "以上",
+      "gt": "より大きい",
+      "lte": "以下",
+      "lt": "より小さい",
+      "eq": "一致する",
+      "neq": "一致しない",
+      "between": "範囲内",
+      "is_true": "真である",
+      "is_false": "偽である",
+      "increasing": "増加傾向",
+      "decreasing": "減少傾向"
     },
     "placeholders": {
       "metric": "head_move_diff_ratio",
@@ -277,18 +277,19 @@
     }
   },
   "severity": {
-    "info": "info",
-    "warn": "warn",
-    "fail": "fail"
+    "info": "参考",
+    "warn": "注意",
+    "fail": "重要"
   },
   "signalType": {
-    "frame_range_ref": "frame_range_ref",
-    "direct": "direct",
-    "event_window": "event_window"
+    "frame_range_ref": "選択ステップの時間帯を使う",
+    "direct": "フレーム範囲を直接指定する",
+    "event_window": "イベント前後の時間帯を使う"
   },
   "validation": {
     "title": "検証",
-    "help": "問題をクリックすると該当ステップ/チェックポイントへ移動します。",
+    "help": "項目をクリックすると、修正が必要な場所へ移動できます。",
+    "technicalDetails": "技術パスを表示",
     "summary": {
       "idle": "未検証です。",
       "pass": "検証に成功しました。",
@@ -336,8 +337,8 @@
       "feedback_message_required": "feedback message は必須です。",
       "severity_invalid": "severity が不正です。",
       "attach_to_ts_invalid": "attach_to_ts は event:<name> または frame:<index> 形式で指定してください。",
-      "phases_required": "step/phase を1件以上追加してください。",
-      "rules_required": "checkpoint/rule を1件以上追加してください。",
+      "phases_required": "ステップを1件以上追加してください。",
+      "rules_required": "チェックポイントを1件以上追加してください。",
       "import_invalid_json": "JSON形式が不正です。",
       "import_invalid_json_root": "JSONルートはオブジェクトである必要があります。",
       "import_unexpected_error": "予期しないインポートエラーが発生しました。"

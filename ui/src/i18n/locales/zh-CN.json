@@ -25,8 +25,8 @@
   "workflow": {
     "setup": {
       "label": "准备",
-      "description": "为单个选手与单个教练比较设置 profile/runtime 标识。",
-      "footerHint": "先选择指标 profile，再进入动作步骤。"
+      "description": "设置选手与教练一对一比较所需的基础信息。",
+      "footerHint": "先选择比较模板，再进入动作步骤。"
     },
     "steps": {
       "label": "步骤",
@@ -40,8 +40,8 @@
     },
     "review": {
       "label": "检查",
-      "description": "仅当 schema 校验与运行时能力校验都通过时才可导出 JSON。",
-      "footerHint": "仍有能力错误时无法导出，请先修复后再导出。"
+      "description": "先检查问题，确认无误后再导出 JSON。",
+      "footerHint": "所有问题修复前，导出会保持禁用。"
     },
     "summary": {
       "steps": "步骤总数",
@@ -57,12 +57,12 @@
     "leftHanded": "左手/左打选手"
   },
   "metadata": {
-    "sectionTitle": "规则集信息",
-    "help": "填写识别该规则集的基础信息。",
-    "ruleSetId": "规则集 ID",
-    "metricProfileId": "指标 Profile ID",
-    "metricProfileType": "指标 Profile 类型",
-    "metricPresetId": "指标 Preset ID",
+    "sectionTitle": "比较设置",
+    "help": "填写本次教练比较的基础信息。",
+    "ruleSetId": "比较 ID（内部）",
+    "metricProfileId": "比较模板",
+    "metricProfileType": "模板类型",
+    "metricPresetId": "推荐预设",
     "sport": "运动项目",
     "ruleVersion": "规则版本",
     "title": "标题"
@@ -79,7 +79,7 @@
     "emptySelect": "请选择一个步骤进行编辑。",
     "uncategorized": "未分类",
     "fields": {
-      "id": "步骤 ID",
+      "id": "步骤 ID（内部）",
       "label": "步骤名称",
       "category": "分类",
       "description": "说明",
@@ -90,7 +90,7 @@
       "eventName": "事件名称",
       "preWindowMs": "前窗口(ms)",
       "postWindowMs": "后窗口(ms)",
-      "jointsOfInterest": "关注关节 (CSV)"
+      "jointsOfInterest": "关注关节"
     },
     "rangeType": {
       "frame": "帧范围",
@@ -166,9 +166,9 @@
     "emptyNoCheckpoints": "当前没有检查点。",
     "addButton": "新增检查点",
     "removeButton": "删除检查点",
-    "showTechnical": "显示技术字段",
-    "hideTechnical": "隐藏技术字段",
-    "enableExpert": "启用高级条件类型",
+    "showTechnical": "显示高级字段",
+    "hideTechnical": "隐藏高级字段",
+    "enableExpert": "启用高级条件",
     "conditionsTitle": "条件",
     "conditionsHelp": "建议先使用基础条件类型，必要时再启用高级类型。",
     "lockedTitle": "条件 ({{type}})",
@@ -185,20 +185,20 @@
       "ankle": "踝: 15, 16"
     },
     "fields": {
-      "id": "检查点 ID",
+      "id": "检查点 ID（内部）",
       "label": "标签",
       "category": "分类",
       "severity": "严重级别",
       "description": "说明",
-      "signalType": "信号类型",
-      "signalTypeHelp": "选择该检查点的判定时机。",
-      "referenceStep": "引用步骤",
+      "signalType": "判定时机来源",
+      "signalTypeHelp": "选择该检查点应该在何时进行评估。",
+      "referenceStep": "基于哪个步骤时机",
       "directStartFrame": "直接范围起始帧",
       "directEndFrame": "直接范围结束帧",
       "event": "事件",
       "windowPreMs": "前窗口 ms",
       "windowPostMs": "后窗口 ms",
-      "defaultPhase": "默认 phase（可选）"
+      "defaultPhase": "备用步骤（可选）"
     },
     "placeholders": {
       "description": "描述怎样算好动作/坏动作。"
@@ -211,55 +211,55 @@
     "expertHelp": "高级条件适用于复杂指标定义。",
     "addButton": "新增条件",
     "fields": {
-      "id": "条件 ID",
+      "id": "条件 ID（内部）",
       "type": "类型",
       "metric": "指标",
       "metricOptional": "指标（可选）",
-      "operator": "运算符",
+      "operator": "判定规则",
       "value": "值",
       "tolerance": "容差",
       "useAbsolute": "使用绝对值",
-      "logic": "逻辑",
-      "conditionRefs": "条件引用 (CSV)",
+      "logic": "组合方式",
+      "conditionRefs": "引用条件",
       "event": "事件",
       "windowPreMs": "前窗口 ms",
       "windowPostMs": "后窗口 ms",
       "windowFrames": "窗口帧数",
-      "joints": "关节（2 或 3 个，CSV）",
-      "pair": "关节点对 (CSV)",
+      "joints": "关节点（2 或 3 个）",
+      "pair": "关节点对",
       "reference": "参考系"
     },
     "type": {
-      "threshold": "阈值",
-      "range": "范围",
-      "boolean": "布尔",
-      "composite": "组合",
-      "event_exists": "事件存在",
-      "trend": "趋势",
-      "angle": "角度",
-      "distance": "距离"
+      "threshold": "阈值判断",
+      "range": "范围判断",
+      "boolean": "真假判断",
+      "composite": "组合多个条件",
+      "event_exists": "事件发生判断",
+      "trend": "增减趋势判断",
+      "angle": "角度判断",
+      "distance": "距离判断"
     },
     "logic": {
-      "all": "all",
-      "any": "any",
-      "none": "none"
+      "all": "全部满足",
+      "any": "任一满足",
+      "none": "全部不满足"
     },
     "reference": {
-      "global": "global",
-      "local": "local"
+      "global": "全局坐标",
+      "local": "局部坐标"
     },
     "op": {
-      "gte": "gte",
-      "gt": "gt",
-      "lte": "lte",
-      "lt": "lt",
-      "eq": "eq",
-      "neq": "neq",
-      "between": "between",
-      "is_true": "is_true",
-      "is_false": "is_false",
-      "increasing": "increasing",
-      "decreasing": "decreasing"
+      "gte": "大于等于",
+      "gt": "大于",
+      "lte": "小于等于",
+      "lt": "小于",
+      "eq": "等于",
+      "neq": "不等于",
+      "between": "位于区间内",
+      "is_true": "为真",
+      "is_false": "为假",
+      "increasing": "上升趋势",
+      "decreasing": "下降趋势"
     },
     "placeholders": {
       "metric": "head_move_diff_ratio",
@@ -277,18 +277,19 @@
     }
   },
   "severity": {
-    "info": "info",
-    "warn": "warn",
-    "fail": "fail"
+    "info": "提示",
+    "warn": "警告",
+    "fail": "严重"
   },
   "signalType": {
-    "frame_range_ref": "frame_range_ref",
-    "direct": "direct",
-    "event_window": "event_window"
+    "frame_range_ref": "使用所选步骤时段",
+    "direct": "直接指定帧范围",
+    "event_window": "使用事件前后窗口"
   },
   "validation": {
     "title": "校验",
-    "help": "点击问题可直接跳转到对应步骤/检查点。",
+    "help": "点击问题可直接跳转到需要修复的位置。",
+    "technicalDetails": "显示技术路径",
     "summary": {
       "idle": "尚未校验。",
       "pass": "校验通过。",
@@ -336,8 +337,8 @@
       "feedback_message_required": "feedback message 为必填项。",
       "severity_invalid": "severity 不合法。",
       "attach_to_ts_invalid": "attach_to_ts 必须为 event:<name> 或 frame:<index> 格式。",
-      "phases_required": "请至少新增一个 step/phase。",
-      "rules_required": "请至少新增一个 checkpoint/rule。",
+      "phases_required": "请至少新增一个步骤。",
+      "rules_required": "请至少新增一个检查点。",
       "import_invalid_json": "JSON 格式不正确。",
       "import_invalid_json_root": "JSON 根节点必须是对象。",
       "import_unexpected_error": "导入时发生未知错误。"
