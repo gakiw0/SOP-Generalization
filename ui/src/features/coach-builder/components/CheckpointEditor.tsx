@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import {
   conditionTypeIsBasic,
   type CheckpointDraft,
@@ -59,10 +59,7 @@ export function CheckpointEditor({
   const selectedCheckpoint =
     step.checkpoints.find((checkpoint) => checkpoint.id === selectedCheckpointId) ?? step.checkpoints[0] ?? null
 
-  const allowedTypes = useMemo(
-    () => (expertEnabled ? [...BASIC_TYPES, ...EXPERT_TYPES] : [...BASIC_TYPES]),
-    [expertEnabled]
-  )
+  const allowedTypes = expertEnabled ? [...BASIC_TYPES, ...EXPERT_TYPES] : [...BASIC_TYPES]
 
   if (!selectedCheckpoint) {
     return (

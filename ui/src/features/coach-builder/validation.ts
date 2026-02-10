@@ -2,7 +2,6 @@ import type {
   AngleCondition,
   BooleanCondition,
   CompositeCondition,
-  Condition,
   DistanceCondition,
   EventExistsCondition,
   Phase,
@@ -157,7 +156,7 @@ const validateSignal = (
     return
   }
 
-  add(`${basePath}.type`, `Unsupported signal type '${String(rule.signal.type)}'`)
+  add(`${basePath}.type`, 'Unsupported signal type')
 }
 
 const validateThreshold = (
@@ -316,7 +315,7 @@ const validateConditions = (rule: Rule, ruleIndex: number, errors: ValidationErr
         compositeConditions.push({ cond, path })
         break
       default:
-        errors.push({ path: `${path}.type`, message: `Unsupported type '${String((cond as Condition).type)}'` })
+        errors.push({ path: `${path}.type`, message: 'Unsupported condition type' })
     }
   })
 

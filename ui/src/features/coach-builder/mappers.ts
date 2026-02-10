@@ -16,6 +16,8 @@ import type {
   ValidationError,
 } from './schemaTypes'
 
+type ComparisonOp = 'gte' | 'gt' | 'lte' | 'lt' | 'eq' | 'neq'
+
 const parseNumber = (value: string, fallback = 0): number => {
   const parsed = Number(value)
   return Number.isFinite(parsed) ? parsed : fallback
@@ -48,6 +50,11 @@ const parseIntPair = (value: string, fallback: [number, number]): [number, numbe
   const pair = parseNumberPair(value, fallback)
   return [Math.trunc(pair[0]), Math.trunc(pair[1])]
 }
+
+const parseComparisonOp = (value: string): ComparisonOp =>
+  ['gte', 'gt', 'lte', 'lt', 'eq', 'neq'].includes(value)
+    ? (value as ComparisonOp)
+    : 'gte'
 
 const serializeNumberArray = (value: number[]): string => value.join(', ')
 
@@ -246,7 +253,7 @@ const parseCondition = (draft: ConditionDraft): Condition => {
       type,
       joints: parseIntList(draft.joints),
       reference: draft.reference,
-      op: between ? 'between' : (['gte', 'gt', 'lte', 'lt', 'eq', 'neq'].includes(draft.op) ? draft.op : 'gte'),
+      op: between ? 'between' : parseComparisonOp(draft.op),
       value: between ? parseNumberPair(draft.valueText, [0, 1]) : parseNumber(draft.valueText, 0),
       tolerance: draft.tolerance.trim().length ? parseNumber(draft.tolerance, 0) : undefined,
     }
@@ -258,7 +265,7 @@ const parseCondition = (draft: ConditionDraft): Condition => {
     type: 'distance',
     pair: parseIntPair(draft.pair, [0, 1]),
     metric: draft.metric || undefined,
-    op: between ? 'between' : (['gte', 'gt', 'lte', 'lt', 'eq', 'neq'].includes(draft.op) ? draft.op : 'gte'),
+    op: between ? 'between' : parseComparisonOp(draft.op),
     value: between ? parseNumberPair(draft.valueText, [0, 1]) : parseNumber(draft.valueText, 0),
     tolerance: draft.tolerance.trim().length ? parseNumber(draft.tolerance, 0) : undefined,
   }
@@ -425,52 +432,52 @@ export const fromRuleSetSchemaV1 = (ruleSet: RuleSet): CoachDraft => {
   const steps = [...stepsById.values()].map((step) => {
     if (step.checkpoints.length > 0) return step
 
-    return {
-      ...step,
-      checkpoints: [
+    const fallbackCheckpoint: CheckpointDraft = {
+      id: `${step.id}_checkpoint`,
+      label: 'Checkpoint',
+      description: '',
+      category: step.category,
+      severity: 'warn',
+      signalType: 'frame_range_ref',
+      signalRefStepId: step.id,
+      signalFrameStart: '0',
+      signalFrameEnd: '0',
+      signalEvent: '',
+      signalWindowPreMs: '-150',
+      signalWindowPostMs: '150',
+      signalDefaultPhase: '',
+      scoreMode: 'all-or-nothing',
+      passScore: '1',
+      maxScore: '1',
+      weightsText: '',
+      feedbackMessage: 'Adjust movement to match coach reference.',
+      feedbackSeverity: 'warn',
+      feedbackAttachToTs: '',
+      conditions: [
         {
-          id: `${step.id}_checkpoint`,
-          label: 'Checkpoint',
-          description: '',
-          category: step.category,
-          severity: 'warn',
-          signalType: 'frame_range_ref',
-          signalRefStepId: step.id,
-          signalFrameStart: '0',
-          signalFrameEnd: '0',
-          signalEvent: '',
-          signalWindowPreMs: '-150',
-          signalWindowPostMs: '150',
-          signalDefaultPhase: '',
-          scoreMode: 'all-or-nothing',
-          passScore: '1',
-          maxScore: '1',
-          weightsText: '',
-          feedbackMessage: 'Adjust movement to match coach reference.',
-          feedbackSeverity: 'warn',
-          feedbackAttachToTs: '',
-          conditions: [
-            {
-              id: `${step.id}_condition`,
-              type: 'threshold',
-              metric: '',
-              op: 'gte',
-              valueText: '0',
-              absVal: false,
-              tolerance: '',
-              logic: 'all',
-              conditionRefs: [],
-              event: '',
-              windowPreMs: '',
-              windowPostMs: '',
-              windowFrames: '',
-              joints: '',
-              pair: '',
-              reference: 'global',
-            },
-          ],
+          id: `${step.id}_condition`,
+          type: 'threshold',
+          metric: '',
+          op: 'gte',
+          valueText: '0',
+          absVal: false,
+          tolerance: '',
+          logic: 'all',
+          conditionRefs: [],
+          event: '',
+          windowPreMs: '',
+          windowPostMs: '',
+          windowFrames: '',
+          joints: '',
+          pair: '',
+          reference: 'global',
         },
       ],
+    }
+
+    return {
+      ...step,
+      checkpoints: [fallbackCheckpoint],
     }
   })
 
