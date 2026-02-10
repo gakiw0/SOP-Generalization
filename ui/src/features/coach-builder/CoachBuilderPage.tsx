@@ -26,9 +26,9 @@ type StatusMessage = {
   params?: Record<string, string | number>
 }
 
-type WorkflowStage = 'setup' | 'steps' | 'checkpoints' | 'review'
+type WorkflowStage = 'setup' | 'steps' | 'review'
 
-const WORKFLOW_STAGES: WorkflowStage[] = ['setup', 'steps', 'checkpoints', 'review']
+const WORKFLOW_STAGES: WorkflowStage[] = ['setup', 'steps', 'review']
 
 export function CoachBuilderPage() {
   const { t, i18n } = useTranslation()
@@ -73,8 +73,6 @@ export function CoachBuilderPage() {
           state.draft.metadata.sportVersion.trim().length > 0
         )
       case 'steps':
-        return selectedStep != null
-      case 'checkpoints':
         return selectedStep != null && selectedStep.checkpoints.length > 0
       case 'review':
         return false
@@ -187,7 +185,7 @@ export function CoachBuilderPage() {
       if (target) {
         dispatch({ type: 'step/select', stepId: target.stepId })
         dispatch({ type: 'checkpoint/select', checkpointId: target.checkpointId })
-        moveStage('checkpoints')
+        moveStage('steps')
       }
     }
   }
@@ -320,103 +318,101 @@ export function CoachBuilderPage() {
             onRemove={(stepId) => dispatch({ type: 'step/remove', stepId })}
           />
 
-          <StepEditor
-            step={selectedStep}
-            onRename={(nextId) => {
-              if (!selectedStep) return
-              dispatch({ type: 'step/rename', stepId: selectedStep.id, nextId })
-            }}
-            onUpdate={(patch) => {
-              if (!selectedStep) return
-              dispatch({ type: 'step/update', stepId: selectedStep.id, patch })
-            }}
-          />
+          <div className="cb-step-workspace">
+            <StepEditor
+              step={selectedStep}
+              onRename={(nextId) => {
+                if (!selectedStep) return
+                dispatch({ type: 'step/rename', stepId: selectedStep.id, nextId })
+              }}
+              onUpdate={(patch) => {
+                if (!selectedStep) return
+                dispatch({ type: 'step/update', stepId: selectedStep.id, patch })
+              }}
+            />
+
+            <section className="cb-panel cb-summary-strip">
+              <div className="cb-summary-item">
+                <span>{t('workflow.summary.steps')}</span>
+                <strong>{state.draft.steps.length}</strong>
+              </div>
+              <div className="cb-summary-item">
+                <span>{t('workflow.summary.checkpoints')}</span>
+                <strong>{totalCheckpointCount}</strong>
+              </div>
+              <div className="cb-summary-item">
+                <span>{t('workflow.summary.currentStep')}</span>
+                <strong>{selectedStep?.label || selectedStep?.id || '-'}</strong>
+              </div>
+            </section>
+
+            <CheckpointEditor
+              step={selectedStep}
+              stepIds={state.draft.steps.map((step) => step.id)}
+              selectedCheckpointId={state.selectedCheckpointId}
+              expertEnabled={
+                state.selectedCheckpointId != null &&
+                state.expertCheckpointIds.includes(state.selectedCheckpointId)
+              }
+              onToggleExpert={(enabled) => {
+                if (!state.selectedCheckpointId) return
+                dispatch({
+                  type: 'checkpoint/toggleExpert',
+                  checkpointId: state.selectedCheckpointId,
+                  enabled,
+                })
+              }}
+              onSelectCheckpoint={(checkpointId) =>
+                dispatch({ type: 'checkpoint/select', checkpointId })
+              }
+              onAddCheckpoint={() => {
+                if (!selectedStep) return
+                dispatch({ type: 'checkpoint/add', stepId: selectedStep.id })
+              }}
+              onRemoveCheckpoint={(checkpointId) => {
+                if (!selectedStep) return
+                dispatch({ type: 'checkpoint/remove', stepId: selectedStep.id, checkpointId })
+              }}
+              onUpdateCheckpoint={(checkpointId, patch) => {
+                if (!selectedStep) return
+                dispatch({
+                  type: 'checkpoint/update',
+                  stepId: selectedStep.id,
+                  checkpointId,
+                  patch,
+                })
+              }}
+              onAddCondition={(checkpointId, conditionType) => {
+                if (!selectedStep) return
+                dispatch({
+                  type: 'condition/add',
+                  stepId: selectedStep.id,
+                  checkpointId,
+                  conditionType,
+                })
+              }}
+              onUpdateCondition={(checkpointId, conditionId, patch) => {
+                if (!selectedStep) return
+                dispatch({
+                  type: 'condition/update',
+                  stepId: selectedStep.id,
+                  checkpointId,
+                  conditionId,
+                  patch,
+                })
+              }}
+              onRemoveCondition={(checkpointId, conditionId) => {
+                if (!selectedStep) return
+                dispatch({
+                  type: 'condition/remove',
+                  stepId: selectedStep.id,
+                  checkpointId,
+                  conditionId,
+                })
+              }}
+            />
+          </div>
         </div>
-      )}
-
-      {workflowStage === 'checkpoints' && (
-        <>
-          <section className="cb-panel cb-summary-strip">
-            <div className="cb-summary-item">
-              <span>{t('workflow.summary.steps')}</span>
-              <strong>{state.draft.steps.length}</strong>
-            </div>
-            <div className="cb-summary-item">
-              <span>{t('workflow.summary.checkpoints')}</span>
-              <strong>{totalCheckpointCount}</strong>
-            </div>
-            <div className="cb-summary-item">
-              <span>{t('workflow.summary.currentStep')}</span>
-              <strong>{selectedStep?.label || selectedStep?.id || '-'}</strong>
-            </div>
-          </section>
-
-          <CheckpointEditor
-            step={selectedStep}
-            stepIds={state.draft.steps.map((step) => step.id)}
-            selectedCheckpointId={state.selectedCheckpointId}
-            expertEnabled={
-              state.selectedCheckpointId != null &&
-              state.expertCheckpointIds.includes(state.selectedCheckpointId)
-            }
-            onToggleExpert={(enabled) => {
-              if (!state.selectedCheckpointId) return
-              dispatch({
-                type: 'checkpoint/toggleExpert',
-                checkpointId: state.selectedCheckpointId,
-                enabled,
-              })
-            }}
-            onSelectCheckpoint={(checkpointId) =>
-              dispatch({ type: 'checkpoint/select', checkpointId })
-            }
-            onAddCheckpoint={() => {
-              if (!selectedStep) return
-              dispatch({ type: 'checkpoint/add', stepId: selectedStep.id })
-            }}
-            onRemoveCheckpoint={(checkpointId) => {
-              if (!selectedStep) return
-              dispatch({ type: 'checkpoint/remove', stepId: selectedStep.id, checkpointId })
-            }}
-            onUpdateCheckpoint={(checkpointId, patch) => {
-              if (!selectedStep) return
-              dispatch({
-                type: 'checkpoint/update',
-                stepId: selectedStep.id,
-                checkpointId,
-                patch,
-              })
-            }}
-            onAddCondition={(checkpointId, conditionType) => {
-              if (!selectedStep) return
-              dispatch({
-                type: 'condition/add',
-                stepId: selectedStep.id,
-                checkpointId,
-                conditionType,
-              })
-            }}
-            onUpdateCondition={(checkpointId, conditionId, patch) => {
-              if (!selectedStep) return
-              dispatch({
-                type: 'condition/update',
-                stepId: selectedStep.id,
-                checkpointId,
-                conditionId,
-                patch,
-              })
-            }}
-            onRemoveCondition={(checkpointId, conditionId) => {
-              if (!selectedStep) return
-              dispatch({
-                type: 'condition/remove',
-                stepId: selectedStep.id,
-                checkpointId,
-                conditionId,
-              })
-            }}
-          />
-        </>
       )}
 
       {workflowStage === 'review' && (
