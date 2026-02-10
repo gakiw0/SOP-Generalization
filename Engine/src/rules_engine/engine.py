@@ -181,16 +181,36 @@ class RuleEngine:
         # Unknown signal type: be conservative and fall back to phase.
         return self._phase_frame_range(phase_map[phase_id], context=context, max_frame=max_frame)
 
-    def _evaluate_rule(self, rule: Dict, metrics: Dict[str, float]) -> Dict:
+    def _evaluate_rule(
+        self,
+        rule: Dict,
+        metrics: Dict[str, float],
+        metric_series: Dict[str, list[float]],
+        *,
+        context: Dict,
+        student_data: np.ndarray,
+        coach_data: np.ndarray,
+    ) -> Dict:
         conditions = rule.get("conditions", [])
         cond_results = []
         cond_results_by_id = {}
+        expected_fps = (self.rule_set.get("inputs", {}) or {}).get("expected_fps")
 
         base_conds = [c for c in conditions if c.get("type") != "composite"]
         composite_conds = [c for c in conditions if c.get("type") == "composite"]
 
         for cond in base_conds:
-            cr = evaluator.evaluate_condition(cond, metrics)
+            cond_context = dict(context or {})
+            if expected_fps is not None:
+                cond_context["expected_fps"] = expected_fps
+            cr = evaluator.evaluate_condition(
+                cond,
+                metrics,
+                metric_series=metric_series,
+                context=cond_context,
+                student_data=student_data,
+                coach_data=coach_data,
+            )
             if cr.id in cond_results_by_id:
                 raise ValueError(f"Duplicate condition id '{cr.id}' in rule '{rule.get('id')}'")
             cond_results.append(cr)
@@ -275,6 +295,9 @@ class RuleEngine:
             phase_metrics = self._apply_feature_pipeline(
                 self.plugin.compute_metrics(phase_id, phase_student_data, phase_coach_data)
             )
+            phase_metric_series = self.plugin.compute_metric_series(
+                phase_id, phase_student_data, phase_coach_data
+            )
             if profile:
                 metrics_sec_total += (time.perf_counter() - metrics_start)
 
@@ -284,6 +307,9 @@ class RuleEngine:
                 if rule_frame_range == frame_range:
                     # Fast path: reuse phase extraction and metrics (legacy rule-sets).
                     metrics = phase_metrics
+                    metric_series = phase_metric_series
+                    rule_student_data = phase_student_data
+                    rule_coach_data = phase_coach_data
                 else:
                     extract_start = time.perf_counter() if profile else None
                     coach_data = su.extract_skeleton_data(coach_p, rule_frame_range)
@@ -295,11 +321,23 @@ class RuleEngine:
                     metrics = self._apply_feature_pipeline(
                         self.plugin.compute_metrics(phase_id, student_data, coach_data)
                     )
+                    metric_series = self.plugin.compute_metric_series(
+                        phase_id, student_data, coach_data
+                    )
+                    rule_student_data = student_data
+                    rule_coach_data = coach_data
                     if profile:
                         metrics_sec_total += (time.perf_counter() - metrics_start)
 
                 rules_eval_start = time.perf_counter() if profile else None
-                rr = self._evaluate_rule(rule, metrics)
+                rr = self._evaluate_rule(
+                    rule,
+                    metrics,
+                    metric_series,
+                    context=context,
+                    student_data=rule_student_data,
+                    coach_data=rule_coach_data,
+                )
                 rr["FrameRange"] = rule_frame_range
                 if profile:
                     rules_eval_sec_total += (time.perf_counter() - rules_eval_start)
@@ -319,6 +357,7 @@ class RuleEngine:
                 "Score": step_score_pct,
                 "StepClassification": classification,
                 "Metrics": phase_metrics,
+                "MetricSeries": phase_metric_series,
                 "FrameRange": frame_range,
             }
 
