@@ -8,7 +8,7 @@ type BasicProfileShape = {
 
 export const humanizeIdentifier = (value: string): string =>
   value
-    .replace(/[_\-]+/g, ' ')
+    .replace(/[_-]+/g, ' ')
     .replace(/([a-z])([A-Z])/g, '$1 $2')
     .trim()
     .replace(/\s+/g, ' ')
@@ -60,4 +60,3 @@ export const formatSignalTypeLabel = (
   if (signalType === 'direct') return 'Use fixed frame range'
   return 'Use event timing'
 }
-
