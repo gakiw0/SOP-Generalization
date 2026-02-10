@@ -26,12 +26,12 @@
     "setup": {
       "label": "准备",
       "description": "设置选手与教练一对一比较所需的基础信息。",
-      "footerHint": "先选择比较模板，再进入动作步骤。"
+      "footerHint": "先选择模板，再继续。"
     },
     "steps": {
       "label": "步骤",
       "description": "在同一工作区同时编辑步骤和检查点。",
-      "footerHint": "完成步骤与检查点后，再继续到检查页面。"
+      "footerHint": "完成步骤与检查点后继续。"
     },
     "checkpoints": {
       "label": "检查点",
@@ -41,7 +41,7 @@
     "review": {
       "label": "检查",
       "description": "先检查问题，确认无误后再导出 JSON。",
-      "footerHint": "所有问题修复前，导出会保持禁用。"
+      "footerHint": "修复所有问题后才能导出。"
     },
     "summary": {
       "steps": "步骤总数",
@@ -104,7 +104,7 @@
     "addButton": "新增步骤",
     "checkpointCount": "{{count}} 个检查点",
     "editorTitle": "步骤编辑",
-    "editorHelp": "一个步骤就是一个动作阶段（例如：准备、加载、挥棒、收杆）。",
+    "editorHelp": "一个步骤代表一个动作阶段（例如：准备、加载、挥棒、收杆）。",
     "metricCandidatesTitle": "当前步骤可用指标",
     "metricCandidatesEmpty": "当前步骤未找到可用指标候选。",
     "emptySelect": "请选择一个步骤进行编辑。",

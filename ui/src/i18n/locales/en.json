@@ -26,12 +26,12 @@
     "setup": {
       "label": "Setup",
       "description": "Set basic comparison information for one athlete and one coach.",
-      "footerHint": "Choose a comparison template first, then continue to motion steps."
+      "footerHint": "Pick a template, then continue."
     },
     "steps": {
       "label": "Step",
       "description": "Define each step and its checkpoints together in one workspace.",
-      "footerHint": "Complete both step and checkpoint details, then continue to review."
+      "footerHint": "Finish step and checkpoint details, then continue."
     },
     "checkpoints": {
       "label": "Checkpoint",
@@ -41,7 +41,7 @@
     "review": {
       "label": "Review",
       "description": "Check for issues before exporting your comparison settings.",
-      "footerHint": "Fix all issues first. Export is disabled until validation passes."
+      "footerHint": "Fix all issues to enable export."
     },
     "summary": {
       "steps": "Total steps",
@@ -104,7 +104,7 @@
     "addButton": "Add step",
     "checkpointCount": "{{count}} checkpoint(s)",
     "editorTitle": "Step editor",
-    "editorHelp": "Each step is a motion phase (for example: prepare, load, swing, finish).",
+    "editorHelp": "Each step is one motion phase (prepare, load, swing, finish).",
     "metricCandidatesTitle": "Available metrics for this step",
     "metricCandidatesEmpty": "No metric candidates found for this step.",
     "emptySelect": "Select a step to edit.",
@@ -319,7 +319,7 @@
   },
   "validation": {
     "title": "Validation",
-    "help": "Click each issue to jump to the field that needs fixing.",
+    "help": "Click an issue to jump to the field that needs fixing.",
     "technicalDetails": "Show technical path",
     "location": {
       "setup": "Setup",

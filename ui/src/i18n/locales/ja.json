@@ -26,12 +26,12 @@
     "setup": {
       "label": "準備",
       "description": "選手1人とコーチ1人を比較するための基本情報を設定します。",
-      "footerHint": "先に比較テンプレートを選んでからステップ編集へ進んでください。"
+      "footerHint": "比較テンプレートを選んで次へ進んでください。"
     },
     "steps": {
       "label": "ステップ",
       "description": "この画面でステップとチェックポイントをまとめて編集します。",
-      "footerHint": "ステップとチェックポイントを入力したら、確認へ進んでください。"
+      "footerHint": "入力が終わったら確認へ進んでください。"
     },
     "checkpoints": {
       "label": "チェックポイント",
@@ -41,7 +41,7 @@
     "review": {
       "label": "確認",
       "description": "エラーを確認し、問題がなければ JSON を書き出します。",
-      "footerHint": "すべて修正されるまで書き出しは無効です。"
+      "footerHint": "問題をすべて修正すると書き出しできます。"
     },
     "summary": {
       "steps": "ステップ数",
@@ -104,7 +104,7 @@
     "addButton": "ステップ追加",
     "checkpointCount": "チェックポイント {{count}} 件",
     "editorTitle": "ステップ編集",
-    "editorHelp": "1ステップ = 1つの動作フェーズ（例: 構え、始動、スイング、フォロー）。",
+    "editorHelp": "1ステップ = 1つの動作フェーズです（例: 構え、始動、スイング、フォロー）。",
     "metricCandidatesTitle": "このステップで利用できるメトリクス",
     "metricCandidatesEmpty": "このステップで利用可能なメトリクス候補が見つかりません。",
     "emptySelect": "編集するステップを選択してください。",
@@ -319,7 +319,7 @@
   },
   "validation": {
     "title": "検証",
-    "help": "項目をクリックすると、修正が必要な場所へ移動できます。",
+    "help": "問題項目をクリックすると修正箇所へ移動できます。",
     "technicalDetails": "技術パスを表示",
     "location": {
       "setup": "準備",

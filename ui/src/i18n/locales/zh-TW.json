@@ -26,12 +26,12 @@
     "setup": {
       "label": "準備",
       "description": "設定選手與教練一對一比較所需的基本資訊。",
-      "footerHint": "先選擇比較模板，再進入動作步驟。"
+      "footerHint": "先選擇模板，再繼續。"
     },
     "steps": {
       "label": "步驟",
       "description": "在同一工作區同時編輯步驟與檢查點。",
-      "footerHint": "完成步驟與檢查點後，再繼續到確認頁面。"
+      "footerHint": "完成步驟與檢查點後繼續。"
     },
     "checkpoints": {
       "label": "檢查點",
@@ -41,7 +41,7 @@
     "review": {
       "label": "確認",
       "description": "先確認問題，沒有錯誤後再匯出 JSON。",
-      "footerHint": "所有問題修正前，匯出會保持停用。"
+      "footerHint": "修正所有問題後才能匯出。"
     },
     "summary": {
       "steps": "步驟總數",
@@ -104,7 +104,7 @@
     "addButton": "新增步驟",
     "checkpointCount": "{{count}} 個檢查點",
     "editorTitle": "步驟編輯",
-    "editorHelp": "一個步驟代表一個動作階段（例如：準備、啟動、揮棒、收尾）。",
+    "editorHelp": "一個步驟就是一個動作階段（例如：準備、啟動、揮棒、收尾）。",
     "metricCandidatesTitle": "此步驟可用指標",
     "metricCandidatesEmpty": "此步驟找不到可用指標候選。",
     "emptySelect": "請先選擇要編輯的步驟。",
