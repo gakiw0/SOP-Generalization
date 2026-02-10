@@ -121,6 +121,14 @@
   z-index: 1;
 }
 
+.cb-panel-header-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
 .cb-panel-header button,
 .cb-inline-actions button,
 .cb-step-list .cb-danger,

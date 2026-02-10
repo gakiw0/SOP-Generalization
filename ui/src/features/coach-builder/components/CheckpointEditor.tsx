@@ -119,9 +119,19 @@ export function CheckpointEditor({
     <section className="cb-panel cb-editor-shell">
       <div className="cb-panel-header">
         <h2>{t('checkpoint.editorTitle')}</h2>
-        <button type="button" onClick={onAddCheckpoint} data-testid="cb-checkpoints-add">
-          {t('checkpoint.addButton')}
-        </button>
+        <div className="cb-panel-header-actions">
+          <button type="button" onClick={onAddCheckpoint} data-testid="cb-checkpoints-add">
+            {t('checkpoint.addButton')}
+          </button>
+          <button
+            type="button"
+            className="cb-danger"
+            onClick={() => onRemoveCheckpoint(selectedCheckpoint.id)}
+            data-testid="cb-checkpoints-remove"
+          >
+            {t('checkpoint.removeButton')}
+          </button>
+        </div>
       </div>
       <p>{t('checkpoint.editorHelp')}</p>
 
@@ -149,6 +159,7 @@ export function CheckpointEditor({
                 type="text"
                 value={selectedCheckpoint.label}
                 data-testid="cb-checkpoints-label"
+                placeholder={t('checkpoint.placeholders.label')}
                 onChange={(event) =>
                   onUpdateCheckpoint(selectedCheckpoint.id, {
                     label: event.target.value,
@@ -179,6 +190,7 @@ export function CheckpointEditor({
                 type="text"
                 value={selectedCheckpoint.category}
                 data-testid="cb-checkpoints-category"
+                placeholder={t('checkpoint.placeholders.category')}
                 onChange={(event) =>
                   onUpdateCheckpoint(selectedCheckpoint.id, {
                     category: event.target.value,
@@ -270,6 +282,7 @@ export function CheckpointEditor({
                         signalFrameStart: event.target.value,
                       })
                     }
+                    placeholder={t('checkpoint.placeholders.directStartFrame')}
                   />
                 </label>
                 <label>
@@ -282,6 +295,7 @@ export function CheckpointEditor({
                         signalFrameEnd: event.target.value,
                       })
                     }
+                    placeholder={t('checkpoint.placeholders.directEndFrame')}
                   />
                 </label>
               </>
@@ -299,6 +313,7 @@ export function CheckpointEditor({
                         signalEvent: event.target.value,
                       })
                     }
+                    placeholder={t('checkpoint.placeholders.event')}
                   />
                 </label>
                 <label>
@@ -311,6 +326,7 @@ export function CheckpointEditor({
                         signalWindowPreMs: event.target.value,
                       })
                     }
+                    placeholder={t('checkpoint.placeholders.windowPreMs')}
                   />
                 </label>
                 <label>
@@ -323,6 +339,7 @@ export function CheckpointEditor({
                         signalWindowPostMs: event.target.value,
                       })
                     }
+                    placeholder={t('checkpoint.placeholders.windowPostMs')}
                   />
                 </label>
                 <label>
@@ -353,6 +370,7 @@ export function CheckpointEditor({
                   <input
                     type="text"
                     value={selectedCheckpoint.id}
+                    placeholder={t('checkpoint.placeholders.id')}
                     onChange={(event) =>
                       onUpdateCheckpoint(selectedCheckpoint.id, {
                         id: event.target.value,
@@ -372,12 +390,6 @@ export function CheckpointEditor({
         helpKey="jointDiagram.checkpointHelp"
         dataTestId="cb-joint-diagram-checkpoint"
       />
-
-      <div className="cb-inline-actions">
-        <button type="button" className="cb-danger" onClick={() => onRemoveCheckpoint(selectedCheckpoint.id)}>
-          {t('checkpoint.removeButton')}
-        </button>
-      </div>
 
       <div className="cb-panel cb-sub-panel">
         <div className="cb-panel-header">
