@@ -200,6 +200,32 @@
   background: #fbf7ea;
 }
 
+.cb-ok-text {
+  color: #1e7b43;
+}
+
+.cb-error-text {
+  color: #a5303e;
+}
+
+.cb-validation-list {
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.cb-validation-list button {
+  width: 100%;
+  text-align: left;
+  border: 1px solid #dfc6cb;
+  background: #fff5f7;
+  border-radius: 8px;
+  padding: 0.5rem;
+}
+
 @media (max-width: 900px) {
   .cb-layout {
     grid-template-columns: 1fr;

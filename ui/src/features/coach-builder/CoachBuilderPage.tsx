@@ -1,18 +1,62 @@
-import { useMemo, useReducer } from 'react'
+import { useMemo, useReducer, useState } from 'react'
 import { createInitialState } from './draftTypes'
+import { summarizeValidation, toRuleSetSchemaV1 } from './mappers'
 import { coachDraftReducer } from './reducer'
+import { validateRuleSet } from './validation'
 import { CheckpointEditor } from './components/CheckpointEditor'
 import { StepEditor } from './components/StepEditor'
 import { StepList } from './components/StepList'
+import { ValidationPanel } from './components/ValidationPanel'
 import './styles.css'
 
 export function CoachBuilderPage() {
   const [state, dispatch] = useReducer(coachDraftReducer, undefined, createInitialState)
+  const [validationSummary, setValidationSummary] = useState('Not validated yet.')
+  const [validationErrors, setValidationErrors] = useState<
+    Array<{ path: string; message: string }>
+  >([])
 
   const selectedStep = useMemo(
     () => state.draft.steps.find((step) => step.id === state.selectedStepId) ?? null,
     [state.draft.steps, state.selectedStepId]
   )
+
+  const checkpointLocator = useMemo(
+    () =>
+      state.draft.steps.flatMap((step) =>
+        step.checkpoints.map((checkpoint) => ({ stepId: step.id, checkpointId: checkpoint.id }))
+      ),
+    [state.draft.steps]
+  )
+
+  const runValidation = () => {
+    const ruleSet = toRuleSetSchemaV1(state.draft)
+    const errors = validateRuleSet(ruleSet)
+    setValidationErrors(errors)
+    setValidationSummary(summarizeValidation(errors))
+  }
+
+  const navigateFromPath = (path: string) => {
+    const phaseMatch = path.match(/^phases\[(\d+)\]/)
+    if (phaseMatch) {
+      const index = Number(phaseMatch[1])
+      const stepId = state.draft.steps[index]?.id
+      if (stepId) {
+        dispatch({ type: 'step/select', stepId })
+      }
+      return
+    }
+
+    const ruleMatch = path.match(/^rules\[(\d+)\]/)
+    if (ruleMatch) {
+      const index = Number(ruleMatch[1])
+      const target = checkpointLocator[index]
+      if (target) {
+        dispatch({ type: 'step/select', stepId: target.stepId })
+        dispatch({ type: 'checkpoint/select', checkpointId: target.checkpointId })
+      }
+    }
+  }
 
   return (
     <main className="coach-builder-page">
@@ -156,6 +200,13 @@ export function CoachBuilderPage() {
             conditionId,
           })
         }}
+      />
+
+      <ValidationPanel
+        errors={validationErrors}
+        summary={validationSummary}
+        onValidate={runValidation}
+        onNavigateError={navigateFromPath}
       />
     </main>
   )
