@@ -1,0 +1,230 @@
+{
+  "common": {
+    "add": "Add",
+    "remove": "Remove",
+    "reset": "Reset",
+    "importJson": "Import JSON",
+    "exportJson": "Export JSON",
+    "validate": "Validate",
+    "language": "Language"
+  },
+  "language": {
+    "ja": "日本語",
+    "en": "English",
+    "zh-CN": "简体中文",
+    "zh-TW": "繁體中文"
+  },
+  "page": {
+    "title": "Coach JSON Builder",
+    "subtitle": "Build schema v1 JSON with step/checkpoint language."
+  },
+  "metadata": {
+    "sectionTitle": "Rule set metadata",
+    "ruleSetId": "Rule set ID",
+    "sport": "Sport",
+    "ruleVersion": "Rule version",
+    "title": "Title"
+  },
+  "step": {
+    "listTitle": "Steps",
+    "addButton": "Add step",
+    "editorTitle": "Step editor",
+    "emptySelect": "Select a step to edit.",
+    "uncategorized": "uncategorized",
+    "fields": {
+      "id": "Step ID",
+      "label": "Step label",
+      "category": "Category",
+      "description": "Description",
+      "rangeType": "Range type",
+      "startFrame": "Start frame",
+      "endFrame": "End frame",
+      "eventName": "Event name",
+      "preWindowMs": "Pre-window (ms)",
+      "postWindowMs": "Post-window (ms)",
+      "jointsOfInterest": "Joints of interest (CSV)"
+    },
+    "rangeType": {
+      "frame": "Frame range",
+      "event": "Event window"
+    },
+    "placeholders": {
+      "id": "step1",
+      "label": "Get Prepared",
+      "category": "batting",
+      "eventName": "impact",
+      "jointsOfInterest": "1, 8, 12"
+    }
+  },
+  "checkpoint": {
+    "editorTitle": "Checkpoint editor",
+    "emptySelectStep": "Select a step to start editing checkpoints.",
+    "emptyNoCheckpoints": "No checkpoints yet.",
+    "addButton": "Add checkpoint",
+    "removeButton": "Remove checkpoint",
+    "enableExpert": "Enable expert condition types",
+    "conditionsTitle": "Conditions",
+    "lockedTitle": "Condition ({{type}})",
+    "lockedMessage": "Enable expert mode to edit this condition type.",
+    "fields": {
+      "id": "Checkpoint ID",
+      "label": "Label",
+      "category": "Category",
+      "severity": "Severity",
+      "description": "Description",
+      "signalType": "Signal type",
+      "referenceStep": "Reference step",
+      "directStartFrame": "Direct start frame",
+      "directEndFrame": "Direct end frame",
+      "event": "Event",
+      "windowPreMs": "Window pre ms",
+      "windowPostMs": "Window post ms",
+      "defaultPhase": "Default phase (optional)"
+    }
+  },
+  "condition": {
+    "basicTitle": "Condition",
+    "expertTitle": "Condition (Expert)",
+    "addButton": "Add condition",
+    "fields": {
+      "id": "Condition ID",
+      "type": "Type",
+      "metric": "Metric",
+      "metricOptional": "Metric (optional)",
+      "operator": "Operator",
+      "value": "Value",
+      "tolerance": "Tolerance",
+      "useAbsolute": "Use absolute value",
+      "logic": "Logic",
+      "conditionRefs": "Condition refs (CSV)",
+      "event": "Event",
+      "windowPreMs": "Window pre ms",
+      "windowPostMs": "Window post ms",
+      "windowFrames": "Window frames",
+      "joints": "Joints (2 or 3, CSV)",
+      "pair": "Pair (CSV)",
+      "reference": "Reference"
+    },
+    "type": {
+      "threshold": "Threshold",
+      "range": "Range",
+      "boolean": "Boolean",
+      "composite": "Composite",
+      "event_exists": "Event exists",
+      "trend": "Trend",
+      "angle": "Angle",
+      "distance": "Distance"
+    },
+    "logic": {
+      "all": "all",
+      "any": "any",
+      "none": "none"
+    },
+    "reference": {
+      "global": "global",
+      "local": "local"
+    },
+    "op": {
+      "gte": "gte",
+      "gt": "gt",
+      "lte": "lte",
+      "lt": "lt",
+      "eq": "eq",
+      "neq": "neq",
+      "between": "between",
+      "is_true": "is_true",
+      "is_false": "is_false",
+      "increasing": "increasing",
+      "decreasing": "decreasing"
+    },
+    "placeholders": {
+      "metric": "head_move_diff_ratio",
+      "thresholdValue": "0.3",
+      "rangeValue": "0, 1",
+      "tolerance": "0",
+      "conditionRefs": "cond_1, cond_2",
+      "event": "impact",
+      "joints": "1, 2, 3",
+      "pair": "4, 7",
+      "angleSingle": "25",
+      "angleRange": "10, 40",
+      "distanceSingle": "0.3",
+      "distanceRange": "0.2, 0.5"
+    }
+  },
+  "severity": {
+    "info": "info",
+    "warn": "warn",
+    "fail": "fail"
+  },
+  "signalType": {
+    "frame_range_ref": "frame_range_ref",
+    "direct": "direct",
+    "event_window": "event_window"
+  },
+  "validation": {
+    "title": "Validation",
+    "summary": {
+      "idle": "Not validated yet.",
+      "pass": "Validation passed.",
+      "fail": "Validation failed with {{count}} issue(s)."
+    },
+    "code": {
+      "required": "This field is required.",
+      "invalid_semver": "Must be semantic version format (x.y.z).",
+      "invalid_id_format": "ID format is invalid.",
+      "duplicate_phase_id": "Duplicate phase id '{{id}}'.",
+      "duplicate_rule_id": "Duplicate rule id '{{id}}'.",
+      "unknown_phase": "Unknown phase '{{id}}'.",
+      "phase_range_mode_required": "Specify either frame_range or event_window.",
+      "frame_range_invalid": "Frame range must be [start, end] with integers >= 0.",
+      "window_ms_invalid": "window_ms must be [pre, post] numbers.",
+      "integer_array_non_negative": "Values must be integers >= 0.",
+      "signal_ref_required": "Signal reference is required.",
+      "signal_ref_format": "Signal ref must use format 'phase:<id>'.",
+      "signal_type_invalid": "Unsupported signal type '{{type}}'.",
+      "signal_event_required": "Signal event is required.",
+      "condition_required": "At least one condition is required.",
+      "duplicate_condition_id": "Duplicate condition id '{{id}}'.",
+      "condition_type_invalid": "Unsupported condition type '{{type}}'.",
+      "metric_required": "Metric is required.",
+      "op_invalid": "Operator is invalid.",
+      "value_number_required": "Value must be a number.",
+      "value_pair_required": "Value must be a number pair [min, max].",
+      "tolerance_number_required": "Tolerance must be a number.",
+      "event_required": "Event is required.",
+      "window_frames_invalid": "window_frames must be an integer >= 1.",
+      "joints_invalid": "Joints must contain 2 or 3 integers >= 0.",
+      "pair_invalid": "Pair must contain 2 integers >= 0.",
+      "logic_invalid": "Logic is invalid.",
+      "condition_refs_required": "Composite condition requires at least one reference.",
+      "unknown_condition_ref": "Unknown condition id '{{id}}'.",
+      "score_required": "Score settings are required.",
+      "score_mode_invalid": "Score mode is invalid.",
+      "pass_score_invalid": "pass_score must be a number.",
+      "max_score_invalid": "max_score must be a number >= 0.",
+      "weighted_requires_weights": "weights are required when score mode is weighted.",
+      "feedback_condition_ids_required": "feedback.condition_ids requires at least one id.",
+      "feedback_unknown_condition": "feedback references unknown condition '{{id}}'.",
+      "feedback_message_required": "Feedback message is required.",
+      "severity_invalid": "Severity is invalid.",
+      "attach_to_ts_invalid": "attach_to_ts must be event:<name> or frame:<index>.",
+      "phases_required": "Add at least one step/phase.",
+      "rules_required": "Add at least one checkpoint/rule.",
+      "import_invalid_json": "JSON format is invalid.",
+      "import_invalid_json_root": "JSON root must be an object.",
+      "import_unexpected_error": "Unexpected import error occurred."
+    }
+  },
+  "import": {
+    "success": "Import successful. Draft loaded from schema v1 JSON.",
+    "validation_failed": "Import failed. {{count}} validation issue(s) found.",
+    "invalid_json": "Import failed. The JSON file is malformed.",
+    "invalid_json_root": "Import failed. JSON root must be an object.",
+    "unexpected_error": "Import failed due to an unexpected error."
+  },
+  "export": {
+    "sectionTitle": "Export",
+    "description": "Run validation first. Export is enabled only when validation passes with zero errors."
+  }
+}

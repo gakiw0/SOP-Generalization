@@ -1,22 +1,37 @@
 import { useEffect, useMemo, useReducer, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { createInitialState, normalizeDraftForExport } from './draftTypes'
 import { downloadRuleSetJson } from './export'
-import { importDraftFromFile } from './import'
-import { summarizeValidation, toRuleSetSchemaV1 } from './mappers'
+import { importDraftFromFile, type ImportMessageKey } from './import'
+import { toRuleSetSchemaV1 } from './mappers'
 import { coachDraftReducer } from './reducer'
+import type { ValidationError } from './schemaTypes'
 import { validateRuleSet } from './validation'
+import {
+  LOCALE_STORAGE_KEY,
+  SUPPORTED_LOCALES,
+  normalizeLocale,
+  type LocaleCode,
+} from '../../i18n'
 import { CheckpointEditor } from './components/CheckpointEditor'
 import { StepEditor } from './components/StepEditor'
 import { StepList } from './components/StepList'
 import { ValidationPanel } from './components/ValidationPanel'
 import './styles.css'
 
+type ValidationStatus = 'idle' | 'pass' | 'fail'
+
+type StatusMessage = {
+  key: ImportMessageKey
+  params?: Record<string, string | number>
+}
+
 export function CoachBuilderPage() {
+  const { t, i18n } = useTranslation()
   const [state, dispatch] = useReducer(coachDraftReducer, undefined, createInitialState)
-  const [validationSummary, setValidationSummary] = useState('Not validated yet.')
-  const [validationErrors, setValidationErrors] = useState<
-    Array<{ path: string; message: string }>
-  >([])
+  const [validationErrors, setValidationErrors] = useState<ValidationError[]>([])
+  const [validationStatus, setValidationStatus] = useState<ValidationStatus>('idle')
+  const [statusMessage, setStatusMessage] = useState<StatusMessage | null>(null)
   const [hasValidated, setHasValidated] = useState(false)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const suppressValidationResetRef = useRef(false)
@@ -34,20 +49,25 @@ export function CoachBuilderPage() {
     [state.draft.steps]
   )
 
+  const currentLocale =
+    normalizeLocale(i18n.resolvedLanguage ?? i18n.language) ?? 'en'
+
   useEffect(() => {
     if (suppressValidationResetRef.current) {
       suppressValidationResetRef.current = false
       return
     }
     setHasValidated(false)
+    setValidationStatus('idle')
   }, [state.draft])
 
   const runValidation = () => {
     const ruleSet = toRuleSetSchemaV1(normalizeDraftForExport(state.draft))
     const errors = validateRuleSet(ruleSet)
     setValidationErrors(errors)
-    setValidationSummary(summarizeValidation(errors))
+    setValidationStatus(errors.length === 0 ? 'pass' : 'fail')
     setHasValidated(true)
+    setStatusMessage(null)
     return errors
   }
 
@@ -72,21 +92,23 @@ export function CoachBuilderPage() {
     try {
       const imported = await importDraftFromFile(file)
       setValidationErrors(imported.errors)
-      setValidationSummary(imported.message)
+      setValidationStatus(imported.errors.length === 0 ? 'pass' : 'fail')
+      setStatusMessage({ key: imported.messageKey, params: imported.messageParams })
       setHasValidated(true)
 
       if (imported.draft) {
         suppressValidationResetRef.current = true
         dispatch({ type: 'draft/replace', draft: imported.draft })
       }
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to import JSON file.'
-      setValidationErrors([{ path: 'import', message }])
-      setValidationSummary(`Import failed. ${message}`)
-      setHasValidated(false)
     } finally {
       event.target.value = ''
     }
+  }
+
+  const handleLocaleChange = async (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const next = event.target.value as LocaleCode
+    await i18n.changeLanguage(next)
+    window.sessionStorage.setItem(LOCALE_STORAGE_KEY, next)
   }
 
   const navigateFromPath = (path: string) => {
@@ -115,17 +137,28 @@ export function CoachBuilderPage() {
     <main className="coach-builder-page">
       <header className="coach-builder-header cb-panel">
         <div className="cb-panel-header">
-          <h1>Coach JSON Builder</h1>
+          <h1>{t('page.title')}</h1>
           <div className="cb-export-actions">
+            <label className="cb-language-select" htmlFor="locale-select">
+              {t('common.language')}
+              <select id="locale-select" value={currentLocale} onChange={handleLocaleChange}>
+                {SUPPORTED_LOCALES.map((locale) => (
+                  <option key={locale} value={locale}>
+                    {t(`language.${locale}`)}
+                  </option>
+                ))}
+              </select>
+            </label>
             <button type="button" onClick={handleImportClick}>
-              Import JSON
+              {t('common.importJson')}
             </button>
             <button type="button" onClick={() => dispatch({ type: 'draft/reset' })}>
-              Reset
+              {t('common.reset')}
             </button>
           </div>
         </div>
-        <p>Build schema v1 JSON with step/checkpoint language.</p>
+        <p>{t('page.subtitle')}</p>
+        {statusMessage ? <p className="cb-status-text">{t(statusMessage.key, statusMessage.params)}</p> : null}
         <input
           ref={fileInputRef}
           type="file"
@@ -136,10 +169,10 @@ export function CoachBuilderPage() {
       </header>
 
       <section className="cb-panel">
-        <h2>Rule set metadata</h2>
+        <h2>{t('metadata.sectionTitle')}</h2>
         <div className="cb-field-grid">
           <label>
-            Rule set ID
+            {t('metadata.ruleSetId')}
             <input
               type="text"
               value={state.draft.metadata.ruleSetId}
@@ -150,7 +183,7 @@ export function CoachBuilderPage() {
           </label>
 
           <label>
-            Sport
+            {t('metadata.sport')}
             <input
               type="text"
               value={state.draft.metadata.sport}
@@ -161,7 +194,7 @@ export function CoachBuilderPage() {
           </label>
 
           <label>
-            Rule version
+            {t('metadata.ruleVersion')}
             <input
               type="text"
               value={state.draft.metadata.sportVersion}
@@ -172,7 +205,7 @@ export function CoachBuilderPage() {
           </label>
 
           <label className="cb-full-width">
-            Title
+            {t('metadata.title')}
             <input
               type="text"
               value={state.draft.metadata.title}
@@ -274,14 +307,14 @@ export function CoachBuilderPage() {
 
       <ValidationPanel
         errors={validationErrors}
-        summary={validationSummary}
+        status={validationStatus}
         onValidate={runValidation}
         onNavigateError={navigateFromPath}
       />
 
       <section className="cb-panel">
         <div className="cb-panel-header">
-          <h2>Export</h2>
+          <h2>{t('export.sectionTitle')}</h2>
           <div className="cb-export-actions">
             <button
               type="button"
@@ -289,13 +322,11 @@ export function CoachBuilderPage() {
               disabled={!hasValidated || validationErrors.length > 0}
               onClick={handleExport}
             >
-              Export JSON
+              {t('common.exportJson')}
             </button>
           </div>
         </div>
-        <p>
-          Run validation first. Export is enabled only when validation passes with zero errors.
-        </p>
+        <p>{t('export.description')}</p>
       </section>
     </main>
   )

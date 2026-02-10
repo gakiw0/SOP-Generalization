@@ -135,9 +135,9 @@ export const createDefaultCheckpoint = (
 
   return {
     id,
-    label: 'New checkpoint',
+    label: '',
     description: '',
-    category: 'technique',
+    category: '',
     severity: 'warn',
     signalType: 'frame_range_ref',
     signalRefStepId: stepId,
@@ -151,7 +151,7 @@ export const createDefaultCheckpoint = (
     passScore: '1',
     maxScore: '1',
     weightsText: '',
-    feedbackMessage: 'Adjust movement to match coach reference.',
+    feedbackMessage: '',
     feedbackSeverity: 'warn',
     feedbackAttachToTs: '',
     conditions: [firstCondition],
@@ -169,9 +169,9 @@ export const createDefaultStep = (
 
   return {
     id,
-    label: 'New step',
+    label: '',
     description: '',
-    category: 'batting',
+    category: '',
     rangeType: 'frame',
     frameStart: '0',
     frameEnd: '10',
@@ -195,7 +195,7 @@ export const createInitialDraft = (): CoachDraft => {
       ruleSetId: 'baseball_swing_custom',
       sport: 'baseball',
       sportVersion: '1.0.0',
-      title: 'Coach SOP Draft',
+      title: '',
       description: '',
     },
     steps: [firstStep],

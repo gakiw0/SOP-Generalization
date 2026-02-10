@@ -183,7 +183,54 @@ export type RuleSet = {
   rules: Rule[]
 }
 
+export type ValidationCode =
+  | 'required'
+  | 'invalid_semver'
+  | 'invalid_id_format'
+  | 'duplicate_phase_id'
+  | 'duplicate_rule_id'
+  | 'unknown_phase'
+  | 'phase_range_mode_required'
+  | 'frame_range_invalid'
+  | 'window_ms_invalid'
+  | 'integer_array_non_negative'
+  | 'signal_ref_required'
+  | 'signal_ref_format'
+  | 'signal_type_invalid'
+  | 'signal_event_required'
+  | 'condition_required'
+  | 'duplicate_condition_id'
+  | 'condition_type_invalid'
+  | 'metric_required'
+  | 'op_invalid'
+  | 'value_number_required'
+  | 'value_pair_required'
+  | 'tolerance_number_required'
+  | 'event_required'
+  | 'window_frames_invalid'
+  | 'joints_invalid'
+  | 'pair_invalid'
+  | 'logic_invalid'
+  | 'condition_refs_required'
+  | 'unknown_condition_ref'
+  | 'score_required'
+  | 'score_mode_invalid'
+  | 'pass_score_invalid'
+  | 'max_score_invalid'
+  | 'weighted_requires_weights'
+  | 'feedback_condition_ids_required'
+  | 'feedback_unknown_condition'
+  | 'feedback_message_required'
+  | 'severity_invalid'
+  | 'attach_to_ts_invalid'
+  | 'phases_required'
+  | 'rules_required'
+  | 'import_invalid_json'
+  | 'import_invalid_json_root'
+  | 'import_unexpected_error'
+
 export type ValidationError = {
   path: string
-  message: string
+  code: ValidationCode
+  params?: Record<string, string | number>
 }

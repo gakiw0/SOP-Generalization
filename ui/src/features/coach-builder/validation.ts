@@ -10,6 +10,7 @@ import type {
   RuleSet,
   ThresholdCondition,
   TrendCondition,
+  ValidationCode,
   ValidationError,
 } from './schemaTypes'
 
@@ -41,6 +42,15 @@ const isNumberPair = (value: unknown): value is [number, number] =>
   isFiniteNumber(value[0]) &&
   isFiniteNumber(value[1])
 
+const pushError = (
+  errors: ValidationError[],
+  path: string,
+  code: ValidationCode,
+  params?: Record<string, string | number>
+) => {
+  errors.push({ path, code, params })
+}
+
 const validatePhase = (
   phase: Phase,
   index: number,
@@ -48,40 +58,39 @@ const validatePhase = (
   phaseIds: Set<string>
 ) => {
   const basePath = `phases[${index}]`
-  const add = (path: string, message: string) => errors.push({ path, message })
 
   if (!isNonEmptyString(phase.id)) {
-    add(`${basePath}.id`, 'Required')
+    pushError(errors, `${basePath}.id`, 'required')
   } else if (!ID_RE.test(phase.id)) {
-    add(`${basePath}.id`, 'Invalid id format')
+    pushError(errors, `${basePath}.id`, 'invalid_id_format')
   } else if (phaseIds.has(phase.id)) {
-    add(`${basePath}.id`, `Duplicate phase id '${phase.id}'`)
+    pushError(errors, `${basePath}.id`, 'duplicate_phase_id', { id: phase.id })
   } else {
     phaseIds.add(phase.id)
   }
 
   if (!isNonEmptyString(phase.label)) {
-    add(`${basePath}.label`, 'Required')
+    pushError(errors, `${basePath}.label`, 'required')
   }
 
   const hasFrameRange = phase.frame_range != null
   const hasEventWindow = phase.event_window != null
 
   if (hasFrameRange === hasEventWindow) {
-    add(basePath, 'Specify either frame_range or event_window')
+    pushError(errors, basePath, 'phase_range_mode_required')
   }
 
   if (hasFrameRange && !isNonNegativeIntPair(phase.frame_range)) {
-    add(`${basePath}.frame_range`, 'Must be [start,end] integers >= 0')
+    pushError(errors, `${basePath}.frame_range`, 'frame_range_invalid')
   }
 
   if (hasEventWindow) {
     const eventWindow = phase.event_window
     if (!eventWindow || !isNonEmptyString(eventWindow.event)) {
-      add(`${basePath}.event_window.event`, 'Required')
+      pushError(errors, `${basePath}.event_window.event`, 'required')
     }
     if (!isNumberPair(eventWindow?.window_ms)) {
-      add(`${basePath}.event_window.window_ms`, 'Must be [pre,post] numbers')
+      pushError(errors, `${basePath}.event_window.window_ms`, 'window_ms_invalid')
     }
   }
 
@@ -90,7 +99,7 @@ const validatePhase = (
       !Array.isArray(phase.joints_of_interest) ||
       phase.joints_of_interest.some((jointId) => !isFiniteInt(jointId) || jointId < 0)
     ) {
-      add(`${basePath}.joints_of_interest`, 'Must be integers >= 0')
+      pushError(errors, `${basePath}.joints_of_interest`, 'integer_array_non_negative')
     }
   }
 }
@@ -102,41 +111,42 @@ const validateSignal = (
   phaseIds: Set<string>
 ) => {
   const basePath = `rules[${index}].signal`
-  const add = (path: string, message: string) => errors.push({ path, message })
 
   if (!rule.signal || !isNonEmptyString(rule.signal.type)) {
-    add(`${basePath}.type`, 'Required')
+    pushError(errors, `${basePath}.type`, 'required')
     return
   }
 
   if (rule.signal.type === 'frame_range_ref') {
     if (!isNonEmptyString(rule.signal.ref)) {
-      add(`${basePath}.ref`, 'Required')
+      pushError(errors, `${basePath}.ref`, 'signal_ref_required')
       return
     }
 
     if (!rule.signal.ref.startsWith('phase:')) {
-      add(`${basePath}.ref`, "Must be formatted as 'phase:<id>'")
+      pushError(errors, `${basePath}.ref`, 'signal_ref_format')
       return
     }
 
     const phaseId = rule.signal.ref.slice('phase:'.length)
     if (!phaseIds.has(phaseId)) {
-      add(`${basePath}.ref`, `Unknown phase '${phaseId}'`)
+      pushError(errors, `${basePath}.ref`, 'unknown_phase', { id: phaseId })
     }
     return
   }
 
   if (rule.signal.type === 'event_window') {
     if (!isNonEmptyString(rule.signal.event)) {
-      add(`${basePath}.event`, 'Required')
+      pushError(errors, `${basePath}.event`, 'signal_event_required')
     }
     if (!isNumberPair(rule.signal.window_ms)) {
-      add(`${basePath}.window_ms`, 'Must be [pre,post] numbers')
+      pushError(errors, `${basePath}.window_ms`, 'window_ms_invalid')
     }
     if (rule.signal.default_phase != null && rule.signal.default_phase !== '') {
       if (!phaseIds.has(rule.signal.default_phase)) {
-        add(`${basePath}.default_phase`, `Unknown phase '${rule.signal.default_phase}'`)
+        pushError(errors, `${basePath}.default_phase`, 'unknown_phase', {
+          id: rule.signal.default_phase,
+        })
       }
     }
     return
@@ -144,19 +154,21 @@ const validateSignal = (
 
   if (rule.signal.type === 'direct') {
     if (!isNonNegativeIntPair(rule.signal.frame_range)) {
-      add(`${basePath}.frame_range`, 'Must be [start,end] integers >= 0')
+      pushError(errors, `${basePath}.frame_range`, 'frame_range_invalid')
     }
     if (
       rule.signal.joints != null &&
       (!Array.isArray(rule.signal.joints) ||
         rule.signal.joints.some((jointId) => !isFiniteInt(jointId) || jointId < 0))
     ) {
-      add(`${basePath}.joints`, 'Must be integers >= 0')
+      pushError(errors, `${basePath}.joints`, 'integer_array_non_negative')
     }
     return
   }
 
-  add(`${basePath}.type`, 'Unsupported signal type')
+  pushError(errors, `${basePath}.type`, 'signal_type_invalid', {
+    type: String((rule.signal as { type?: unknown }).type ?? ''),
+  })
 }
 
 const validateThreshold = (
@@ -164,25 +176,26 @@ const validateThreshold = (
   path: string,
   errors: ValidationError[]
 ) => {
-  const add = (message: string) => errors.push({ path, message })
-  if (!isNonEmptyString(cond.metric)) add('metric is required')
-  if (!['gte', 'gt', 'lte', 'lt', 'eq', 'neq'].includes(cond.op)) add('invalid op')
-  if (!isFiniteNumber(cond.value)) add('value must be a number')
-  if (cond.tolerance != null && !isFiniteNumber(cond.tolerance)) add('tolerance must be a number')
+  if (!isNonEmptyString(cond.metric)) pushError(errors, path, 'metric_required')
+  if (!['gte', 'gt', 'lte', 'lt', 'eq', 'neq'].includes(cond.op)) pushError(errors, path, 'op_invalid')
+  if (!isFiniteNumber(cond.value)) pushError(errors, path, 'value_number_required')
+  if (cond.tolerance != null && !isFiniteNumber(cond.tolerance)) {
+    pushError(errors, path, 'tolerance_number_required')
+  }
 }
 
 const validateRange = (cond: RangeCondition, path: string, errors: ValidationError[]) => {
-  const add = (message: string) => errors.push({ path, message })
-  if (!isNonEmptyString(cond.metric)) add('metric is required')
-  if (cond.op !== 'between') add("op must be 'between'")
-  if (!isNumberPair(cond.value)) add('value must be [lower, upper]')
-  if (cond.tolerance != null && !isFiniteNumber(cond.tolerance)) add('tolerance must be a number')
+  if (!isNonEmptyString(cond.metric)) pushError(errors, path, 'metric_required')
+  if (cond.op !== 'between') pushError(errors, path, 'op_invalid')
+  if (!isNumberPair(cond.value)) pushError(errors, path, 'value_pair_required')
+  if (cond.tolerance != null && !isFiniteNumber(cond.tolerance)) {
+    pushError(errors, path, 'tolerance_number_required')
+  }
 }
 
 const validateBoolean = (cond: BooleanCondition, path: string, errors: ValidationError[]) => {
-  const add = (message: string) => errors.push({ path, message })
-  if (!isNonEmptyString(cond.metric)) add('metric is required')
-  if (!['is_true', 'is_false'].includes(cond.op)) add('invalid op')
+  if (!isNonEmptyString(cond.metric)) pushError(errors, path, 'metric_required')
+  if (!['is_true', 'is_false'].includes(cond.op)) pushError(errors, path, 'op_invalid')
 }
 
 const validateEventExists = (
@@ -190,55 +203,55 @@ const validateEventExists = (
   path: string,
   errors: ValidationError[]
 ) => {
-  const add = (message: string) => errors.push({ path, message })
-  if (!isNonEmptyString(cond.event)) add('event is required')
-  if (cond.window_ms != null && !isNumberPair(cond.window_ms)) add('window_ms must be [pre, post]')
+  if (!isNonEmptyString(cond.event)) pushError(errors, path, 'event_required')
+  if (cond.window_ms != null && !isNumberPair(cond.window_ms)) {
+    pushError(errors, path, 'window_ms_invalid')
+  }
 }
 
 const validateTrend = (cond: TrendCondition, path: string, errors: ValidationError[]) => {
-  const add = (message: string) => errors.push({ path, message })
-  if (!isNonEmptyString(cond.metric)) add('metric is required')
-  if (!['increasing', 'decreasing'].includes(cond.op)) add('invalid op')
+  if (!isNonEmptyString(cond.metric)) pushError(errors, path, 'metric_required')
+  if (!['increasing', 'decreasing'].includes(cond.op)) pushError(errors, path, 'op_invalid')
   if (cond.window_frames != null && (!isFiniteInt(cond.window_frames) || cond.window_frames < 1)) {
-    add('window_frames must be integer >= 1')
+    pushError(errors, path, 'window_frames_invalid')
   }
-  if (cond.window_ms != null && !isNumberPair(cond.window_ms)) add('window_ms must be [pre, post]')
+  if (cond.window_ms != null && !isNumberPair(cond.window_ms)) {
+    pushError(errors, path, 'window_ms_invalid')
+  }
 }
 
 const validateAngle = (cond: AngleCondition, path: string, errors: ValidationError[]) => {
-  const add = (message: string) => errors.push({ path, message })
   if (
     !Array.isArray(cond.joints) ||
     cond.joints.length < 2 ||
     cond.joints.length > 3 ||
     cond.joints.some((jointId) => !isFiniteInt(jointId) || jointId < 0)
   ) {
-    add('joints must be 2 or 3 integers >= 0')
+    pushError(errors, path, 'joints_invalid')
   }
 
   if (!['gte', 'gt', 'lte', 'lt', 'eq', 'neq', 'between'].includes(cond.op)) {
-    add('invalid op')
+    pushError(errors, path, 'op_invalid')
   }
 
   if (cond.op === 'between') {
-    if (!isNumberPair(cond.value)) add('value must be [lower, upper] when op=between')
+    if (!isNumberPair(cond.value)) pushError(errors, path, 'value_pair_required')
   } else if (!isFiniteNumber(cond.value)) {
-    add('value must be a number when op is not between')
+    pushError(errors, path, 'value_number_required')
   }
 }
 
 const validateDistance = (cond: DistanceCondition, path: string, errors: ValidationError[]) => {
-  const add = (message: string) => errors.push({ path, message })
-  if (!isNonNegativeIntPair(cond.pair)) add('pair must be 2 integers >= 0')
+  if (!isNonNegativeIntPair(cond.pair)) pushError(errors, path, 'pair_invalid')
 
   if (!['gte', 'gt', 'lte', 'lt', 'eq', 'neq', 'between'].includes(cond.op)) {
-    add('invalid op')
+    pushError(errors, path, 'op_invalid')
   }
 
   if (cond.op === 'between') {
-    if (!isNumberPair(cond.value)) add('value must be [lower, upper] when op=between')
+    if (!isNumberPair(cond.value)) pushError(errors, path, 'value_pair_required')
   } else if (!isFiniteNumber(cond.value)) {
-    add('value must be a number when op is not between')
+    pushError(errors, path, 'value_number_required')
   }
 }
 
@@ -248,16 +261,15 @@ const validateComposite = (
   errors: ValidationError[],
   condIds: Set<string>
 ) => {
-  const add = (message: string) => errors.push({ path, message })
-  if (!['all', 'any', 'none'].includes(cond.logic)) add('invalid logic')
+  if (!['all', 'any', 'none'].includes(cond.logic)) pushError(errors, path, 'logic_invalid')
   if (!Array.isArray(cond.conditions) || cond.conditions.length === 0) {
-    add('conditions must be a non-empty array of ids')
+    pushError(errors, path, 'condition_refs_required')
     return
   }
 
   cond.conditions.forEach((condId) => {
     if (!condIds.has(condId)) {
-      add(`Unknown condition id '${condId}'`)
+      pushError(errors, path, 'unknown_condition_ref', { id: condId })
     }
   })
 }
@@ -266,7 +278,7 @@ const validateConditions = (rule: Rule, ruleIndex: number, errors: ValidationErr
   const basePath = `rules[${ruleIndex}].conditions`
 
   if (!Array.isArray(rule.conditions) || rule.conditions.length === 0) {
-    errors.push({ path: basePath, message: 'At least one condition is required' })
+    pushError(errors, basePath, 'condition_required')
     return
   }
 
@@ -276,15 +288,15 @@ const validateConditions = (rule: Rule, ruleIndex: number, errors: ValidationErr
   rule.conditions.forEach((cond, condIndex) => {
     const path = `${basePath}[${condIndex}]`
     if (!isNonEmptyString(cond.id)) {
-      errors.push({ path: `${path}.id`, message: 'Required' })
+      pushError(errors, `${path}.id`, 'required')
       return
     }
     if (!ID_RE.test(cond.id)) {
-      errors.push({ path: `${path}.id`, message: 'Invalid id format' })
+      pushError(errors, `${path}.id`, 'invalid_id_format')
       return
     }
     if (condIds.has(cond.id)) {
-      errors.push({ path: `${path}.id`, message: `Duplicate condition id '${cond.id}'` })
+      pushError(errors, `${path}.id`, 'duplicate_condition_id', { id: cond.id })
       return
     }
     condIds.add(cond.id)
@@ -315,7 +327,9 @@ const validateConditions = (rule: Rule, ruleIndex: number, errors: ValidationErr
         compositeConditions.push({ cond, path })
         break
       default:
-        errors.push({ path: `${path}.type`, message: 'Unsupported condition type' })
+        pushError(errors, `${path}.type`, 'condition_type_invalid', {
+          type: String((cond as { type?: unknown }).type ?? ''),
+        })
     }
   })
 
@@ -327,25 +341,25 @@ const validateConditions = (rule: Rule, ruleIndex: number, errors: ValidationErr
 const validateScore = (rule: Rule, index: number, errors: ValidationError[]) => {
   const basePath = `rules[${index}].score`
   if (!rule.score) {
-    errors.push({ path: basePath, message: 'Required' })
+    pushError(errors, basePath, 'score_required')
     return
   }
 
   if (!['weighted', 'all-or-nothing', 'average'].includes(rule.score.mode)) {
-    errors.push({ path: `${basePath}.mode`, message: 'Invalid mode' })
+    pushError(errors, `${basePath}.mode`, 'score_mode_invalid')
   }
 
   if (!isFiniteNumber(rule.score.pass_score)) {
-    errors.push({ path: `${basePath}.pass_score`, message: 'Must be a number' })
+    pushError(errors, `${basePath}.pass_score`, 'pass_score_invalid')
   }
 
   if (!isFiniteNumber(rule.score.max_score) || rule.score.max_score < 0) {
-    errors.push({ path: `${basePath}.max_score`, message: 'Must be a number >= 0' })
+    pushError(errors, `${basePath}.max_score`, 'max_score_invalid')
   }
 
   if (rule.score.mode === 'weighted') {
     if (!rule.score.weights || Object.keys(rule.score.weights).length === 0) {
-      errors.push({ path: `${basePath}.weights`, message: 'Required when mode=weighted' })
+      pushError(errors, `${basePath}.weights`, 'weighted_requires_weights')
     }
   }
 }
@@ -359,21 +373,21 @@ const validateFeedback = (rule: Rule, index: number, errors: ValidationError[]) 
   rule.feedback.forEach((feedback, feedbackIndex) => {
     const path = `${basePath}[${feedbackIndex}]`
     if (!Array.isArray(feedback.condition_ids) || feedback.condition_ids.length === 0) {
-      errors.push({ path: `${path}.condition_ids`, message: 'At least one condition id is required' })
+      pushError(errors, `${path}.condition_ids`, 'feedback_condition_ids_required')
     } else {
       feedback.condition_ids.forEach((condId) => {
         if (!conditionIds.has(condId)) {
-          errors.push({ path: `${path}.condition_ids`, message: `Unknown condition id '${condId}'` })
+          pushError(errors, `${path}.condition_ids`, 'feedback_unknown_condition', { id: condId })
         }
       })
     }
 
     if (!isNonEmptyString(feedback.message)) {
-      errors.push({ path: `${path}.message`, message: 'Required' })
+      pushError(errors, `${path}.message`, 'feedback_message_required')
     }
 
     if (!['info', 'warn', 'fail'].includes(feedback.severity)) {
-      errors.push({ path: `${path}.severity`, message: 'Invalid severity' })
+      pushError(errors, `${path}.severity`, 'severity_invalid')
     }
 
     if (
@@ -381,30 +395,26 @@ const validateFeedback = (rule: Rule, index: number, errors: ValidationError[]) 
       feedback.attach_to_ts !== '' &&
       !/^(event:[A-Za-z0-9_.-]+|frame:[0-9]+)$/.test(feedback.attach_to_ts)
     ) {
-      errors.push({
-        path: `${path}.attach_to_ts`,
-        message: "Must match 'event:<name>' or 'frame:<index>'",
-      })
+      pushError(errors, `${path}.attach_to_ts`, 'attach_to_ts_invalid')
     }
   })
 }
 
 export const validateRuleSet = (ruleSet: RuleSet): ValidationError[] => {
   const errors: ValidationError[] = []
-  const add = (path: string, message: string) => errors.push({ path, message })
 
-  if (!isSemver(ruleSet.schema_version)) add('schema_version', 'Must be semver x.y.z')
-  if (!isNonEmptyString(ruleSet.rule_set_id)) add('rule_set_id', 'Required')
-  if (!isNonEmptyString(ruleSet.sport)) add('sport', 'Required')
-  if (!isSemver(ruleSet.sport_version)) add('sport_version', 'Must be semver x.y.z')
-  if (!isNonEmptyString(ruleSet.metadata?.title)) add('metadata.title', 'Required')
+  if (!isSemver(ruleSet.schema_version)) pushError(errors, 'schema_version', 'invalid_semver')
+  if (!isNonEmptyString(ruleSet.rule_set_id)) pushError(errors, 'rule_set_id', 'required')
+  if (!isNonEmptyString(ruleSet.sport)) pushError(errors, 'sport', 'required')
+  if (!isSemver(ruleSet.sport_version)) pushError(errors, 'sport_version', 'invalid_semver')
+  if (!isNonEmptyString(ruleSet.metadata?.title)) pushError(errors, 'metadata.title', 'required')
 
   if (!Array.isArray(ruleSet.phases) || ruleSet.phases.length === 0) {
-    add('phases', 'Add at least one step/phase')
+    pushError(errors, 'phases', 'phases_required')
   }
 
   if (!Array.isArray(ruleSet.rules) || ruleSet.rules.length === 0) {
-    add('rules', 'Add at least one checkpoint/rule')
+    pushError(errors, 'rules', 'rules_required')
   }
 
   const phaseIds = new Set<string>()
@@ -415,27 +425,27 @@ export const validateRuleSet = (ruleSet: RuleSet): ValidationError[] => {
     const basePath = `rules[${index}]`
 
     if (!isNonEmptyString(rule.id)) {
-      add(`${basePath}.id`, 'Required')
+      pushError(errors, `${basePath}.id`, 'required')
     } else if (!ID_RE.test(rule.id)) {
-      add(`${basePath}.id`, 'Invalid id format')
+      pushError(errors, `${basePath}.id`, 'invalid_id_format')
     } else if (ruleIds.has(rule.id)) {
-      add(`${basePath}.id`, `Duplicate rule id '${rule.id}'`)
+      pushError(errors, `${basePath}.id`, 'duplicate_rule_id', { id: rule.id })
     } else {
       ruleIds.add(rule.id)
     }
 
-    if (!isNonEmptyString(rule.label)) add(`${basePath}.label`, 'Required')
+    if (!isNonEmptyString(rule.label)) pushError(errors, `${basePath}.label`, 'required')
 
     if (!isNonEmptyString(rule.phase)) {
-      add(`${basePath}.phase`, 'Required')
+      pushError(errors, `${basePath}.phase`, 'required')
     } else if (!phaseIds.has(rule.phase)) {
-      add(`${basePath}.phase`, `Unknown phase '${rule.phase}'`)
+      pushError(errors, `${basePath}.phase`, 'unknown_phase', { id: rule.phase })
     }
 
-    if (!isNonEmptyString(rule.category)) add(`${basePath}.category`, 'Required')
+    if (!isNonEmptyString(rule.category)) pushError(errors, `${basePath}.category`, 'required')
 
     if (!['info', 'warn', 'fail'].includes(rule.severity)) {
-      add(`${basePath}.severity`, 'Invalid severity')
+      pushError(errors, `${basePath}.severity`, 'severity_invalid')
     }
 
     validateSignal(rule, index, errors, phaseIds)

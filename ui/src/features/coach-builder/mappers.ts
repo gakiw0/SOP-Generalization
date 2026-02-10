@@ -13,7 +13,6 @@ import type {
   Rule,
   RuleSet,
   Signal,
-  ValidationError,
 } from './schemaTypes'
 
 type ComparisonOp = 'gte' | 'gt' | 'lte' | 'lt' | 'eq' | 'neq'
@@ -434,7 +433,7 @@ export const fromRuleSetSchemaV1 = (ruleSet: RuleSet): CoachDraft => {
 
     const fallbackCheckpoint: CheckpointDraft = {
       id: `${step.id}_checkpoint`,
-      label: 'Checkpoint',
+      label: '',
       description: '',
       category: step.category,
       severity: 'warn',
@@ -450,7 +449,7 @@ export const fromRuleSetSchemaV1 = (ruleSet: RuleSet): CoachDraft => {
       passScore: '1',
       maxScore: '1',
       weightsText: '',
-      feedbackMessage: 'Adjust movement to match coach reference.',
+      feedbackMessage: '',
       feedbackSeverity: 'warn',
       feedbackAttachToTs: '',
       conditions: [
@@ -485,11 +484,6 @@ export const fromRuleSetSchemaV1 = (ruleSet: RuleSet): CoachDraft => {
     metadata: createDraftFromRuleSetMeta(ruleSet),
     steps,
   }
-}
-
-export const summarizeValidation = (errors: ValidationError[]): string => {
-  if (errors.length === 0) return 'Validation passed.'
-  return `Validation failed with ${errors.length} issue(s).`
 }
 
 export const supportsExpertConditionType = (type: ConditionType): boolean =>

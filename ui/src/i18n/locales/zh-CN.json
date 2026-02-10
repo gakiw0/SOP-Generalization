@@ -1,0 +1,230 @@
+{
+  "common": {
+    "add": "新增",
+    "remove": "删除",
+    "reset": "重置",
+    "importJson": "导入 JSON",
+    "exportJson": "导出 JSON",
+    "validate": "校验",
+    "language": "语言"
+  },
+  "language": {
+    "ja": "日本語",
+    "en": "English",
+    "zh-CN": "简体中文",
+    "zh-TW": "繁體中文"
+  },
+  "page": {
+    "title": "Coach JSON Builder",
+    "subtitle": "使用 step/checkpoint 方式生成 schema v1 JSON。"
+  },
+  "metadata": {
+    "sectionTitle": "规则集信息",
+    "ruleSetId": "规则集 ID",
+    "sport": "运动项目",
+    "ruleVersion": "规则版本",
+    "title": "标题"
+  },
+  "step": {
+    "listTitle": "步骤",
+    "addButton": "新增步骤",
+    "editorTitle": "步骤编辑",
+    "emptySelect": "请选择一个步骤进行编辑。",
+    "uncategorized": "未分类",
+    "fields": {
+      "id": "步骤 ID",
+      "label": "步骤名称",
+      "category": "分类",
+      "description": "说明",
+      "rangeType": "范围类型",
+      "startFrame": "起始帧",
+      "endFrame": "结束帧",
+      "eventName": "事件名称",
+      "preWindowMs": "前窗口(ms)",
+      "postWindowMs": "后窗口(ms)",
+      "jointsOfInterest": "关注关节 (CSV)"
+    },
+    "rangeType": {
+      "frame": "帧范围",
+      "event": "事件窗口"
+    },
+    "placeholders": {
+      "id": "step1",
+      "label": "准备动作",
+      "category": "batting",
+      "eventName": "impact",
+      "jointsOfInterest": "1, 8, 12"
+    }
+  },
+  "checkpoint": {
+    "editorTitle": "检查点编辑",
+    "emptySelectStep": "请先选择一个步骤。",
+    "emptyNoCheckpoints": "当前没有检查点。",
+    "addButton": "新增检查点",
+    "removeButton": "删除检查点",
+    "enableExpert": "启用高级条件类型",
+    "conditionsTitle": "条件",
+    "lockedTitle": "条件 ({{type}})",
+    "lockedMessage": "启用高级模式后可编辑该条件类型。",
+    "fields": {
+      "id": "检查点 ID",
+      "label": "标签",
+      "category": "分类",
+      "severity": "严重级别",
+      "description": "说明",
+      "signalType": "信号类型",
+      "referenceStep": "引用步骤",
+      "directStartFrame": "直接范围起始帧",
+      "directEndFrame": "直接范围结束帧",
+      "event": "事件",
+      "windowPreMs": "前窗口 ms",
+      "windowPostMs": "后窗口 ms",
+      "defaultPhase": "默认 phase（可选）"
+    }
+  },
+  "condition": {
+    "basicTitle": "条件",
+    "expertTitle": "条件（高级）",
+    "addButton": "新增条件",
+    "fields": {
+      "id": "条件 ID",
+      "type": "类型",
+      "metric": "指标",
+      "metricOptional": "指标（可选）",
+      "operator": "运算符",
+      "value": "值",
+      "tolerance": "容差",
+      "useAbsolute": "使用绝对值",
+      "logic": "逻辑",
+      "conditionRefs": "条件引用 (CSV)",
+      "event": "事件",
+      "windowPreMs": "前窗口 ms",
+      "windowPostMs": "后窗口 ms",
+      "windowFrames": "窗口帧数",
+      "joints": "关节（2 或 3 个，CSV）",
+      "pair": "关节点对 (CSV)",
+      "reference": "参考系"
+    },
+    "type": {
+      "threshold": "阈值",
+      "range": "范围",
+      "boolean": "布尔",
+      "composite": "组合",
+      "event_exists": "事件存在",
+      "trend": "趋势",
+      "angle": "角度",
+      "distance": "距离"
+    },
+    "logic": {
+      "all": "all",
+      "any": "any",
+      "none": "none"
+    },
+    "reference": {
+      "global": "global",
+      "local": "local"
+    },
+    "op": {
+      "gte": "gte",
+      "gt": "gt",
+      "lte": "lte",
+      "lt": "lt",
+      "eq": "eq",
+      "neq": "neq",
+      "between": "between",
+      "is_true": "is_true",
+      "is_false": "is_false",
+      "increasing": "increasing",
+      "decreasing": "decreasing"
+    },
+    "placeholders": {
+      "metric": "head_move_diff_ratio",
+      "thresholdValue": "0.3",
+      "rangeValue": "0, 1",
+      "tolerance": "0",
+      "conditionRefs": "cond_1, cond_2",
+      "event": "impact",
+      "joints": "1, 2, 3",
+      "pair": "4, 7",
+      "angleSingle": "25",
+      "angleRange": "10, 40",
+      "distanceSingle": "0.3",
+      "distanceRange": "0.2, 0.5"
+    }
+  },
+  "severity": {
+    "info": "info",
+    "warn": "warn",
+    "fail": "fail"
+  },
+  "signalType": {
+    "frame_range_ref": "frame_range_ref",
+    "direct": "direct",
+    "event_window": "event_window"
+  },
+  "validation": {
+    "title": "校验",
+    "summary": {
+      "idle": "尚未校验。",
+      "pass": "校验通过。",
+      "fail": "校验失败，共 {{count}} 个问题。"
+    },
+    "code": {
+      "required": "该字段为必填项。",
+      "invalid_semver": "必须是语义版本格式 (x.y.z)。",
+      "invalid_id_format": "ID 格式不正确。",
+      "duplicate_phase_id": "phase id '{{id}}' 重复。",
+      "duplicate_rule_id": "rule id '{{id}}' 重复。",
+      "unknown_phase": "未知的 phase '{{id}}'。",
+      "phase_range_mode_required": "必须在 frame_range 与 event_window 中二选一。",
+      "frame_range_invalid": "frame_range 必须为 [start, end]，且为 >=0 的整数。",
+      "window_ms_invalid": "window_ms 必须为 [pre, post] 数字。",
+      "integer_array_non_negative": "值必须是 >=0 的整数数组。",
+      "signal_ref_required": "signal ref 为必填项。",
+      "signal_ref_format": "signal ref 必须是 'phase:<id>' 格式。",
+      "signal_type_invalid": "不支持的 signal type '{{type}}'。",
+      "signal_event_required": "signal event 为必填项。",
+      "condition_required": "至少需要一个条件。",
+      "duplicate_condition_id": "condition id '{{id}}' 重复。",
+      "condition_type_invalid": "不支持的 condition type '{{type}}'。",
+      "metric_required": "metric 为必填项。",
+      "op_invalid": "运算符不合法。",
+      "value_number_required": "值必须为数字。",
+      "value_pair_required": "值必须为数字对 [min, max]。",
+      "tolerance_number_required": "tolerance 必须为数字。",
+      "event_required": "event 为必填项。",
+      "window_frames_invalid": "window_frames 必须是 >=1 的整数。",
+      "joints_invalid": "joints 必须是 2 或 3 个 >=0 的整数。",
+      "pair_invalid": "pair 必须是 2 个 >=0 的整数。",
+      "logic_invalid": "logic 不合法。",
+      "condition_refs_required": "composite 条件至少需要一个引用。",
+      "unknown_condition_ref": "未知的 condition id '{{id}}'。",
+      "score_required": "score 配置为必填项。",
+      "score_mode_invalid": "score mode 不合法。",
+      "pass_score_invalid": "pass_score 必须是数字。",
+      "max_score_invalid": "max_score 必须是 >=0 的数字。",
+      "weighted_requires_weights": "当 score mode 为 weighted 时必须提供 weights。",
+      "feedback_condition_ids_required": "feedback.condition_ids 至少需要一个 id。",
+      "feedback_unknown_condition": "feedback 引用了未知 condition '{{id}}'。",
+      "feedback_message_required": "feedback message 为必填项。",
+      "severity_invalid": "severity 不合法。",
+      "attach_to_ts_invalid": "attach_to_ts 必须为 event:<name> 或 frame:<index> 格式。",
+      "phases_required": "请至少新增一个 step/phase。",
+      "rules_required": "请至少新增一个 checkpoint/rule。",
+      "import_invalid_json": "JSON 格式不正确。",
+      "import_invalid_json_root": "JSON 根节点必须是对象。",
+      "import_unexpected_error": "导入时发生未知错误。"
+    }
+  },
+  "import": {
+    "success": "导入成功：已从 schema v1 JSON 加载草稿。",
+    "validation_failed": "导入失败：发现 {{count}} 个校验问题。",
+    "invalid_json": "导入失败：JSON 文件格式错误。",
+    "invalid_json_root": "导入失败：JSON 根节点必须是对象。",
+    "unexpected_error": "导入失败：发生未知错误。"
+  },
+  "export": {
+    "sectionTitle": "导出",
+    "description": "请先执行校验。仅当校验通过且错误为 0 时，才可导出 JSON。"
+  }
+}

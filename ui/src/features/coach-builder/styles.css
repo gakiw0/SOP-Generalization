@@ -48,6 +48,11 @@
   color: var(--ink-700);
 }
 
+.cb-status-text {
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
 .cb-panel h2,
 .cb-panel h3,
 .cb-panel h4 {
@@ -286,6 +291,21 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 0.52rem;
+}
+
+.cb-language-select {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.84rem;
+  color: var(--ink-700);
+}
+
+.cb-language-select select {
+  border: 1px solid #c4cedc;
+  border-radius: 10px;
+  padding: 0.33rem 0.5rem;
+  background: #ffffff;
 }
 
 .cb-export-actions .cb-primary[disabled] {

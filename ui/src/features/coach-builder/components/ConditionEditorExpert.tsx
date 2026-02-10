@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import type { ConditionDraft } from '../draftTypes'
 
 type ExpertConditionType = 'event_exists' | 'trend' | 'angle' | 'distance'
@@ -11,18 +12,20 @@ type ConditionEditorExpertProps = {
 }
 
 export function ConditionEditorExpert({ condition, onUpdate, onRemove }: ConditionEditorExpertProps) {
+  const { t } = useTranslation()
+
   return (
     <article className="cb-condition-card cb-condition-expert">
       <div className="cb-condition-header">
-        <h4>Condition (Expert)</h4>
+        <h4>{t('condition.expertTitle')}</h4>
         <button type="button" className="cb-danger" onClick={onRemove}>
-          Remove
+          {t('common.remove')}
         </button>
       </div>
 
       <div className="cb-field-grid">
         <label>
-          Condition ID
+          {t('condition.fields.id')}
           <input
             type="text"
             value={condition.id}
@@ -31,7 +34,7 @@ export function ConditionEditorExpert({ condition, onUpdate, onRemove }: Conditi
         </label>
 
         <label>
-          Type
+          {t('condition.fields.type')}
           <select
             value={condition.type}
             onChange={(event) => {
@@ -44,7 +47,7 @@ export function ConditionEditorExpert({ condition, onUpdate, onRemove }: Conditi
           >
             {EXPERT_TYPES.map((type) => (
               <option key={type} value={type}>
-                {type}
+                {t(`condition.type.${type}`)}
               </option>
             ))}
           </select>
@@ -53,16 +56,16 @@ export function ConditionEditorExpert({ condition, onUpdate, onRemove }: Conditi
         {condition.type === 'event_exists' && (
           <>
             <label>
-              Event
+              {t('condition.fields.event')}
               <input
                 type="text"
                 value={condition.event}
                 onChange={(event) => onUpdate({ event: event.target.value })}
-                placeholder="impact"
+                placeholder={t('condition.placeholders.event')}
               />
             </label>
             <label>
-              Window pre ms
+              {t('condition.fields.windowPreMs')}
               <input
                 type="number"
                 value={condition.windowPreMs}
@@ -70,7 +73,7 @@ export function ConditionEditorExpert({ condition, onUpdate, onRemove }: Conditi
               />
             </label>
             <label>
-              Window post ms
+              {t('condition.fields.windowPostMs')}
               <input
                 type="number"
                 value={condition.windowPostMs}
@@ -83,22 +86,23 @@ export function ConditionEditorExpert({ condition, onUpdate, onRemove }: Conditi
         {condition.type === 'trend' && (
           <>
             <label>
-              Metric
+              {t('condition.fields.metric')}
               <input
                 type="text"
                 value={condition.metric}
                 onChange={(event) => onUpdate({ metric: event.target.value })}
+                placeholder={t('condition.placeholders.metric')}
               />
             </label>
             <label>
-              Operator
+              {t('condition.fields.operator')}
               <select value={condition.op} onChange={(event) => onUpdate({ op: event.target.value })}>
-                <option value="increasing">increasing</option>
-                <option value="decreasing">decreasing</option>
+                <option value="increasing">{t('condition.op.increasing')}</option>
+                <option value="decreasing">{t('condition.op.decreasing')}</option>
               </select>
             </label>
             <label>
-              Window frames
+              {t('condition.fields.windowFrames')}
               <input
                 type="number"
                 value={condition.windowFrames}
@@ -106,7 +110,7 @@ export function ConditionEditorExpert({ condition, onUpdate, onRemove }: Conditi
               />
             </label>
             <label>
-              Window pre ms
+              {t('condition.fields.windowPreMs')}
               <input
                 type="number"
                 value={condition.windowPreMs}
@@ -114,7 +118,7 @@ export function ConditionEditorExpert({ condition, onUpdate, onRemove }: Conditi
               />
             </label>
             <label>
-              Window post ms
+              {t('condition.fields.windowPostMs')}
               <input
                 type="number"
                 value={condition.windowPostMs}
@@ -127,47 +131,51 @@ export function ConditionEditorExpert({ condition, onUpdate, onRemove }: Conditi
         {condition.type === 'angle' && (
           <>
             <label>
-              Joints (2 or 3, CSV)
+              {t('condition.fields.joints')}
               <input
                 type="text"
                 value={condition.joints}
                 onChange={(event) => onUpdate({ joints: event.target.value })}
-                placeholder="1, 2, 3"
+                placeholder={t('condition.placeholders.joints')}
               />
             </label>
             <label>
-              Reference
+              {t('condition.fields.reference')}
               <select
                 value={condition.reference}
                 onChange={(event) => onUpdate({ reference: event.target.value as 'global' | 'local' })}
               >
-                <option value="global">global</option>
-                <option value="local">local</option>
+                <option value="global">{t('condition.reference.global')}</option>
+                <option value="local">{t('condition.reference.local')}</option>
               </select>
             </label>
             <label>
-              Operator
+              {t('condition.fields.operator')}
               <select value={condition.op} onChange={(event) => onUpdate({ op: event.target.value })}>
-                <option value="gte">gte</option>
-                <option value="gt">gt</option>
-                <option value="lte">lte</option>
-                <option value="lt">lt</option>
-                <option value="eq">eq</option>
-                <option value="neq">neq</option>
-                <option value="between">between</option>
+                <option value="gte">{t('condition.op.gte')}</option>
+                <option value="gt">{t('condition.op.gt')}</option>
+                <option value="lte">{t('condition.op.lte')}</option>
+                <option value="lt">{t('condition.op.lt')}</option>
+                <option value="eq">{t('condition.op.eq')}</option>
+                <option value="neq">{t('condition.op.neq')}</option>
+                <option value="between">{t('condition.op.between')}</option>
               </select>
             </label>
             <label>
-              Value
+              {t('condition.fields.value')}
               <input
                 type="text"
                 value={condition.valueText}
                 onChange={(event) => onUpdate({ valueText: event.target.value })}
-                placeholder={condition.op === 'between' ? '10, 40' : '25'}
+                placeholder={
+                  condition.op === 'between'
+                    ? t('condition.placeholders.angleRange')
+                    : t('condition.placeholders.angleSingle')
+                }
               />
             </label>
             <label>
-              Tolerance
+              {t('condition.fields.tolerance')}
               <input
                 type="number"
                 value={condition.tolerance}
@@ -180,45 +188,50 @@ export function ConditionEditorExpert({ condition, onUpdate, onRemove }: Conditi
         {condition.type === 'distance' && (
           <>
             <label>
-              Pair (CSV)
+              {t('condition.fields.pair')}
               <input
                 type="text"
                 value={condition.pair}
                 onChange={(event) => onUpdate({ pair: event.target.value })}
-                placeholder="4, 7"
+                placeholder={t('condition.placeholders.pair')}
               />
             </label>
             <label>
-              Metric (optional)
+              {t('condition.fields.metricOptional')}
               <input
                 type="text"
                 value={condition.metric}
                 onChange={(event) => onUpdate({ metric: event.target.value })}
+                placeholder={t('condition.placeholders.metric')}
               />
             </label>
             <label>
-              Operator
+              {t('condition.fields.operator')}
               <select value={condition.op} onChange={(event) => onUpdate({ op: event.target.value })}>
-                <option value="gte">gte</option>
-                <option value="gt">gt</option>
-                <option value="lte">lte</option>
-                <option value="lt">lt</option>
-                <option value="eq">eq</option>
-                <option value="neq">neq</option>
-                <option value="between">between</option>
+                <option value="gte">{t('condition.op.gte')}</option>
+                <option value="gt">{t('condition.op.gt')}</option>
+                <option value="lte">{t('condition.op.lte')}</option>
+                <option value="lt">{t('condition.op.lt')}</option>
+                <option value="eq">{t('condition.op.eq')}</option>
+                <option value="neq">{t('condition.op.neq')}</option>
+                <option value="between">{t('condition.op.between')}</option>
               </select>
             </label>
             <label>
-              Value
+              {t('condition.fields.value')}
               <input
                 type="text"
                 value={condition.valueText}
                 onChange={(event) => onUpdate({ valueText: event.target.value })}
-                placeholder={condition.op === 'between' ? '0.2, 0.5' : '0.3'}
+                placeholder={
+                  condition.op === 'between'
+                    ? t('condition.placeholders.distanceRange')
+                    : t('condition.placeholders.distanceSingle')
+                }
               />
             </label>
             <label>
-              Tolerance
+              {t('condition.fields.tolerance')}
               <input
                 type="number"
                 value={condition.tolerance}

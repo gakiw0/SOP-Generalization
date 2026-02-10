@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import type { StepDraft } from '../draftTypes'
 
 type StepEditorProps = {
@@ -7,52 +8,54 @@ type StepEditorProps = {
 }
 
 export function StepEditor({ step, onRename, onUpdate }: StepEditorProps) {
+  const { t } = useTranslation()
+
   if (!step) {
     return (
       <section className="cb-panel">
-        <h2>Step editor</h2>
-        <p>Select a step to edit.</p>
+        <h2>{t('step.editorTitle')}</h2>
+        <p>{t('step.emptySelect')}</p>
       </section>
     )
   }
 
   return (
     <section className="cb-panel">
-      <h2>Step editor</h2>
+      <h2>{t('step.editorTitle')}</h2>
 
       <div className="cb-field-grid">
         <label>
-          Step ID
+          {t('step.fields.id')}
           <input
             type="text"
             value={step.id}
             onChange={(event) => onRename(event.target.value)}
-            placeholder="step1"
+            placeholder={t('step.placeholders.id')}
           />
         </label>
 
         <label>
-          Step label
+          {t('step.fields.label')}
           <input
             type="text"
             value={step.label}
             onChange={(event) => onUpdate({ label: event.target.value })}
-            placeholder="Get Prepared"
+            placeholder={t('step.placeholders.label')}
           />
         </label>
 
         <label>
-          Category
+          {t('step.fields.category')}
           <input
             type="text"
             value={step.category}
             onChange={(event) => onUpdate({ category: event.target.value })}
-            placeholder="batting"
+            placeholder={t('step.placeholders.category')}
           />
         </label>
 
         <label className="cb-full-width">
-          Description
+          {t('step.fields.description')}
           <textarea
             rows={3}
             value={step.description}
@@ -61,20 +64,20 @@ export function StepEditor({ step, onRename, onUpdate }: StepEditorProps) {
         </label>
 
         <label>
-          Range type
+          {t('step.fields.rangeType')}
           <select
             value={step.rangeType}
             onChange={(event) => onUpdate({ rangeType: event.target.value as 'frame' | 'event' })}
           >
-            <option value="frame">Frame range</option>
-            <option value="event">Event window</option>
+            <option value="frame">{t('step.rangeType.frame')}</option>
+            <option value="event">{t('step.rangeType.event')}</option>
           </select>
         </label>
 
         {step.rangeType === 'frame' ? (
           <>
             <label>
-              Start frame
+              {t('step.fields.startFrame')}
               <input
                 type="number"
                 value={step.frameStart}
@@ -82,7 +85,7 @@ export function StepEditor({ step, onRename, onUpdate }: StepEditorProps) {
               />
             </label>
             <label>
-              End frame
+              {t('step.fields.endFrame')}
               <input
                 type="number"
                 value={step.frameEnd}
@@ -93,16 +96,16 @@ export function StepEditor({ step, onRename, onUpdate }: StepEditorProps) {
         ) : (
           <>
             <label>
-              Event name
+              {t('step.fields.eventName')}
               <input
                 type="text"
                 value={step.eventName}
                 onChange={(event) => onUpdate({ eventName: event.target.value })}
-                placeholder="impact"
+                placeholder={t('step.placeholders.eventName')}
               />
             </label>
             <label>
-              Pre-window (ms)
+              {t('step.fields.preWindowMs')}
               <input
                 type="number"
                 value={step.eventWindowPreMs}
@@ -110,7 +113,7 @@ export function StepEditor({ step, onRename, onUpdate }: StepEditorProps) {
               />
             </label>
             <label>
-              Post-window (ms)
+              {t('step.fields.postWindowMs')}
               <input
                 type="number"
                 value={step.eventWindowPostMs}
@@ -121,12 +124,12 @@ export function StepEditor({ step, onRename, onUpdate }: StepEditorProps) {
         )}
 
         <label className="cb-full-width">
-          Joints of interest (CSV)
+          {t('step.fields.jointsOfInterest')}
           <input
             type="text"
             value={step.jointsOfInterest}
             onChange={(event) => onUpdate({ jointsOfInterest: event.target.value })}
-            placeholder="1, 8, 12"
+            placeholder={t('step.placeholders.jointsOfInterest')}
           />
         </label>
       </div>

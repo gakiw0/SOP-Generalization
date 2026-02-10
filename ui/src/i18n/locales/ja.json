@@ -1,0 +1,230 @@
+{
+  "common": {
+    "add": "追加",
+    "remove": "削除",
+    "reset": "リセット",
+    "importJson": "JSONを読み込む",
+    "exportJson": "JSONを書き出す",
+    "validate": "検証",
+    "language": "言語"
+  },
+  "language": {
+    "ja": "日本語",
+    "en": "English",
+    "zh-CN": "简体中文",
+    "zh-TW": "繁體中文"
+  },
+  "page": {
+    "title": "Coach JSON Builder",
+    "subtitle": "step/checkpoint 形式で schema v1 JSON を作成します。"
+  },
+  "metadata": {
+    "sectionTitle": "ルールセット情報",
+    "ruleSetId": "ルールセットID",
+    "sport": "競技",
+    "ruleVersion": "ルールバージョン",
+    "title": "タイトル"
+  },
+  "step": {
+    "listTitle": "ステップ",
+    "addButton": "ステップ追加",
+    "editorTitle": "ステップ編集",
+    "emptySelect": "編集するステップを選択してください。",
+    "uncategorized": "未分類",
+    "fields": {
+      "id": "ステップID",
+      "label": "ステップ名",
+      "category": "カテゴリ",
+      "description": "説明",
+      "rangeType": "範囲タイプ",
+      "startFrame": "開始フレーム",
+      "endFrame": "終了フレーム",
+      "eventName": "イベント名",
+      "preWindowMs": "前ウィンドウ(ms)",
+      "postWindowMs": "後ウィンドウ(ms)",
+      "jointsOfInterest": "注目関節 (CSV)"
+    },
+    "rangeType": {
+      "frame": "フレーム範囲",
+      "event": "イベントウィンドウ"
+    },
+    "placeholders": {
+      "id": "step1",
+      "label": "準備動作",
+      "category": "batting",
+      "eventName": "impact",
+      "jointsOfInterest": "1, 8, 12"
+    }
+  },
+  "checkpoint": {
+    "editorTitle": "チェックポイント編集",
+    "emptySelectStep": "まずステップを選択してください。",
+    "emptyNoCheckpoints": "チェックポイントがありません。",
+    "addButton": "チェックポイント追加",
+    "removeButton": "チェックポイント削除",
+    "enableExpert": "上級条件タイプを有効化",
+    "conditionsTitle": "条件",
+    "lockedTitle": "条件 ({{type}})",
+    "lockedMessage": "この条件タイプを編集するには上級モードを有効化してください。",
+    "fields": {
+      "id": "チェックポイントID",
+      "label": "ラベル",
+      "category": "カテゴリ",
+      "severity": "重要度",
+      "description": "説明",
+      "signalType": "シグナルタイプ",
+      "referenceStep": "参照ステップ",
+      "directStartFrame": "直接指定 開始フレーム",
+      "directEndFrame": "直接指定 終了フレーム",
+      "event": "イベント",
+      "windowPreMs": "前ウィンドウ ms",
+      "windowPostMs": "後ウィンドウ ms",
+      "defaultPhase": "デフォルトphase (任意)"
+    }
+  },
+  "condition": {
+    "basicTitle": "条件",
+    "expertTitle": "条件 (上級)",
+    "addButton": "条件追加",
+    "fields": {
+      "id": "条件ID",
+      "type": "タイプ",
+      "metric": "メトリクス",
+      "metricOptional": "メトリクス (任意)",
+      "operator": "演算子",
+      "value": "値",
+      "tolerance": "許容値",
+      "useAbsolute": "絶対値を使用",
+      "logic": "ロジック",
+      "conditionRefs": "条件参照 (CSV)",
+      "event": "イベント",
+      "windowPreMs": "前ウィンドウ ms",
+      "windowPostMs": "後ウィンドウ ms",
+      "windowFrames": "ウィンドウフレーム数",
+      "joints": "関節 (2または3, CSV)",
+      "pair": "ペア (CSV)",
+      "reference": "参照"
+    },
+    "type": {
+      "threshold": "しきい値",
+      "range": "範囲",
+      "boolean": "真偽",
+      "composite": "複合",
+      "event_exists": "イベント存在",
+      "trend": "トレンド",
+      "angle": "角度",
+      "distance": "距離"
+    },
+    "logic": {
+      "all": "all",
+      "any": "any",
+      "none": "none"
+    },
+    "reference": {
+      "global": "global",
+      "local": "local"
+    },
+    "op": {
+      "gte": "gte",
+      "gt": "gt",
+      "lte": "lte",
+      "lt": "lt",
+      "eq": "eq",
+      "neq": "neq",
+      "between": "between",
+      "is_true": "is_true",
+      "is_false": "is_false",
+      "increasing": "increasing",
+      "decreasing": "decreasing"
+    },
+    "placeholders": {
+      "metric": "head_move_diff_ratio",
+      "thresholdValue": "0.3",
+      "rangeValue": "0, 1",
+      "tolerance": "0",
+      "conditionRefs": "cond_1, cond_2",
+      "event": "impact",
+      "joints": "1, 2, 3",
+      "pair": "4, 7",
+      "angleSingle": "25",
+      "angleRange": "10, 40",
+      "distanceSingle": "0.3",
+      "distanceRange": "0.2, 0.5"
+    }
+  },
+  "severity": {
+    "info": "info",
+    "warn": "warn",
+    "fail": "fail"
+  },
+  "signalType": {
+    "frame_range_ref": "frame_range_ref",
+    "direct": "direct",
+    "event_window": "event_window"
+  },
+  "validation": {
+    "title": "検証",
+    "summary": {
+      "idle": "未検証です。",
+      "pass": "検証に成功しました。",
+      "fail": "検証で {{count}} 件の問題が見つかりました。"
+    },
+    "code": {
+      "required": "必須項目です。",
+      "invalid_semver": "セマンティックバージョン (x.y.z) 形式で入力してください。",
+      "invalid_id_format": "ID形式が不正です。",
+      "duplicate_phase_id": "phase id '{{id}}' が重複しています。",
+      "duplicate_rule_id": "rule id '{{id}}' が重複しています。",
+      "unknown_phase": "phase '{{id}}' が見つかりません。",
+      "phase_range_mode_required": "frame_range または event_window のどちらか1つを指定してください。",
+      "frame_range_invalid": "frame_range は [開始, 終了] の整数(0以上)で指定してください。",
+      "window_ms_invalid": "window_ms は [pre, post] の数値で指定してください。",
+      "integer_array_non_negative": "0以上の整数配列を指定してください。",
+      "signal_ref_required": "signal ref は必須です。",
+      "signal_ref_format": "signal ref は 'phase:<id>' 形式で指定してください。",
+      "signal_type_invalid": "未対応の signal type '{{type}}' です。",
+      "signal_event_required": "signal event は必須です。",
+      "condition_required": "条件を1件以上追加してください。",
+      "duplicate_condition_id": "condition id '{{id}}' が重複しています。",
+      "condition_type_invalid": "未対応の condition type '{{type}}' です。",
+      "metric_required": "metric は必須です。",
+      "op_invalid": "演算子が不正です。",
+      "value_number_required": "値は数値で指定してください。",
+      "value_pair_required": "値は [最小, 最大] のペアで指定してください。",
+      "tolerance_number_required": "tolerance は数値で指定してください。",
+      "event_required": "event は必須です。",
+      "window_frames_invalid": "window_frames は1以上の整数で指定してください。",
+      "joints_invalid": "joints は0以上の整数を2つまたは3つ指定してください。",
+      "pair_invalid": "pair は0以上の整数を2つ指定してください。",
+      "logic_invalid": "logic が不正です。",
+      "condition_refs_required": "composite には参照条件を1件以上指定してください。",
+      "unknown_condition_ref": "condition id '{{id}}' が存在しません。",
+      "score_required": "score 設定は必須です。",
+      "score_mode_invalid": "score mode が不正です。",
+      "pass_score_invalid": "pass_score は数値で指定してください。",
+      "max_score_invalid": "max_score は0以上の数値で指定してください。",
+      "weighted_requires_weights": "score mode が weighted の場合は weights が必要です。",
+      "feedback_condition_ids_required": "feedback.condition_ids は1件以上必要です。",
+      "feedback_unknown_condition": "feedback が未知の condition '{{id}}' を参照しています。",
+      "feedback_message_required": "feedback message は必須です。",
+      "severity_invalid": "severity が不正です。",
+      "attach_to_ts_invalid": "attach_to_ts は event:<name> または frame:<index> 形式で指定してください。",
+      "phases_required": "step/phase を1件以上追加してください。",
+      "rules_required": "checkpoint/rule を1件以上追加してください。",
+      "import_invalid_json": "JSON形式が不正です。",
+      "import_invalid_json_root": "JSONルートはオブジェクトである必要があります。",
+      "import_unexpected_error": "予期しないインポートエラーが発生しました。"
+    }
+  },
+  "import": {
+    "success": "インポート成功: schema v1 JSON から下書きを読み込みました。",
+    "validation_failed": "インポート失敗: 検証エラーが {{count}} 件あります。",
+    "invalid_json": "インポート失敗: JSON形式が不正です。",
+    "invalid_json_root": "インポート失敗: JSONルートはオブジェクトである必要があります。",
+    "unexpected_error": "インポート失敗: 予期しないエラーが発生しました。"
+  },
+  "export": {
+    "sectionTitle": "書き出し",
+    "description": "先に検証を実行してください。検証エラーが0件の場合のみ JSON 書き出しが有効になります。"
+  }
+}

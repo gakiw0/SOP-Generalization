@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   conditionTypeIsBasic,
   type CheckpointDraft,
@@ -45,13 +46,14 @@ export function CheckpointEditor({
   onUpdateCondition,
   onRemoveCondition,
 }: CheckpointEditorProps) {
+  const { t } = useTranslation()
   const [newConditionType, setNewConditionType] = useState<ConditionType>('threshold')
 
   if (!step) {
     return (
       <section className="cb-panel">
-        <h2>Checkpoint editor</h2>
-        <p>Select a step to start editing checkpoints.</p>
+        <h2>{t('checkpoint.editorTitle')}</h2>
+        <p>{t('checkpoint.emptySelectStep')}</p>
       </section>
     )
   }
@@ -65,12 +67,12 @@ export function CheckpointEditor({
     return (
       <section className="cb-panel">
         <div className="cb-panel-header">
-          <h2>Checkpoint editor</h2>
+          <h2>{t('checkpoint.editorTitle')}</h2>
           <button type="button" onClick={onAddCheckpoint}>
-            Add checkpoint
+            {t('checkpoint.addButton')}
           </button>
         </div>
-        <p>No checkpoints yet.</p>
+        <p>{t('checkpoint.emptyNoCheckpoints')}</p>
       </section>
     )
   }
@@ -78,9 +80,9 @@ export function CheckpointEditor({
   return (
     <section className="cb-panel">
       <div className="cb-panel-header">
-        <h2>Checkpoint editor</h2>
+        <h2>{t('checkpoint.editorTitle')}</h2>
         <button type="button" onClick={onAddCheckpoint}>
-          Add checkpoint
+          {t('checkpoint.addButton')}
         </button>
       </div>
 
@@ -99,7 +101,7 @@ export function CheckpointEditor({
 
       <div className="cb-field-grid">
         <label>
-          Checkpoint ID
+          {t('checkpoint.fields.id')}
           <input
             type="text"
             value={selectedCheckpoint.id}
@@ -112,7 +114,7 @@ export function CheckpointEditor({
         </label>
 
         <label>
-          Label
+          {t('checkpoint.fields.label')}
           <input
             type="text"
             value={selectedCheckpoint.label}
@@ -125,7 +127,7 @@ export function CheckpointEditor({
         </label>
 
         <label>
-          Category
+          {t('checkpoint.fields.category')}
           <input
             type="text"
             value={selectedCheckpoint.category}
@@ -138,7 +140,7 @@ export function CheckpointEditor({
         </label>
 
         <label>
-          Severity
+          {t('checkpoint.fields.severity')}
           <select
             value={selectedCheckpoint.severity}
             onChange={(event) =>
@@ -147,14 +149,14 @@ export function CheckpointEditor({
               })
             }
           >
-            <option value="info">info</option>
-            <option value="warn">warn</option>
-            <option value="fail">fail</option>
+            <option value="info">{t('severity.info')}</option>
+            <option value="warn">{t('severity.warn')}</option>
+            <option value="fail">{t('severity.fail')}</option>
           </select>
         </label>
 
         <label className="cb-full-width">
-          Description
+          {t('checkpoint.fields.description')}
           <textarea
             rows={2}
             value={selectedCheckpoint.description}
@@ -167,7 +169,7 @@ export function CheckpointEditor({
         </label>
 
         <label>
-          Signal type
+          {t('checkpoint.fields.signalType')}
           <select
             value={selectedCheckpoint.signalType}
             onChange={(event) =>
@@ -176,15 +178,15 @@ export function CheckpointEditor({
               })
             }
           >
-            <option value="frame_range_ref">frame_range_ref</option>
-            <option value="direct">direct</option>
-            <option value="event_window">event_window</option>
+            <option value="frame_range_ref">{t('signalType.frame_range_ref')}</option>
+            <option value="direct">{t('signalType.direct')}</option>
+            <option value="event_window">{t('signalType.event_window')}</option>
           </select>
         </label>
 
         {selectedCheckpoint.signalType === 'frame_range_ref' && (
           <label>
-            Reference step
+            {t('checkpoint.fields.referenceStep')}
             <select
               value={selectedCheckpoint.signalRefStepId}
               onChange={(event) =>
@@ -205,7 +207,7 @@ export function CheckpointEditor({
         {selectedCheckpoint.signalType === 'direct' && (
           <>
             <label>
-              Direct start frame
+              {t('checkpoint.fields.directStartFrame')}
               <input
                 type="number"
                 value={selectedCheckpoint.signalFrameStart}
@@ -217,7 +219,7 @@ export function CheckpointEditor({
               />
             </label>
             <label>
-              Direct end frame
+              {t('checkpoint.fields.directEndFrame')}
               <input
                 type="number"
                 value={selectedCheckpoint.signalFrameEnd}
@@ -234,7 +236,7 @@ export function CheckpointEditor({
         {selectedCheckpoint.signalType === 'event_window' && (
           <>
             <label>
-              Event
+              {t('checkpoint.fields.event')}
               <input
                 type="text"
                 value={selectedCheckpoint.signalEvent}
@@ -246,7 +248,7 @@ export function CheckpointEditor({
               />
             </label>
             <label>
-              Window pre ms
+              {t('checkpoint.fields.windowPreMs')}
               <input
                 type="number"
                 value={selectedCheckpoint.signalWindowPreMs}
@@ -258,7 +260,7 @@ export function CheckpointEditor({
               />
             </label>
             <label>
-              Window post ms
+              {t('checkpoint.fields.windowPostMs')}
               <input
                 type="number"
                 value={selectedCheckpoint.signalWindowPostMs}
@@ -270,7 +272,7 @@ export function CheckpointEditor({
               />
             </label>
             <label>
-              Default phase (optional)
+              {t('checkpoint.fields.defaultPhase')}
               <input
                 type="text"
                 value={selectedCheckpoint.signalDefaultPhase}
@@ -292,17 +294,17 @@ export function CheckpointEditor({
             checked={expertEnabled}
             onChange={(event) => onToggleExpert(event.target.checked)}
           />
-          Enable expert condition types
+          {t('checkpoint.enableExpert')}
         </label>
 
         <button type="button" className="cb-danger" onClick={() => onRemoveCheckpoint(selectedCheckpoint.id)}>
-          Remove checkpoint
+          {t('checkpoint.removeButton')}
         </button>
       </div>
 
       <div className="cb-panel cb-sub-panel">
         <div className="cb-panel-header">
-          <h3>Conditions</h3>
+          <h3>{t('checkpoint.conditionsTitle')}</h3>
           <div className="cb-add-condition-row">
             <select
               value={newConditionType}
@@ -310,7 +312,7 @@ export function CheckpointEditor({
             >
               {allowedTypes.map((type) => (
                 <option key={type} value={type}>
-                  {type}
+                  {t(`condition.type.${type}`)}
                 </option>
               ))}
             </select>
@@ -318,7 +320,7 @@ export function CheckpointEditor({
               type="button"
               onClick={() => onAddCondition(selectedCheckpoint.id, newConditionType)}
             >
-              Add condition
+              {t('condition.addButton')}
             </button>
           </div>
         </div>
@@ -340,18 +342,16 @@ export function CheckpointEditor({
             return (
               <article key={condition.id} className="cb-condition-card cb-condition-locked">
                 <div className="cb-condition-header">
-                  <h4>
-                    Condition ({condition.type})
-                  </h4>
+                  <h4>{t('checkpoint.lockedTitle', { type: t(`condition.type.${condition.type}`) })}</h4>
                   <button
                     type="button"
                     className="cb-danger"
                     onClick={() => onRemoveCondition(selectedCheckpoint.id, condition.id)}
                   >
-                    Remove
+                    {t('common.remove')}
                   </button>
                 </div>
-                <p>Enable expert mode to edit this condition type.</p>
+                <p>{t('checkpoint.lockedMessage')}</p>
               </article>
             )
           }

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import type { BasicConditionType, ConditionDraft } from '../draftTypes'
 
 type ConditionEditorBasicProps = {
@@ -15,20 +16,21 @@ export function ConditionEditorBasic({
   onUpdate,
   onRemove,
 }: ConditionEditorBasicProps) {
+  const { t } = useTranslation()
   const availableRefIds = allConditionIds.filter((id) => id !== condition.id)
 
   return (
     <article className="cb-condition-card">
       <div className="cb-condition-header">
-        <h4>Condition</h4>
+        <h4>{t('condition.basicTitle')}</h4>
         <button type="button" className="cb-danger" onClick={onRemove}>
-          Remove
+          {t('common.remove')}
         </button>
       </div>
 
       <div className="cb-field-grid">
         <label>
-          Condition ID
+          {t('condition.fields.id')}
           <input
             type="text"
             value={condition.id}
@@ -37,7 +39,7 @@ export function ConditionEditorBasic({
         </label>
 
         <label>
-          Type
+          {t('condition.fields.type')}
           <select
             value={condition.type}
             onChange={(event) => {
@@ -57,7 +59,7 @@ export function ConditionEditorBasic({
           >
             {BASIC_TYPES.map((type) => (
               <option key={type} value={type}>
-                {type}
+                {t(`condition.type.${type}`)}
               </option>
             ))}
           </select>
@@ -65,60 +67,64 @@ export function ConditionEditorBasic({
 
         {(condition.type === 'threshold' || condition.type === 'range' || condition.type === 'boolean') && (
           <label>
-            Metric
+            {t('condition.fields.metric')}
             <input
               type="text"
               value={condition.metric}
               onChange={(event) => onUpdate({ metric: event.target.value })}
-              placeholder="head_move_diff_ratio"
+              placeholder={t('condition.placeholders.metric')}
             />
           </label>
         )}
 
         {condition.type === 'threshold' && (
           <label>
-            Operator
+            {t('condition.fields.operator')}
             <select value={condition.op} onChange={(event) => onUpdate({ op: event.target.value })}>
-              <option value="gte">gte</option>
-              <option value="gt">gt</option>
-              <option value="lte">lte</option>
-              <option value="lt">lt</option>
-              <option value="eq">eq</option>
-              <option value="neq">neq</option>
+              <option value="gte">{t('condition.op.gte')}</option>
+              <option value="gt">{t('condition.op.gt')}</option>
+              <option value="lte">{t('condition.op.lte')}</option>
+              <option value="lt">{t('condition.op.lt')}</option>
+              <option value="eq">{t('condition.op.eq')}</option>
+              <option value="neq">{t('condition.op.neq')}</option>
             </select>
           </label>
         )}
 
         {condition.type === 'boolean' && (
           <label>
-            Operator
+            {t('condition.fields.operator')}
             <select value={condition.op} onChange={(event) => onUpdate({ op: event.target.value })}>
-              <option value="is_true">is_true</option>
-              <option value="is_false">is_false</option>
+              <option value="is_true">{t('condition.op.is_true')}</option>
+              <option value="is_false">{t('condition.op.is_false')}</option>
             </select>
           </label>
         )}
 
         {(condition.type === 'threshold' || condition.type === 'range') && (
           <label>
-            Value
+            {t('condition.fields.value')}
             <input
               type="text"
               value={condition.valueText}
               onChange={(event) => onUpdate({ valueText: event.target.value })}
-              placeholder={condition.type === 'range' ? '0, 1' : '0.3'}
+              placeholder={
+                condition.type === 'range'
+                  ? t('condition.placeholders.rangeValue')
+                  : t('condition.placeholders.thresholdValue')
+              }
             />
           </label>
         )}
 
         {(condition.type === 'threshold' || condition.type === 'range') && (
           <label>
-            Tolerance
+            {t('condition.fields.tolerance')}
             <input
               type="number"
               value={condition.tolerance}
               onChange={(event) => onUpdate({ tolerance: event.target.value })}
-              placeholder="0"
+              placeholder={t('condition.placeholders.tolerance')}
             />
           </label>
         )}
@@ -130,23 +136,28 @@ export function ConditionEditorBasic({
               checked={condition.absVal}
               onChange={(event) => onUpdate({ absVal: event.target.checked })}
             />
-            Use absolute value
+            {t('condition.fields.useAbsolute')}
           </label>
         )}
 
         {condition.type === 'composite' && (
           <>
             <label>
-              Logic
-              <select value={condition.logic} onChange={(event) => onUpdate({ logic: event.target.value as 'all' | 'any' | 'none' })}>
-                <option value="all">all</option>
-                <option value="any">any</option>
-                <option value="none">none</option>
+              {t('condition.fields.logic')}
+              <select
+                value={condition.logic}
+                onChange={(event) =>
+                  onUpdate({ logic: event.target.value as 'all' | 'any' | 'none' })
+                }
+              >
+                <option value="all">{t('condition.logic.all')}</option>
+                <option value="any">{t('condition.logic.any')}</option>
+                <option value="none">{t('condition.logic.none')}</option>
               </select>
             </label>
 
             <label className="cb-full-width">
-              Condition refs (CSV)
+              {t('condition.fields.conditionRefs')}
               <input
                 type="text"
                 value={condition.conditionRefs.join(', ')}
@@ -158,7 +169,7 @@ export function ConditionEditorBasic({
                       .filter((item) => item.length > 0),
                   })
                 }
-                placeholder="cond_1, cond_2"
+                placeholder={t('condition.placeholders.conditionRefs')}
                 list={`condition_refs_${condition.id}`}
               />
               <datalist id={`condition_refs_${condition.id}`}>

@@ -1,0 +1,230 @@
+{
+  "common": {
+    "add": "新增",
+    "remove": "刪除",
+    "reset": "重設",
+    "importJson": "匯入 JSON",
+    "exportJson": "匯出 JSON",
+    "validate": "驗證",
+    "language": "語言"
+  },
+  "language": {
+    "ja": "日本語",
+    "en": "English",
+    "zh-CN": "简体中文",
+    "zh-TW": "繁體中文"
+  },
+  "page": {
+    "title": "Coach JSON Builder",
+    "subtitle": "使用 step/checkpoint 方式建立 schema v1 JSON。"
+  },
+  "metadata": {
+    "sectionTitle": "規則集資訊",
+    "ruleSetId": "規則集 ID",
+    "sport": "運動項目",
+    "ruleVersion": "規則版本",
+    "title": "標題"
+  },
+  "step": {
+    "listTitle": "步驟",
+    "addButton": "新增步驟",
+    "editorTitle": "步驟編輯",
+    "emptySelect": "請先選擇要編輯的步驟。",
+    "uncategorized": "未分類",
+    "fields": {
+      "id": "步驟 ID",
+      "label": "步驟名稱",
+      "category": "分類",
+      "description": "說明",
+      "rangeType": "範圍類型",
+      "startFrame": "起始影格",
+      "endFrame": "結束影格",
+      "eventName": "事件名稱",
+      "preWindowMs": "前視窗(ms)",
+      "postWindowMs": "後視窗(ms)",
+      "jointsOfInterest": "關注關節 (CSV)"
+    },
+    "rangeType": {
+      "frame": "影格範圍",
+      "event": "事件視窗"
+    },
+    "placeholders": {
+      "id": "step1",
+      "label": "準備動作",
+      "category": "batting",
+      "eventName": "impact",
+      "jointsOfInterest": "1, 8, 12"
+    }
+  },
+  "checkpoint": {
+    "editorTitle": "檢查點編輯",
+    "emptySelectStep": "請先選擇步驟。",
+    "emptyNoCheckpoints": "目前沒有檢查點。",
+    "addButton": "新增檢查點",
+    "removeButton": "刪除檢查點",
+    "enableExpert": "啟用進階條件類型",
+    "conditionsTitle": "條件",
+    "lockedTitle": "條件 ({{type}})",
+    "lockedMessage": "請啟用進階模式以編輯此條件類型。",
+    "fields": {
+      "id": "檢查點 ID",
+      "label": "標籤",
+      "category": "分類",
+      "severity": "嚴重等級",
+      "description": "說明",
+      "signalType": "訊號類型",
+      "referenceStep": "參照步驟",
+      "directStartFrame": "直接範圍起始影格",
+      "directEndFrame": "直接範圍結束影格",
+      "event": "事件",
+      "windowPreMs": "前視窗 ms",
+      "windowPostMs": "後視窗 ms",
+      "defaultPhase": "預設 phase（可選）"
+    }
+  },
+  "condition": {
+    "basicTitle": "條件",
+    "expertTitle": "條件（進階）",
+    "addButton": "新增條件",
+    "fields": {
+      "id": "條件 ID",
+      "type": "類型",
+      "metric": "指標",
+      "metricOptional": "指標（可選）",
+      "operator": "運算子",
+      "value": "值",
+      "tolerance": "容差",
+      "useAbsolute": "使用絕對值",
+      "logic": "邏輯",
+      "conditionRefs": "條件參照 (CSV)",
+      "event": "事件",
+      "windowPreMs": "前視窗 ms",
+      "windowPostMs": "後視窗 ms",
+      "windowFrames": "視窗影格數",
+      "joints": "關節（2 或 3 個，CSV）",
+      "pair": "關節對 (CSV)",
+      "reference": "參考系"
+    },
+    "type": {
+      "threshold": "閾值",
+      "range": "範圍",
+      "boolean": "布林",
+      "composite": "組合",
+      "event_exists": "事件存在",
+      "trend": "趨勢",
+      "angle": "角度",
+      "distance": "距離"
+    },
+    "logic": {
+      "all": "all",
+      "any": "any",
+      "none": "none"
+    },
+    "reference": {
+      "global": "global",
+      "local": "local"
+    },
+    "op": {
+      "gte": "gte",
+      "gt": "gt",
+      "lte": "lte",
+      "lt": "lt",
+      "eq": "eq",
+      "neq": "neq",
+      "between": "between",
+      "is_true": "is_true",
+      "is_false": "is_false",
+      "increasing": "increasing",
+      "decreasing": "decreasing"
+    },
+    "placeholders": {
+      "metric": "head_move_diff_ratio",
+      "thresholdValue": "0.3",
+      "rangeValue": "0, 1",
+      "tolerance": "0",
+      "conditionRefs": "cond_1, cond_2",
+      "event": "impact",
+      "joints": "1, 2, 3",
+      "pair": "4, 7",
+      "angleSingle": "25",
+      "angleRange": "10, 40",
+      "distanceSingle": "0.3",
+      "distanceRange": "0.2, 0.5"
+    }
+  },
+  "severity": {
+    "info": "info",
+    "warn": "warn",
+    "fail": "fail"
+  },
+  "signalType": {
+    "frame_range_ref": "frame_range_ref",
+    "direct": "direct",
+    "event_window": "event_window"
+  },
+  "validation": {
+    "title": "驗證",
+    "summary": {
+      "idle": "尚未驗證。",
+      "pass": "驗證通過。",
+      "fail": "驗證失敗，共 {{count}} 個問題。"
+    },
+    "code": {
+      "required": "此欄位為必填。",
+      "invalid_semver": "必須是語意版本格式 (x.y.z)。",
+      "invalid_id_format": "ID 格式不正確。",
+      "duplicate_phase_id": "phase id '{{id}}' 重複。",
+      "duplicate_rule_id": "rule id '{{id}}' 重複。",
+      "unknown_phase": "未知的 phase '{{id}}'。",
+      "phase_range_mode_required": "frame_range 與 event_window 必須二擇一。",
+      "frame_range_invalid": "frame_range 必須是 [start, end] 且為 >=0 的整數。",
+      "window_ms_invalid": "window_ms 必須是 [pre, post] 數值。",
+      "integer_array_non_negative": "值必須是 >=0 的整數陣列。",
+      "signal_ref_required": "signal ref 為必填。",
+      "signal_ref_format": "signal ref 必須是 'phase:<id>' 格式。",
+      "signal_type_invalid": "不支援的 signal type '{{type}}'。",
+      "signal_event_required": "signal event 為必填。",
+      "condition_required": "至少需要一個條件。",
+      "duplicate_condition_id": "condition id '{{id}}' 重複。",
+      "condition_type_invalid": "不支援的 condition type '{{type}}'。",
+      "metric_required": "metric 為必填。",
+      "op_invalid": "運算子不合法。",
+      "value_number_required": "值必須是數字。",
+      "value_pair_required": "值必須是數字對 [min, max]。",
+      "tolerance_number_required": "tolerance 必須是數字。",
+      "event_required": "event 為必填。",
+      "window_frames_invalid": "window_frames 必須是 >=1 的整數。",
+      "joints_invalid": "joints 必須為 2 或 3 個 >=0 整數。",
+      "pair_invalid": "pair 必須為 2 個 >=0 整數。",
+      "logic_invalid": "logic 不合法。",
+      "condition_refs_required": "composite 條件至少需要一個參照。",
+      "unknown_condition_ref": "未知的 condition id '{{id}}'。",
+      "score_required": "score 設定為必填。",
+      "score_mode_invalid": "score mode 不合法。",
+      "pass_score_invalid": "pass_score 必須是數字。",
+      "max_score_invalid": "max_score 必須是 >=0 的數字。",
+      "weighted_requires_weights": "當 score mode 為 weighted 時必須提供 weights。",
+      "feedback_condition_ids_required": "feedback.condition_ids 至少需要一個 id。",
+      "feedback_unknown_condition": "feedback 參照了未知 condition '{{id}}'。",
+      "feedback_message_required": "feedback message 為必填。",
+      "severity_invalid": "severity 不合法。",
+      "attach_to_ts_invalid": "attach_to_ts 必須是 event:<name> 或 frame:<index> 格式。",
+      "phases_required": "請至少新增一個 step/phase。",
+      "rules_required": "請至少新增一個 checkpoint/rule。",
+      "import_invalid_json": "JSON 格式不正確。",
+      "import_invalid_json_root": "JSON 根節點必須是物件。",
+      "import_unexpected_error": "匯入時發生未知錯誤。"
+    }
+  },
+  "import": {
+    "success": "匯入成功：已從 schema v1 JSON 載入草稿。",
+    "validation_failed": "匯入失敗：找到 {{count}} 個驗證問題。",
+    "invalid_json": "匯入失敗：JSON 檔案格式錯誤。",
+    "invalid_json_root": "匯入失敗：JSON 根節點必須是物件。",
+    "unexpected_error": "匯入失敗：發生未知錯誤。"
+  },
+  "export": {
+    "sectionTitle": "匯出",
+    "description": "請先執行驗證。只有在驗證通過且錯誤數為 0 時，才可匯出 JSON。"
+  }
+}
