@@ -1,0 +1,37 @@
+{
+  "preset_id": "baseball_starter",
+  "version": "1.0.0",
+  "title": "Baseball Starter Preset",
+  "description": "Optional starter template for baseball coaches. Runtime capability is still resolved by metric profile/plugin.",
+  "metric_profile_id": "generic_core",
+  "metric_space": "core_v1",
+  "recommended_steps": [
+    {
+      "id": "setup",
+      "label": "Setup",
+      "recommended_metrics": ["head_displacement_delta_mean", "shoulder_tilt_delta_mean"]
+    },
+    {
+      "id": "stride",
+      "label": "Stride",
+      "recommended_metrics": ["cg_z_delta_mean", "root_speed_delta_mean"]
+    },
+    {
+      "id": "swing",
+      "label": "Swing",
+      "recommended_metrics": ["head_displacement_delta_series", "root_speed_delta_series"]
+    }
+  ],
+  "starter_thresholds": [
+    {
+      "metric": "head_displacement_delta_mean",
+      "op": "lte",
+      "value": 0.45
+    },
+    {
+      "metric": "cg_z_delta_mean",
+      "op": "lte",
+      "value": 0.35
+    }
+  ]
+}
