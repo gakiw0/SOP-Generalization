@@ -6,7 +6,6 @@ import numpy as np
 
 from .base import BaseRulePlugin
 from .registry import register_plugin
-from ..metrics import base_metrics as bm
 
 
 @register_plugin("baseball")
@@ -16,6 +15,8 @@ class BaseballPlugin(BaseRulePlugin):
     """
 
     def compute_metrics(self, phase_id: str, student_data: np.ndarray, coach_data: np.ndarray) -> Dict[str, float]:
+        from ..metrics import base_metrics as bm
+
         metrics: Dict[str, float] = {}
         if phase_id == "step1":
             metrics["stance_angle_diff_ratio"] = bm.stance_angle_diff_ratio(student_data, coach_data)

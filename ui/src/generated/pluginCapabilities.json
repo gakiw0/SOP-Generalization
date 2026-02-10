@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "plugins": {
+    "baseball": {
+      "supported_condition_types": [
+        "boolean",
+        "composite",
+        "range",
+        "threshold"
+      ],
+      "metrics_by_phase": {
+        "step1": [
+          "cg_z_avg_ratio_or_flag",
+          "stance_angle_diff_ratio"
+        ],
+        "step2": [
+          "cg_z_end_ratio_or_flag",
+          "head_move_diff_ratio",
+          "shoulder_xz_angle_diff_ratio",
+          "stride_z_class"
+        ],
+        "step3": [
+          "cg_z_end_diff_class",
+          "shoulder_height_diff_class"
+        ],
+        "step4": [
+          "cg_z_std_diff_ratio",
+          "hip_yaw_angle_diff_ratio_or_clamp"
+        ]
+      },
+      "all_metrics": [
+        "cg_z_avg_ratio_or_flag",
+        "cg_z_end_diff_class",
+        "cg_z_end_ratio_or_flag",
+        "cg_z_std_diff_ratio",
+        "head_move_diff_ratio",
+        "hip_yaw_angle_diff_ratio_or_clamp",
+        "shoulder_height_diff_class",
+        "shoulder_xz_angle_diff_ratio",
+        "stance_angle_diff_ratio",
+        "stride_z_class"
+      ]
+    }
+  }
+}
