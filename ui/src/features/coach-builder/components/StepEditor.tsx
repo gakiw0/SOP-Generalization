@@ -194,7 +194,7 @@ export function StepEditor({ step, metricCandidates, onRename, onUpdate }: StepE
                 className="cb-chip-button cb-chip-static cb-metric-chip"
                 data-testid="cb-step-metric-option"
               >
-                <span>{formatMetricLabel(metric, getMetricCatalogEntry(metric)).primary}</span>
+                <span>{formatMetricLabel(metric, getMetricCatalogEntry(metric), t).primary}</span>
                 <small className="cb-metric-subtext">{metric}</small>
               </span>
             ))}

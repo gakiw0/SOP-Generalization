@@ -65,7 +65,38 @@
     "metricPresetId": "おすすめ初期設定",
     "sport": "競技",
     "ruleVersion": "ルールバージョン",
-    "title": "タイトル"
+    "title": "タイトル",
+    "profileType": {
+      "generic": "汎用テンプレート",
+      "preset": "プリセットテンプレート"
+    }
+  },
+  "profiles": {
+    "generic_core": "汎用動作比較",
+    "baseball": "野球スターター"
+  },
+  "presets": {
+    "baseball_starter": "野球スターター"
+  },
+  "metrics": {
+    "cg_z_delta_mean": "重心Z差分（平均）",
+    "cg_z_delta_series": "重心Z差分（時系列）",
+    "head_displacement_delta_mean": "頭部移動差分（平均）",
+    "head_displacement_delta_series": "頭部移動差分（時系列）",
+    "hip_yaw_delta_mean": "腰回旋差分（平均）",
+    "root_speed_delta_mean": "体幹速度差分（平均）",
+    "root_speed_delta_series": "体幹速度差分（時系列）",
+    "shoulder_tilt_delta_mean": "肩傾き差分（平均）",
+    "cg_z_avg_ratio_or_flag": "重心Z平均差分",
+    "stance_angle_diff_ratio": "スタンス角度差分",
+    "cg_z_end_ratio_or_flag": "重心Z終端差分",
+    "head_move_diff_ratio": "頭部移動差分",
+    "shoulder_xz_angle_diff_ratio": "肩XZ角度差分",
+    "stride_z_class": "ステップ方向クラス",
+    "cg_z_end_diff_class": "重心Z終端クラス差分",
+    "shoulder_height_diff_class": "肩高さクラス差分",
+    "cg_z_std_diff_ratio": "重心Z安定性差分",
+    "hip_yaw_angle_diff_ratio_or_clamp": "腰回旋角度差分"
   },
   "step": {
     "listTitle": "ステップ",
@@ -290,6 +321,27 @@
     "title": "検証",
     "help": "項目をクリックすると、修正が必要な場所へ移動できます。",
     "technicalDetails": "技術パスを表示",
+    "location": {
+      "setup": "準備",
+      "step": "ステップ: {{name}}",
+      "checkpoint": "チェックポイント: {{name}}",
+      "review": "確認"
+    },
+    "field": {
+      "general": "全般",
+      "comparisonId": "比較ID",
+      "template": "比較テンプレート",
+      "title": "タイトル",
+      "label": "ラベル",
+      "category": "カテゴリ",
+      "id": "内部ID",
+      "description": "説明",
+      "timing": "タイミング設定",
+      "conditions": "条件",
+      "score": "スコア設定",
+      "version": "バージョン",
+      "sport": "競技"
+    },
     "summary": {
       "idle": "未検証です。",
       "pass": "検証に成功しました。",

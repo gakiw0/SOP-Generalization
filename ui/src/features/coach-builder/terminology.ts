@@ -1,4 +1,5 @@
 import type { MetricCatalogEntry } from './metricCatalog'
+import type { TFunction } from 'i18next'
 
 type BasicProfileShape = {
   id: string
@@ -16,8 +17,16 @@ export const humanizeIdentifier = (value: string): string =>
 
 export const formatMetricLabel = (
   metricId: string,
-  metricEntry: MetricCatalogEntry | null
+  metricEntry: MetricCatalogEntry | null,
+  t?: TFunction
 ): { primary: string; secondary: string } => {
+  const translatedLabel = t?.(`metrics.${metricId}`, { defaultValue: '' }) ?? ''
+  if (translatedLabel.trim().length > 0) {
+    return {
+      primary: translatedLabel,
+      secondary: metricId,
+    }
+  }
   if (metricEntry && metricEntry.label.trim().length > 0) {
     return {
       primary: metricEntry.label,
@@ -32,17 +41,30 @@ export const formatMetricLabel = (
 
 export const formatMetricOptionText = (
   metricId: string,
-  metricEntry: MetricCatalogEntry | null
+  metricEntry: MetricCatalogEntry | null,
+  t?: TFunction
 ): string => {
-  const label = formatMetricLabel(metricId, metricEntry)
+  const label = formatMetricLabel(metricId, metricEntry, t)
   return `${label.primary} (${label.secondary})`
 }
 
-export const formatProfileLabel = (profile: BasicProfileShape): { displayName: string; subtitle: string } => {
+export const formatProfileLabel = (
+  profile: BasicProfileShape,
+  t?: TFunction
+): { displayName: string; subtitle: string } => {
+  const translatedProfile = t?.(`profiles.${profile.id}`, { defaultValue: '' }) ?? ''
+  if (translatedProfile.trim().length > 0) {
+    return {
+      displayName: translatedProfile,
+      subtitle: profile.id,
+    }
+  }
+
   if (profile.type === 'preset') {
     const presetId = profile.preset_id?.trim() || profile.id
+    const translatedPreset = t?.(`presets.${presetId}`, { defaultValue: '' }) ?? ''
     return {
-      displayName: humanizeIdentifier(presetId),
+      displayName: translatedPreset.trim().length > 0 ? translatedPreset : humanizeIdentifier(presetId),
       subtitle: profile.id,
     }
   }

@@ -65,7 +65,38 @@
     "metricPresetId": "推荐预设",
     "sport": "运动项目",
     "ruleVersion": "规则版本",
-    "title": "标题"
+    "title": "标题",
+    "profileType": {
+      "generic": "通用模板",
+      "preset": "预设模板"
+    }
+  },
+  "profiles": {
+    "generic_core": "通用动作对比",
+    "baseball": "棒球入门模板"
+  },
+  "presets": {
+    "baseball_starter": "棒球入门模板"
+  },
+  "metrics": {
+    "cg_z_delta_mean": "重心 Z 差异（平均）",
+    "cg_z_delta_series": "重心 Z 差异（时序）",
+    "head_displacement_delta_mean": "头部位移差异（平均）",
+    "head_displacement_delta_series": "头部位移差异（时序）",
+    "hip_yaw_delta_mean": "髋部转动差异（平均）",
+    "root_speed_delta_mean": "躯干速度差异（平均）",
+    "root_speed_delta_series": "躯干速度差异（时序）",
+    "shoulder_tilt_delta_mean": "肩部倾斜差异（平均）",
+    "cg_z_avg_ratio_or_flag": "重心 Z 平均差异",
+    "stance_angle_diff_ratio": "站姿角度差异",
+    "cg_z_end_ratio_or_flag": "重心 Z 末端差异",
+    "head_move_diff_ratio": "头部移动差异",
+    "shoulder_xz_angle_diff_ratio": "肩部 XZ 角度差异",
+    "stride_z_class": "跨步方向分类",
+    "cg_z_end_diff_class": "重心 Z 末端分类差异",
+    "shoulder_height_diff_class": "肩高分类差异",
+    "cg_z_std_diff_ratio": "重心 Z 稳定性差异",
+    "hip_yaw_angle_diff_ratio_or_clamp": "髋部旋转角度差异"
   },
   "step": {
     "listTitle": "步骤",
@@ -290,6 +321,27 @@
     "title": "校验",
     "help": "点击问题可直接跳转到需要修复的位置。",
     "technicalDetails": "显示技术路径",
+    "location": {
+      "setup": "准备",
+      "step": "步骤：{{name}}",
+      "checkpoint": "检查点：{{name}}",
+      "review": "检查"
+    },
+    "field": {
+      "general": "通用",
+      "comparisonId": "比较 ID",
+      "template": "比较模板",
+      "title": "标题",
+      "label": "标签",
+      "category": "分类",
+      "id": "内部 ID",
+      "description": "说明",
+      "timing": "时机设置",
+      "conditions": "条件",
+      "score": "评分设置",
+      "version": "版本",
+      "sport": "运动项目"
+    },
     "summary": {
       "idle": "尚未校验。",
       "pass": "校验通过。",

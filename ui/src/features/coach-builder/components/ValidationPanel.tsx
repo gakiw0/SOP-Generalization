@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next'
+import type { TFunction } from 'i18next'
 import type { ValidationError } from '../schemaTypes'
 
 type ValidationStatus = 'idle' | 'pass' | 'fail'
@@ -15,37 +16,58 @@ type ValidationPanelProps = {
 const describeErrorLocation = (
   path: string,
   stepLabels: string[],
-  checkpointLabels: string[]
+  checkpointLabels: string[],
+  t: TFunction
 ): string => {
+  const mapFieldLabel = (fieldToken: string): string => {
+    const token = fieldToken.trim()
+    if (token.startsWith('conditions[')) return t('validation.field.conditions')
+    if (token.startsWith('score')) return t('validation.field.score')
+    if (token.startsWith('signal')) return t('validation.field.timing')
+    if (token === 'label') return t('validation.field.label')
+    if (token === 'category') return t('validation.field.category')
+    if (token === 'id') return t('validation.field.id')
+    if (token === 'description') return t('validation.field.description')
+    if (token === 'title') return t('validation.field.title')
+    if (token === 'metric_profile') return t('validation.field.template')
+    if (token.startsWith('metric_profile')) return t('validation.field.template')
+    if (token === 'rule_set_id') return t('validation.field.comparisonId')
+    if (token === 'sport') return t('validation.field.sport')
+    if (token === 'sport_version') return t('validation.field.version')
+    return t('validation.field.general')
+  }
+
   const phaseMatch = path.match(/^phases\[(\d+)\](?:\.(.+))?$/)
   if (phaseMatch) {
     const index = Number(phaseMatch[1])
-    const field = phaseMatch[2] ? ` > ${phaseMatch[2]}` : ''
-    return `Step: ${stepLabels[index] ?? `#${index + 1}`}${field}`
+    const fieldToken = phaseMatch[2]?.split('.')[0] ?? ''
+    const field = fieldToken.length > 0 ? ` > ${mapFieldLabel(fieldToken)}` : ''
+    return `${t('validation.location.step', { name: stepLabels[index] ?? `#${index + 1}` })}${field}`
   }
 
   const ruleMatch = path.match(/^rules\[(\d+)\](?:\.(.+))?$/)
   if (ruleMatch) {
     const index = Number(ruleMatch[1])
-    const field = ruleMatch[2] ? ` > ${ruleMatch[2]}` : ''
-    return `Checkpoint: ${checkpointLabels[index] ?? `#${index + 1}`}${field}`
+    const fieldToken = ruleMatch[2]?.split('.')[0] ?? ''
+    const field = fieldToken.length > 0 ? ` > ${mapFieldLabel(fieldToken)}` : ''
+    return `${t('validation.location.checkpoint', { name: checkpointLabels[index] ?? `#${index + 1}` })}${field}`
   }
 
   const metadataMatch = path.match(/^metadata(?:\.(.+))?$/)
   if (metadataMatch) {
-    const field = metadataMatch[1] ?? 'general'
-    return `Setup: ${field}`
+    const fieldToken = metadataMatch[1]?.split('.')[0] ?? 'general'
+    return `${t('validation.location.setup')}: ${mapFieldLabel(fieldToken)}`
   }
 
   if (path.startsWith('metric_profile')) {
-    return `Setup: comparison template`
+    return `${t('validation.location.setup')}: ${t('validation.field.template')}`
   }
 
   if (path === 'schema_version' || path === 'rule_set_id' || path === 'sport' || path === 'sport_version') {
-    return `Setup: ${path}`
+    return `${t('validation.location.setup')}: ${mapFieldLabel(path)}`
   }
 
-  return 'Review: general'
+  return `${t('validation.location.review')}: ${t('validation.field.general')}`
 }
 
 export function ValidationPanel({
@@ -87,7 +109,7 @@ export function ValidationPanel({
                 data-testid={`cb-validation-error-${index}`}
                 data-error-path={error.path}
               >
-                <strong>{describeErrorLocation(error.path, stepLabels, checkpointLabels)}</strong>: {t(`validation.code.${error.code}`, error.params)}
+                <strong>{describeErrorLocation(error.path, stepLabels, checkpointLabels, t)}</strong>: {t(`validation.code.${error.code}`, error.params)}
               </button>
               <details className="cb-validation-technical">
                 <summary>{t('validation.technicalDetails')}</summary>

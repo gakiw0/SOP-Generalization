@@ -6,7 +6,7 @@ import {
   type ConditionType,
 } from './draftTypes'
 import { getProfileCapability, listProfileOptions } from './capabilities'
-import { humanizeIdentifier } from './terminology'
+import { formatProfileLabel, humanizeIdentifier } from './terminology'
 import { downloadRuleSetJson } from './export'
 import { importDraftFromFile, type ImportMessageKey } from './import'
 import { toRuleSetForExport } from './mappers'
@@ -112,8 +112,8 @@ export function CoachBuilderPage() {
   const selectedProfileOption =
     profileOptionMap.get(state.draft.metadata.metricProfileId.trim()) ?? null
   const selectedProfileTypeLabel = state.draft.metadata.metricProfileType === 'preset'
-    ? 'Preset template'
-    : 'General template'
+    ? t('metadata.profileType.preset')
+    : t('metadata.profileType.generic')
   const supportedConditionTypes = useMemo(() => {
     if (!activeCapability) return KNOWN_CONDITION_TYPES
     const typeSet = new Set(activeCapability.supported_condition_types)
@@ -425,7 +425,7 @@ export function CoachBuilderPage() {
                 >
                   {selectableProfileOptions.map((profile) => (
                     <option key={profile.id} value={profile.id}>
-                      {profile.displayName} ({profile.subtitle})
+                      {formatProfileLabel(profile, t).displayName} ({profile.id})
                     </option>
                   ))}
                 </select>
@@ -445,8 +445,8 @@ export function CoachBuilderPage() {
                   data-testid="cb-setup-profile-type"
                   disabled
                 >
-                  <option value="generic">General template</option>
-                  <option value="preset">Preset template</option>
+                  <option value="generic">{t('metadata.profileType.generic')}</option>
+                  <option value="preset">{t('metadata.profileType.preset')}</option>
                 </select>
               </label>
 
@@ -462,7 +462,7 @@ export function CoachBuilderPage() {
                   >
                     {selectablePresetIds.map((presetId) => (
                       <option key={presetId} value={presetId}>
-                        {humanizeIdentifier(presetId)} ({presetId})
+                        {t(`presets.${presetId}`, { defaultValue: humanizeIdentifier(presetId) })} ({presetId})
                       </option>
                     ))}
                   </select>

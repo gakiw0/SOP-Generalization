@@ -65,7 +65,38 @@
     "metricPresetId": "推薦預設",
     "sport": "運動項目",
     "ruleVersion": "規則版本",
-    "title": "標題"
+    "title": "標題",
+    "profileType": {
+      "generic": "通用模板",
+      "preset": "預設模板"
+    }
+  },
+  "profiles": {
+    "generic_core": "通用動作比較",
+    "baseball": "棒球入門模板"
+  },
+  "presets": {
+    "baseball_starter": "棒球入門模板"
+  },
+  "metrics": {
+    "cg_z_delta_mean": "重心 Z 差異（平均）",
+    "cg_z_delta_series": "重心 Z 差異（時序）",
+    "head_displacement_delta_mean": "頭部位移差異（平均）",
+    "head_displacement_delta_series": "頭部位移差異（時序）",
+    "hip_yaw_delta_mean": "髖部旋轉差異（平均）",
+    "root_speed_delta_mean": "軀幹速度差異（平均）",
+    "root_speed_delta_series": "軀幹速度差異（時序）",
+    "shoulder_tilt_delta_mean": "肩部傾斜差異（平均）",
+    "cg_z_avg_ratio_or_flag": "重心 Z 平均差異",
+    "stance_angle_diff_ratio": "站姿角度差異",
+    "cg_z_end_ratio_or_flag": "重心 Z 終點差異",
+    "head_move_diff_ratio": "頭部移動差異",
+    "shoulder_xz_angle_diff_ratio": "肩部 XZ 角度差異",
+    "stride_z_class": "跨步方向分類",
+    "cg_z_end_diff_class": "重心 Z 終點分類差異",
+    "shoulder_height_diff_class": "肩高分類差異",
+    "cg_z_std_diff_ratio": "重心 Z 穩定性差異",
+    "hip_yaw_angle_diff_ratio_or_clamp": "髖部旋轉角度差異"
   },
   "step": {
     "listTitle": "步驟",
@@ -290,6 +321,27 @@
     "title": "驗證",
     "help": "點擊問題可直接跳到需要修正的位置。",
     "technicalDetails": "顯示技術路徑",
+    "location": {
+      "setup": "準備",
+      "step": "步驟：{{name}}",
+      "checkpoint": "檢查點：{{name}}",
+      "review": "確認"
+    },
+    "field": {
+      "general": "通用",
+      "comparisonId": "比較 ID",
+      "template": "比較模板",
+      "title": "標題",
+      "label": "標籤",
+      "category": "分類",
+      "id": "內部 ID",
+      "description": "說明",
+      "timing": "時機設定",
+      "conditions": "條件",
+      "score": "評分設定",
+      "version": "版本",
+      "sport": "運動項目"
+    },
     "summary": {
       "idle": "尚未驗證。",
       "pass": "驗證通過。",

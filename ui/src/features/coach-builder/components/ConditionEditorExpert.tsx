@@ -129,7 +129,7 @@ export function ConditionEditorExpert({
                 <option value="">{t('condition.placeholders.metric')}</option>
                 {metrics.map((metric) => (
                   <option key={metric} value={metric}>
-                    {formatMetricOptionText(metric, getMetricCatalogEntry(metric))}
+                    {formatMetricOptionText(metric, getMetricCatalogEntry(metric), t)}
                   </option>
                 ))}
               </select>
@@ -258,7 +258,7 @@ export function ConditionEditorExpert({
                 <option value="">{t('condition.placeholders.metric')}</option>
                 {metrics.map((metric) => (
                   <option key={metric} value={metric}>
-                    {formatMetricOptionText(metric, getMetricCatalogEntry(metric))}
+                    {formatMetricOptionText(metric, getMetricCatalogEntry(metric), t)}
                   </option>
                 ))}
               </select>

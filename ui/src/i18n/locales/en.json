@@ -65,7 +65,38 @@
     "metricPresetId": "Starter preset",
     "sport": "Sport",
     "ruleVersion": "Rule version",
-    "title": "Title"
+    "title": "Title",
+    "profileType": {
+      "generic": "General template",
+      "preset": "Preset template"
+    }
+  },
+  "profiles": {
+    "generic_core": "General motion comparison",
+    "baseball": "Baseball starter"
+  },
+  "presets": {
+    "baseball_starter": "Baseball starter"
+  },
+  "metrics": {
+    "cg_z_delta_mean": "Center of gravity Z delta (mean)",
+    "cg_z_delta_series": "Center of gravity Z delta (series)",
+    "head_displacement_delta_mean": "Head displacement delta (mean)",
+    "head_displacement_delta_series": "Head displacement delta (series)",
+    "hip_yaw_delta_mean": "Hip yaw delta (mean)",
+    "root_speed_delta_mean": "Root speed delta (mean)",
+    "root_speed_delta_series": "Root speed delta (series)",
+    "shoulder_tilt_delta_mean": "Shoulder tilt delta (mean)",
+    "cg_z_avg_ratio_or_flag": "Center of gravity Z average difference",
+    "stance_angle_diff_ratio": "Stance angle difference",
+    "cg_z_end_ratio_or_flag": "Center of gravity Z end difference",
+    "head_move_diff_ratio": "Head movement difference",
+    "shoulder_xz_angle_diff_ratio": "Shoulder XZ angle difference",
+    "stride_z_class": "Stride direction class",
+    "cg_z_end_diff_class": "Center of gravity Z end class",
+    "shoulder_height_diff_class": "Shoulder height difference class",
+    "cg_z_std_diff_ratio": "Center of gravity Z stability difference",
+    "hip_yaw_angle_diff_ratio_or_clamp": "Hip rotation angle difference"
   },
   "step": {
     "listTitle": "Steps",
@@ -290,6 +321,27 @@
     "title": "Validation",
     "help": "Click each issue to jump to the field that needs fixing.",
     "technicalDetails": "Show technical path",
+    "location": {
+      "setup": "Setup",
+      "step": "Step: {{name}}",
+      "checkpoint": "Checkpoint: {{name}}",
+      "review": "Review"
+    },
+    "field": {
+      "general": "General",
+      "comparisonId": "Comparison ID",
+      "template": "Comparison template",
+      "title": "Title",
+      "label": "Label",
+      "category": "Category",
+      "id": "Internal ID",
+      "description": "Description",
+      "timing": "Timing settings",
+      "conditions": "Conditions",
+      "score": "Scoring",
+      "version": "Version",
+      "sport": "Sport"
+    },
     "summary": {
       "idle": "Not validated yet.",
       "pass": "Validation passed.",
