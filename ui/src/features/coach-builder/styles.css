@@ -594,19 +594,55 @@
 }
 
 .cb-validation-list {
-  margin: 0.58rem 0 0;
+  margin: 0.74rem 0 0;
   padding: 0;
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 0.42rem;
+  gap: 0.55rem;
 }
 
-.cb-validation-list button {
+.cb-validation-summary {
+  margin-top: 0.72rem;
+  border: 1px solid #cfd8e8;
+  border-radius: var(--radius-sm);
+  padding: 0.52rem 0.66rem;
+  background: linear-gradient(180deg, #f8fafe 0%, #f2f6fd 100%);
+}
+
+.cb-validation-summary.is-error {
+  border-color: #e4c2ca;
+  background: linear-gradient(180deg, #fff6f8 0%, #fff0f3 100%);
+}
+
+.cb-validation-summary.is-pass {
+  border-color: #b2d6be;
+  background: linear-gradient(180deg, #f1fbf5 0%, #eaf7ef 100%);
+}
+
+.cb-validation-list li {
+  border: 1px solid #e3cad0;
+  border-radius: var(--radius-sm);
+  background: #fff6f8;
+  padding: 0.46rem 0.5rem;
+}
+
+.cb-validation-item-main {
   width: 100%;
   text-align: left;
-  border-color: #dfc6cb;
-  background: #fff5f7;
+  border: none !important;
+  padding: 0 !important;
+  background: transparent !important;
+  display: flex;
+  flex-direction: column;
+  gap: 0.14rem;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.cb-validation-item-main span {
+  color: #6f2434;
+  font-size: 0.86rem;
 }
 
 .cb-validation-list code {
@@ -618,7 +654,7 @@
 }
 
 .cb-validation-technical {
-  margin-top: 0.28rem;
+  margin-top: 0.3rem;
 }
 
 .cb-validation-technical summary {

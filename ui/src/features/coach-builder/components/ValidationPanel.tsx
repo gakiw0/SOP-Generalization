@@ -88,7 +88,7 @@ export function ValidationPanel({
         : t('validation.summary.fail', { count: errors.length })
 
   return (
-    <section className="cb-panel">
+    <section className="cb-panel cb-stage-section">
       <div className="cb-panel-header">
         <h2>{t('validation.title')}</h2>
         <button type="button" onClick={onValidate} data-testid="cb-review-validate">
@@ -97,7 +97,9 @@ export function ValidationPanel({
       </div>
       <p>{t('validation.help')}</p>
 
-      <p className={errors.length > 0 ? 'cb-error-text' : 'cb-ok-text'}>{summary}</p>
+      <div className={`cb-validation-summary ${errors.length > 0 ? 'is-error' : 'is-pass'}`}>
+        <p className={errors.length > 0 ? 'cb-error-text' : 'cb-ok-text'}>{summary}</p>
+      </div>
 
       {errors.length > 0 && (
         <ul className="cb-validation-list">
@@ -105,11 +107,13 @@ export function ValidationPanel({
             <li key={`${error.path}_${error.code}_${index}`}>
               <button
                 type="button"
+                className="cb-validation-item-main"
                 onClick={() => onNavigateError(error.path)}
                 data-testid={`cb-validation-error-${index}`}
                 data-error-path={error.path}
               >
-                <strong>{describeErrorLocation(error.path, stepLabels, checkpointLabels, t)}</strong>: {t(`validation.code.${error.code}`, error.params)}
+                <strong>{describeErrorLocation(error.path, stepLabels, checkpointLabels, t)}</strong>
+                <span>{t(`validation.code.${error.code}`, error.params)}</span>
               </button>
               <details className="cb-validation-technical">
                 <summary>{t('validation.technicalDetails')}</summary>
