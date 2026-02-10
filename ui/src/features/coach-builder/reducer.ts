@@ -1,4 +1,5 @@
 import {
+  conditionTypeIsBasic,
   collectUsedIds,
   createDefaultCheckpoint,
   createDefaultCondition,
@@ -102,6 +103,12 @@ const updateStepReferences = (steps: StepDraft[], oldStepId: string, newStepId: 
         checkpoint.signalDefaultPhase === oldStepId ? newStepId : checkpoint.signalDefaultPhase,
     })),
   }))
+
+const collectExpertCheckpointIds = (draft: CoachDraft): string[] =>
+  draft.steps
+    .flatMap((step) => step.checkpoints)
+    .filter((checkpoint) => checkpoint.conditions.some((condition) => !conditionTypeIsBasic(condition.type)))
+    .map((checkpoint) => checkpoint.id)
 
 export const coachDraftReducer = (
   state: CoachDraftState,
@@ -327,6 +334,7 @@ export const coachDraftReducer = (
       return ensureSelection({
         ...state,
         draft: action.draft,
+        expertCheckpointIds: collectExpertCheckpointIds(action.draft),
       })
     }
 

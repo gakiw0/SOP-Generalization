@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useReducer, useState } from 'react'
+import { useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import { createInitialState, normalizeDraftForExport } from './draftTypes'
 import { downloadRuleSetJson } from './export'
+import { importDraftFromFile } from './import'
 import { summarizeValidation, toRuleSetSchemaV1 } from './mappers'
 import { coachDraftReducer } from './reducer'
 import { validateRuleSet } from './validation'
@@ -17,6 +18,8 @@ export function CoachBuilderPage() {
     Array<{ path: string; message: string }>
   >([])
   const [hasValidated, setHasValidated] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
+  const suppressValidationResetRef = useRef(false)
 
   const selectedStep = useMemo(
     () => state.draft.steps.find((step) => step.id === state.selectedStepId) ?? null,
@@ -32,6 +35,10 @@ export function CoachBuilderPage() {
   )
 
   useEffect(() => {
+    if (suppressValidationResetRef.current) {
+      suppressValidationResetRef.current = false
+      return
+    }
     setHasValidated(false)
   }, [state.draft])
 
@@ -52,6 +59,34 @@ export function CoachBuilderPage() {
     const ruleSet = toRuleSetSchemaV1(normalizedDraft)
     const fileName = normalizedDraft.metadata.ruleSetId || 'rule_set'
     downloadRuleSetJson(ruleSet, fileName)
+  }
+
+  const handleImportClick = () => {
+    fileInputRef.current?.click()
+  }
+
+  const handleImportFile = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    try {
+      const imported = await importDraftFromFile(file)
+      setValidationErrors(imported.errors)
+      setValidationSummary(imported.message)
+      setHasValidated(true)
+
+      if (imported.draft) {
+        suppressValidationResetRef.current = true
+        dispatch({ type: 'draft/replace', draft: imported.draft })
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to import JSON file.'
+      setValidationErrors([{ path: 'import', message }])
+      setValidationSummary(`Import failed. ${message}`)
+      setHasValidated(false)
+    } finally {
+      event.target.value = ''
+    }
   }
 
   const navigateFromPath = (path: string) => {
@@ -79,8 +114,25 @@ export function CoachBuilderPage() {
   return (
     <main className="coach-builder-page">
       <header className="coach-builder-header cb-panel">
-        <h1>Coach JSON Builder</h1>
+        <div className="cb-panel-header">
+          <h1>Coach JSON Builder</h1>
+          <div className="cb-export-actions">
+            <button type="button" onClick={handleImportClick}>
+              Import JSON
+            </button>
+            <button type="button" onClick={() => dispatch({ type: 'draft/reset' })}>
+              Reset
+            </button>
+          </div>
+        </div>
         <p>Build schema v1 JSON with step/checkpoint language.</p>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".json,application/json"
+          onChange={handleImportFile}
+          className="cb-hidden-file-input"
+        />
       </header>
 
       <section className="cb-panel">

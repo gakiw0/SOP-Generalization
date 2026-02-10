@@ -294,6 +294,10 @@
   cursor: not-allowed;
 }
 
+.cb-hidden-file-input {
+  display: none;
+}
+
 @keyframes cbFadeIn {
   from {
     opacity: 0;
