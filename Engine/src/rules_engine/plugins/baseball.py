@@ -34,3 +34,29 @@ class BaseballPlugin(BaseRulePlugin):
         else:
             raise ValueError(f"Unknown phase id: {phase_id}")
         return metrics
+
+    def list_supported_metrics(self) -> Dict[str, list[str]]:
+        return {
+            "step1": [
+                "stance_angle_diff_ratio",
+                "cg_z_avg_ratio_or_flag",
+            ],
+            "step2": [
+                "head_move_diff_ratio",
+                "stride_z_class",
+                "cg_z_end_ratio_or_flag",
+                "shoulder_xz_angle_diff_ratio",
+            ],
+            "step3": [
+                "cg_z_end_diff_class",
+                "shoulder_height_diff_class",
+            ],
+            "step4": [
+                "cg_z_std_diff_ratio",
+                "hip_yaw_angle_diff_ratio_or_clamp",
+            ],
+        }
+
+    def list_supported_condition_types(self) -> list[str]:
+        # Keep this in sync with evaluator.evaluate_condition + composite handling in RuleEngine.
+        return ["threshold", "range", "boolean", "composite"]
