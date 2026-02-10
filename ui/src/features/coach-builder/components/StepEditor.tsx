@@ -1,6 +1,8 @@
 import { useTranslation } from 'react-i18next'
 import type { StepDraft } from '../draftTypes'
 import { formatJointIdsCsv, parseJointIdsCsv } from '../jointParsing'
+import { getMetricCatalogEntry } from '../metricCatalog'
+import { formatMetricLabel } from '../terminology'
 import { JointLandmarkDiagram } from './JointLandmarkDiagram'
 
 type StepEditorProps = {
@@ -187,8 +189,13 @@ export function StepEditor({ step, metricCandidates, onRename, onUpdate }: StepE
         ) : (
           <div className="cb-chip-row">
             {visibleMetrics.map((metric) => (
-              <span key={metric} className="cb-chip-button cb-chip-static" data-testid="cb-step-metric-option">
-                {metric}
+              <span
+                key={metric}
+                className="cb-chip-button cb-chip-static cb-metric-chip"
+                data-testid="cb-step-metric-option"
+              >
+                <span>{formatMetricLabel(metric, getMetricCatalogEntry(metric)).primary}</span>
+                <small className="cb-metric-subtext">{metric}</small>
               </span>
             ))}
           </div>

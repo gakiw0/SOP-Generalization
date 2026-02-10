@@ -9,6 +9,7 @@ import {
   type StepDraft,
 } from '../draftTypes'
 import { parseJointIdsCsv } from '../jointParsing'
+import { formatSignalTypeLabel } from '../terminology'
 import { ConditionEditorBasic } from './ConditionEditorBasic'
 import { ConditionEditorExpert } from './ConditionEditorExpert'
 import { JointLandmarkDiagram } from './JointLandmarkDiagram'
@@ -89,6 +90,7 @@ export function CheckpointEditor({
 
   const selectedCheckpoint =
     step.checkpoints.find((checkpoint) => checkpoint.id === selectedCheckpointId) ?? step.checkpoints[0] ?? null
+  const stepLabelMap = new Map(stepIds.map((stepId, index) => [stepId, `Step ${index + 1} (${stepId})`]))
 
   const highlightedJointIds: number[] = []
   if (selectedCheckpoint) {
@@ -138,7 +140,7 @@ export function CheckpointEditor({
             onClick={() => onSelectCheckpoint(checkpoint.id)}
             data-testid={`cb-checkpoints-tab-${index}`}
           >
-            {checkpoint.label || checkpoint.id}
+            {checkpoint.label || `Checkpoint ${index + 1}`}
           </button>
         ))}
       </div>
@@ -198,9 +200,15 @@ export function CheckpointEditor({
               })
             }
           >
-            <option value="frame_range_ref">{t('signalType.frame_range_ref')}</option>
-            <option value="direct">{t('signalType.direct')}</option>
-            <option value="event_window">{t('signalType.event_window')}</option>
+            <option value="frame_range_ref">
+              {t('signalType.frame_range_ref')} ({formatSignalTypeLabel('frame_range_ref')})
+            </option>
+            <option value="direct">
+              {t('signalType.direct')} ({formatSignalTypeLabel('direct')})
+            </option>
+            <option value="event_window">
+              {t('signalType.event_window')} ({formatSignalTypeLabel('event_window')})
+            </option>
           </select>
           <span className="cb-field-help">{t('checkpoint.fields.signalTypeHelp')}</span>
         </label>
@@ -218,7 +226,7 @@ export function CheckpointEditor({
             >
               {stepIds.map((stepId) => (
                 <option key={stepId} value={stepId}>
-                  {stepId}
+                  {stepLabelMap.get(stepId) ?? stepId}
                 </option>
               ))}
             </select>
@@ -305,7 +313,7 @@ export function CheckpointEditor({
                 <option value="">{t('common.none')}</option>
                 {stepIds.map((stepId) => (
                   <option key={stepId} value={stepId}>
-                    {stepId}
+                    {stepLabelMap.get(stepId) ?? stepId}
                   </option>
                 ))}
               </select>

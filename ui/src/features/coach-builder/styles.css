@@ -328,6 +328,21 @@
   font-size: 0.76rem;
 }
 
+.cb-chip-static {
+  cursor: default;
+}
+
+.cb-metric-chip {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.cb-metric-subtext {
+  opacity: 0.72;
+  font-size: 0.7rem;
+}
+
 .cb-condition-card {
   border: 1px solid #d8dde7;
   border-radius: 12px;
