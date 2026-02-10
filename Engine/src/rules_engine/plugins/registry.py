@@ -69,14 +69,29 @@ def register_plugin(name: str):
     return decorator
 
 
+def _schema_major(rule_set: dict) -> int:
+    version = str((rule_set or {}).get("schema_version", "")).strip()
+    parts = version.split(".")
+    if len(parts) == 3 and all(part.isdigit() for part in parts):
+        return int(parts[0])
+    return 1
+
+
 def resolve_plugin_name(rule_set: dict, plugin_name: Optional[str]) -> str:
     """
-    Resolve a plugin name, allowing auto-selection via rule_set["sport"].
+    Resolve plugin name:
+    - v1: auto => rule_set["sport"] (legacy behavior)
+    - v2+: auto => rule_set["metric_profile"]["id"], fallback generic_core
     """
     if plugin_name and plugin_name != "auto":
         return plugin_name
+    major = _schema_major(rule_set)
+    if major >= 2:
+        metric_profile = (rule_set or {}).get("metric_profile") or {}
+        profile_id = str(metric_profile.get("id", "")).strip()
+        return profile_id or "generic_core"
+
     sport = (rule_set or {}).get("sport")
     if not sport:
-        raise ValueError("plugin_name is 'auto' but rule_set.sport is missing.")
+        raise ValueError("plugin_name is 'auto' but rule_set.sport is missing for schema v1.")
     return str(sport)
-

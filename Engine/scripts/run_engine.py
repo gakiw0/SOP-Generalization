@@ -52,7 +52,7 @@ def main():
         "--plugin",
         type=str,
         default="auto",
-        help="Plugin name (default: auto -> inferred from rule_set.sport).",
+        help="Plugin name (default: auto -> v1 uses sport, v2 uses metric_profile.id with generic_core fallback).",
     )
     parser.add_argument("--no-save-new", action="store_true", help="Do not save analysis_results_new.json.")
     parser.add_argument("--no-save-legacy", action="store_true", help="Do not save analysis_results.json.")
