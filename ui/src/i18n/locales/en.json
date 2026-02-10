@@ -29,8 +29,8 @@
     },
     "steps": {
       "label": "Step",
-      "description": "Define movement phases in the same order coaches observe them.",
-      "footerHint": "Once your steps are ready, continue to checkpoint rules."
+      "description": "Define each step and its checkpoints together in one workspace.",
+      "footerHint": "Complete both step and checkpoint details, then continue to review."
     },
     "checkpoints": {
       "label": "Checkpoint",

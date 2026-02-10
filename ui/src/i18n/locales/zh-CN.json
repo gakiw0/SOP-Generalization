@@ -29,8 +29,8 @@
     },
     "steps": {
       "label": "步骤",
-      "description": "按教练观察动作的顺序定义步骤。",
-      "footerHint": "步骤确认后，继续到检查点设置。"
+      "description": "在同一工作区同时编辑步骤和检查点。",
+      "footerHint": "完成步骤与检查点后，再继续到检查页面。"
     },
     "checkpoints": {
       "label": "检查点",

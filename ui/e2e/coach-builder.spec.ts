@@ -9,7 +9,6 @@ const setEnglishLocale = async (page: Page) => {
 const gotoReviewStage = async (page: Page) => {
   await page.getByTestId('cb-nav-continue').click()
   await page.getByTestId('cb-nav-continue').click()
-  await page.getByTestId('cb-nav-continue').click()
   await expect(page.getByTestId('cb-stage-review')).toHaveClass(/is-current/)
 }
 
@@ -53,8 +52,6 @@ test('scenario_3_export_guard', async ({ page }) => {
   await page.getByTestId('cb-nav-continue').click()
 
   await page.getByTestId('cb-steps-label').fill('Load Phase')
-  await page.getByTestId('cb-nav-continue').click()
-
   await page.getByTestId('cb-checkpoints-label').fill('Head Stability')
   await page.getByTestId('cb-checkpoints-toggle-technical').click()
   await page.getByTestId('cb-checkpoints-category').fill('timing')

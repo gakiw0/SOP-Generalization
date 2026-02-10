@@ -29,8 +29,8 @@
     },
     "steps": {
       "label": "步驟",
-      "description": "依教練觀察動作的順序定義步驟。",
-      "footerHint": "步驟設定完成後，請繼續到檢查點。"
+      "description": "在同一工作區同時編輯步驟與檢查點。",
+      "footerHint": "完成步驟與檢查點後，再繼續到確認頁面。"
     },
     "checkpoints": {
       "label": "檢查點",
