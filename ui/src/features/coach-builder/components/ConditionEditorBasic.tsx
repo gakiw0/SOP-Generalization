@@ -1,5 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import type { BasicConditionType, ConditionDraft } from '../draftTypes'
+import { getMetricCatalogEntry } from '../metricCatalog'
+import { formatMetricOptionText } from '../terminology'
 
 type ConditionEditorBasicProps = {
   condition: ConditionDraft
@@ -94,7 +96,7 @@ export function ConditionEditorBasic({
               <option value="">{t('condition.placeholders.metric')}</option>
               {metrics.map((metric) => (
                 <option key={metric} value={metric}>
-                  {metric}
+                  {formatMetricOptionText(metric, getMetricCatalogEntry(metric))}
                 </option>
               ))}
             </select>
@@ -201,6 +203,15 @@ export function ConditionEditorBasic({
                   </option>
                 ))}
               </select>
+              {condition.conditionRefs.length > 0 ? (
+                <div className="cb-chip-row">
+                  {condition.conditionRefs.map((refId) => (
+                    <span key={refId} className="cb-chip-button cb-chip-static">
+                      {refId}
+                    </span>
+                  ))}
+                </div>
+              ) : null}
             </label>
           </>
         )}

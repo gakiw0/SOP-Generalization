@@ -1,6 +1,8 @@
 import { useTranslation } from 'react-i18next'
 import type { ConditionDraft } from '../draftTypes'
 import { formatJointIdsCsv, parseJointIdsCsv } from '../jointParsing'
+import { getMetricCatalogEntry } from '../metricCatalog'
+import { formatMetricOptionText } from '../terminology'
 import { JointLandmarkDiagram } from './JointLandmarkDiagram'
 
 type ExpertConditionType = 'event_exists' | 'trend' | 'angle' | 'distance'
@@ -127,7 +129,7 @@ export function ConditionEditorExpert({
                 <option value="">{t('condition.placeholders.metric')}</option>
                 {metrics.map((metric) => (
                   <option key={metric} value={metric}>
-                    {metric}
+                    {formatMetricOptionText(metric, getMetricCatalogEntry(metric))}
                   </option>
                 ))}
               </select>
@@ -256,7 +258,7 @@ export function ConditionEditorExpert({
                 <option value="">{t('condition.placeholders.metric')}</option>
                 {metrics.map((metric) => (
                   <option key={metric} value={metric}>
-                    {metric}
+                    {formatMetricOptionText(metric, getMetricCatalogEntry(metric))}
                   </option>
                 ))}
               </select>
