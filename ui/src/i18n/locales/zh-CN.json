@@ -71,6 +71,12 @@
     "profileType": {
       "generic": "通用模板",
       "preset": "预设模板"
+    },
+    "placeholders": {
+      "title": "选手与教练动作对比规则",
+      "sport": "棒球（可选）",
+      "ruleVersion": "1.0.0",
+      "ruleSetId": "motion_compare_custom"
     }
   },
   "profiles": {
@@ -147,7 +153,11 @@
       "category": "batting",
       "description": "填写该阶段的目标动作描述。",
       "eventName": "impact",
-      "jointsOfInterest": "1, 8, 12"
+      "jointsOfInterest": "1, 8, 12",
+      "startFrame": "0",
+      "endFrame": "30",
+      "preWindowMs": "120",
+      "postWindowMs": "120"
     }
   },
   "jointDiagram": {
@@ -234,7 +244,15 @@
       "defaultPhase": "备用步骤（可选）"
     },
     "placeholders": {
-      "description": "描述怎样算好动作/坏动作。"
+      "label": "头部保持稳定",
+      "category": "稳定性",
+      "description": "描述怎样算好动作/坏动作。",
+      "id": "cp_head_stability",
+      "directStartFrame": "0",
+      "directEndFrame": "30",
+      "event": "impact",
+      "windowPreMs": "120",
+      "windowPostMs": "120"
     }
   },
   "condition": {
@@ -295,12 +313,16 @@
       "decreasing": "下降趋势"
     },
     "placeholders": {
+      "id": "cond_head_delta",
       "metric": "请选择指标",
       "thresholdValue": "0.3",
       "rangeValue": "0, 1",
       "tolerance": "0",
       "conditionRefs": "cond_1, cond_2",
       "event": "impact",
+      "windowPreMs": "120",
+      "windowPostMs": "120",
+      "windowFrames": "10",
       "joints": "1, 2, 3",
       "pair": "4, 7",
       "angleSingle": "25",

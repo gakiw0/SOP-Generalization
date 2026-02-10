@@ -128,6 +128,7 @@ export function StepEditor({ step, metricCandidates, onRename, onUpdate }: StepE
                     type="number"
                     value={step.frameStart}
                     onChange={(event) => onUpdate({ frameStart: event.target.value })}
+                    placeholder={t('step.placeholders.startFrame')}
                   />
                 </label>
                 <label>
@@ -136,6 +137,7 @@ export function StepEditor({ step, metricCandidates, onRename, onUpdate }: StepE
                     type="number"
                     value={step.frameEnd}
                     onChange={(event) => onUpdate({ frameEnd: event.target.value })}
+                    placeholder={t('step.placeholders.endFrame')}
                   />
                 </label>
               </>
@@ -156,6 +158,7 @@ export function StepEditor({ step, metricCandidates, onRename, onUpdate }: StepE
                     type="number"
                     value={step.eventWindowPreMs}
                     onChange={(event) => onUpdate({ eventWindowPreMs: event.target.value })}
+                    placeholder={t('step.placeholders.preWindowMs')}
                   />
                 </label>
                 <label>
@@ -164,6 +167,7 @@ export function StepEditor({ step, metricCandidates, onRename, onUpdate }: StepE
                     type="number"
                     value={step.eventWindowPostMs}
                     onChange={(event) => onUpdate({ eventWindowPostMs: event.target.value })}
+                    placeholder={t('step.placeholders.postWindowMs')}
                   />
                 </label>
               </>

@@ -69,6 +69,7 @@ export function ConditionEditorBasic({
             <input
               type="text"
               value={condition.id}
+              placeholder={t('condition.placeholders.id')}
               onChange={(event) => onUpdate({ id: event.target.value })}
             />
           </label>

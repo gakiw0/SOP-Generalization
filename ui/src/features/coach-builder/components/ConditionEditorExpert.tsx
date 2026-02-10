@@ -79,6 +79,7 @@ export function ConditionEditorExpert({
             <input
               type="text"
               value={condition.id}
+              placeholder={t('condition.placeholders.id')}
               onChange={(event) => onUpdate({ id: event.target.value })}
             />
           </label>
@@ -121,6 +122,7 @@ export function ConditionEditorExpert({
                 type="number"
                 value={condition.windowPreMs}
                 onChange={(event) => onUpdate({ windowPreMs: event.target.value })}
+                placeholder={t('condition.placeholders.windowPreMs')}
               />
             </label>
             <label>
@@ -129,6 +131,7 @@ export function ConditionEditorExpert({
                 type="number"
                 value={condition.windowPostMs}
                 onChange={(event) => onUpdate({ windowPostMs: event.target.value })}
+                placeholder={t('condition.placeholders.windowPostMs')}
               />
             </label>
           </>
@@ -163,6 +166,7 @@ export function ConditionEditorExpert({
                 type="number"
                 value={condition.windowFrames}
                 onChange={(event) => onUpdate({ windowFrames: event.target.value })}
+                placeholder={t('condition.placeholders.windowFrames')}
               />
             </label>
             <label>
@@ -171,6 +175,7 @@ export function ConditionEditorExpert({
                 type="number"
                 value={condition.windowPreMs}
                 onChange={(event) => onUpdate({ windowPreMs: event.target.value })}
+                placeholder={t('condition.placeholders.windowPreMs')}
               />
             </label>
             <label>
@@ -179,6 +184,7 @@ export function ConditionEditorExpert({
                 type="number"
                 value={condition.windowPostMs}
                 onChange={(event) => onUpdate({ windowPostMs: event.target.value })}
+                placeholder={t('condition.placeholders.windowPostMs')}
               />
             </label>
           </>
@@ -237,6 +243,7 @@ export function ConditionEditorExpert({
                 type="number"
                 value={condition.tolerance}
                 onChange={(event) => onUpdate({ tolerance: event.target.value })}
+                placeholder={t('condition.placeholders.tolerance')}
               />
             </label>
 
@@ -310,6 +317,7 @@ export function ConditionEditorExpert({
                 type="number"
                 value={condition.tolerance}
                 onChange={(event) => onUpdate({ tolerance: event.target.value })}
+                placeholder={t('condition.placeholders.tolerance')}
               />
             </label>
 

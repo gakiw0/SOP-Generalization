@@ -71,6 +71,12 @@
     "profileType": {
       "generic": "General template",
       "preset": "Preset template"
+    },
+    "placeholders": {
+      "title": "Player vs coach baseline check",
+      "sport": "Baseball (optional)",
+      "ruleVersion": "1.0.0",
+      "ruleSetId": "motion_compare_custom"
     }
   },
   "profiles": {
@@ -147,7 +153,11 @@
       "category": "batting",
       "description": "Describe what the athlete should do in this phase.",
       "eventName": "impact",
-      "jointsOfInterest": "1, 8, 12"
+      "jointsOfInterest": "1, 8, 12",
+      "startFrame": "0",
+      "endFrame": "30",
+      "preWindowMs": "120",
+      "postWindowMs": "120"
     }
   },
   "jointDiagram": {
@@ -234,7 +244,15 @@
       "defaultPhase": "Fallback step (optional)"
     },
     "placeholders": {
-      "description": "Describe what good/bad motion looks like."
+      "label": "Head remains stable",
+      "category": "stability",
+      "description": "Describe what good/bad motion looks like.",
+      "id": "cp_head_stability",
+      "directStartFrame": "0",
+      "directEndFrame": "30",
+      "event": "impact",
+      "windowPreMs": "120",
+      "windowPostMs": "120"
     }
   },
   "condition": {
@@ -295,12 +313,16 @@
       "decreasing": "Decreasing"
     },
     "placeholders": {
+      "id": "cond_head_delta",
       "metric": "Select a metric",
       "thresholdValue": "0.3",
       "rangeValue": "0, 1",
       "tolerance": "0",
       "conditionRefs": "cond_1, cond_2",
       "event": "impact",
+      "windowPreMs": "120",
+      "windowPostMs": "120",
+      "windowFrames": "10",
       "joints": "1, 2, 3",
       "pair": "4, 7",
       "angleSingle": "25",

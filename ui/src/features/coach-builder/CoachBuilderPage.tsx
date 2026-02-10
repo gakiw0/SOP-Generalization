@@ -412,6 +412,7 @@ export function CoachBuilderPage() {
                       type="text"
                       value={state.draft.metadata.title}
                       data-testid="cb-setup-title"
+                      placeholder={t('metadata.placeholders.title')}
                       onChange={(event) =>
                         dispatch({ type: 'meta/set', field: 'title', value: event.target.value })
                       }
@@ -423,6 +424,7 @@ export function CoachBuilderPage() {
                       type="text"
                       value={state.draft.metadata.sport}
                       data-testid="cb-setup-sport"
+                      placeholder={t('metadata.placeholders.sport')}
                       onChange={(event) =>
                         dispatch({ type: 'meta/set', field: 'sport', value: event.target.value })
                       }
@@ -434,6 +436,7 @@ export function CoachBuilderPage() {
                       type="text"
                       value={state.draft.metadata.sportVersion}
                       data-testid="cb-setup-sport-version"
+                      placeholder={t('metadata.placeholders.ruleVersion')}
                       onChange={(event) =>
                         dispatch({ type: 'meta/set', field: 'sportVersion', value: event.target.value })
                       }
@@ -455,6 +458,7 @@ export function CoachBuilderPage() {
                         type="text"
                         value={state.draft.metadata.ruleSetId}
                         data-testid="cb-setup-rule-set-id"
+                        placeholder={t('metadata.placeholders.ruleSetId')}
                         onChange={(event) =>
                           dispatch({ type: 'meta/set', field: 'ruleSetId', value: event.target.value })
                         }

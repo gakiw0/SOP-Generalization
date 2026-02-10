@@ -71,6 +71,12 @@
     "profileType": {
       "generic": "汎用テンプレート",
       "preset": "プリセットテンプレート"
+    },
+    "placeholders": {
+      "title": "選手とコーチの比較ルール",
+      "sport": "野球（任意）",
+      "ruleVersion": "1.0.0",
+      "ruleSetId": "motion_compare_custom"
     }
   },
   "profiles": {
@@ -147,7 +153,11 @@
       "category": "batting",
       "description": "このフェーズで理想とする動作を書いてください。",
       "eventName": "impact",
-      "jointsOfInterest": "1, 8, 12"
+      "jointsOfInterest": "1, 8, 12",
+      "startFrame": "0",
+      "endFrame": "30",
+      "preWindowMs": "120",
+      "postWindowMs": "120"
     }
   },
   "jointDiagram": {
@@ -234,7 +244,15 @@
       "defaultPhase": "代替ステップ（任意）"
     },
     "placeholders": {
-      "description": "良い動作・悪い動作の基準を記述してください。"
+      "label": "頭のブレを抑える",
+      "category": "安定性",
+      "description": "良い動作・悪い動作の基準を記述してください。",
+      "id": "cp_head_stability",
+      "directStartFrame": "0",
+      "directEndFrame": "30",
+      "event": "impact",
+      "windowPreMs": "120",
+      "windowPostMs": "120"
     }
   },
   "condition": {
@@ -295,12 +313,16 @@
       "decreasing": "減少傾向"
     },
     "placeholders": {
+      "id": "cond_head_delta",
       "metric": "メトリクスを選択",
       "thresholdValue": "0.3",
       "rangeValue": "0, 1",
       "tolerance": "0",
       "conditionRefs": "cond_1, cond_2",
       "event": "impact",
+      "windowPreMs": "120",
+      "windowPostMs": "120",
+      "windowFrames": "10",
       "joints": "1, 2, 3",
       "pair": "4, 7",
       "angleSingle": "25",

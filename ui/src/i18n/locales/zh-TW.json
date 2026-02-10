@@ -71,6 +71,12 @@
     "profileType": {
       "generic": "通用模板",
       "preset": "預設模板"
+    },
+    "placeholders": {
+      "title": "選手與教練動作比較規則",
+      "sport": "棒球（可選）",
+      "ruleVersion": "1.0.0",
+      "ruleSetId": "motion_compare_custom"
     }
   },
   "profiles": {
@@ -147,7 +153,11 @@
       "category": "batting",
       "description": "描述此階段的理想動作。",
       "eventName": "impact",
-      "jointsOfInterest": "1, 8, 12"
+      "jointsOfInterest": "1, 8, 12",
+      "startFrame": "0",
+      "endFrame": "30",
+      "preWindowMs": "120",
+      "postWindowMs": "120"
     }
   },
   "jointDiagram": {
@@ -234,7 +244,15 @@
       "defaultPhase": "備援步驟（可選）"
     },
     "placeholders": {
-      "description": "描述何謂好動作與需修正動作。"
+      "label": "頭部保持穩定",
+      "category": "穩定性",
+      "description": "描述何謂好動作與需修正動作。",
+      "id": "cp_head_stability",
+      "directStartFrame": "0",
+      "directEndFrame": "30",
+      "event": "impact",
+      "windowPreMs": "120",
+      "windowPostMs": "120"
     }
   },
   "condition": {
@@ -295,12 +313,16 @@
       "decreasing": "下降趨勢"
     },
     "placeholders": {
+      "id": "cond_head_delta",
       "metric": "請選擇指標",
       "thresholdValue": "0.3",
       "rangeValue": "0, 1",
       "tolerance": "0",
       "conditionRefs": "cond_1, cond_2",
       "event": "impact",
+      "windowPreMs": "120",
+      "windowPostMs": "120",
+      "windowFrames": "10",
       "joints": "1, 2, 3",
       "pair": "4, 7",
       "angleSingle": "25",
