@@ -1,6 +1,7 @@
 import { useMemo, useReducer } from 'react'
 import { createInitialState } from './draftTypes'
 import { coachDraftReducer } from './reducer'
+import { CheckpointEditor } from './components/CheckpointEditor'
 import { StepEditor } from './components/StepEditor'
 import { StepList } from './components/StepList'
 import './styles.css'
@@ -91,10 +92,54 @@ export function CoachBuilderPage() {
         />
       </div>
 
-      <section className="cb-panel">
-        <h2>Checkpoint editor</h2>
-        <p>Checkpoint editing is added in the next commit.</p>
-      </section>
+      <CheckpointEditor
+        step={selectedStep}
+        stepIds={state.draft.steps.map((step) => step.id)}
+        selectedCheckpointId={state.selectedCheckpointId}
+        onSelectCheckpoint={(checkpointId) =>
+          dispatch({ type: 'checkpoint/select', checkpointId })
+        }
+        onAddCheckpoint={() => {
+          if (!selectedStep) return
+          dispatch({ type: 'checkpoint/add', stepId: selectedStep.id })
+        }}
+        onRemoveCheckpoint={(checkpointId) => {
+          if (!selectedStep) return
+          dispatch({ type: 'checkpoint/remove', stepId: selectedStep.id, checkpointId })
+        }}
+        onUpdateCheckpoint={(checkpointId, patch) => {
+          if (!selectedStep) return
+          dispatch({
+            type: 'checkpoint/update',
+            stepId: selectedStep.id,
+            checkpointId,
+            patch,
+          })
+        }}
+        onAddCondition={(checkpointId) => {
+          if (!selectedStep) return
+          dispatch({ type: 'condition/add', stepId: selectedStep.id, checkpointId })
+        }}
+        onUpdateCondition={(checkpointId, conditionId, patch) => {
+          if (!selectedStep) return
+          dispatch({
+            type: 'condition/update',
+            stepId: selectedStep.id,
+            checkpointId,
+            conditionId,
+            patch,
+          })
+        }}
+        onRemoveCondition={(checkpointId, conditionId) => {
+          if (!selectedStep) return
+          dispatch({
+            type: 'condition/remove',
+            stepId: selectedStep.id,
+            checkpointId,
+            conditionId,
+          })
+        }}
+      />
     </main>
   )
 }

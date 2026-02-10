@@ -119,6 +119,64 @@
   padding: 0.35rem 0.6rem;
 }
 
+.cb-checkpoint-tabs {
+  margin: 0.8rem 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.cb-checkpoint-tabs button {
+  border: 1px solid #c8d1df;
+  border-radius: 999px;
+  background: #f5f7fb;
+  padding: 0.35rem 0.7rem;
+}
+
+.cb-checkpoint-tabs button.is-selected {
+  border-color: #2f6bdb;
+  background: #edf3ff;
+}
+
+.cb-inline-actions {
+  margin-top: 0.8rem;
+  display: flex;
+  gap: 0.6rem;
+}
+
+.cb-sub-panel {
+  margin-top: 1rem;
+}
+
+.cb-sub-panel h3 {
+  margin: 0;
+}
+
+.cb-condition-card {
+  border: 1px solid #d8dde7;
+  border-radius: 10px;
+  padding: 0.75rem;
+  margin-top: 0.75rem;
+  background: #ffffff;
+}
+
+.cb-condition-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.cb-condition-header h4 {
+  margin: 0;
+}
+
+.cb-checkbox-label {
+  flex-direction: row !important;
+  align-items: center;
+  gap: 0.5rem !important;
+}
+
 @media (max-width: 900px) {
   .cb-layout {
     grid-template-columns: 1fr;

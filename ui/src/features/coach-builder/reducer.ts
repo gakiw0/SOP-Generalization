@@ -230,6 +230,7 @@ export const coachDraftReducer = (
     }
 
     case 'checkpoint/update': {
+      const nextId = typeof action.patch.id === 'string' ? action.patch.id : null
       return {
         ...state,
         draft: {
@@ -244,6 +245,10 @@ export const coachDraftReducer = (
             })
           ),
         },
+        selectedCheckpointId:
+          nextId != null && state.selectedCheckpointId === action.checkpointId
+            ? nextId
+            : state.selectedCheckpointId,
       }
     }
 
