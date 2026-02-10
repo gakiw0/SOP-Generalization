@@ -572,18 +572,6 @@ export function CoachBuilderPage() {
               supportedConditionTypes={supportedConditionTypes}
               metricCandidates={stepMetricCandidates}
               selectedCheckpointId={state.selectedCheckpointId}
-              expertEnabled={
-                state.selectedCheckpointId != null &&
-                state.expertCheckpointIds.includes(state.selectedCheckpointId)
-              }
-              onToggleExpert={(enabled) => {
-                if (!state.selectedCheckpointId) return
-                dispatch({
-                  type: 'checkpoint/toggleExpert',
-                  checkpointId: state.selectedCheckpointId,
-                  enabled,
-                })
-              }}
               onSelectCheckpoint={(checkpointId) =>
                 dispatch({ type: 'checkpoint/select', checkpointId })
               }

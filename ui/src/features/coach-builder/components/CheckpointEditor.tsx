@@ -20,8 +20,6 @@ type CheckpointEditorProps = {
   supportedConditionTypes?: ConditionType[]
   metricCandidates?: string[]
   selectedCheckpointId: string | null
-  expertEnabled: boolean
-  onToggleExpert: (enabled: boolean) => void
   onSelectCheckpoint: (checkpointId: string) => void
   onAddCheckpoint: () => void
   onRemoveCheckpoint: (checkpointId: string) => void
@@ -46,8 +44,6 @@ export function CheckpointEditor({
   supportedConditionTypes,
   metricCandidates,
   selectedCheckpointId,
-  expertEnabled,
-  onToggleExpert,
   onSelectCheckpoint,
   onAddCheckpoint,
   onRemoveCheckpoint,
@@ -68,9 +64,7 @@ export function CheckpointEditor({
   const allowedExpertTypes: ExpertConditionType[] = EXPERT_TYPES.filter((type) =>
     supportedTypeSet.has(type)
   )
-  const allowedTypes = expertEnabled
-    ? [...allowedBasicTypes, ...allowedExpertTypes]
-    : [...allowedBasicTypes]
+  const allowedTypes = [...allowedBasicTypes, ...allowedExpertTypes]
   const [newConditionType, setNewConditionType] = useState<ConditionType>(
     allowedTypes[0] ?? 'threshold'
   )
@@ -380,16 +374,6 @@ export function CheckpointEditor({
       />
 
       <div className="cb-inline-actions">
-        <label className="cb-checkbox-label">
-          <input
-            type="checkbox"
-            checked={expertEnabled}
-            onChange={(event) => onToggleExpert(event.target.checked)}
-            data-testid="cb-checkpoints-enable-expert"
-          />
-          {t('checkpoint.enableExpert')}
-        </label>
-
         <button type="button" className="cb-danger" onClick={() => onRemoveCheckpoint(selectedCheckpoint.id)}>
           {t('checkpoint.removeButton')}
         </button>
@@ -444,7 +428,7 @@ export function CheckpointEditor({
           }
 
           const expertTypeSupported = allowedExpertTypes.includes(condition.type)
-          if (!expertEnabled || !expertTypeSupported) {
+          if (!expertTypeSupported) {
             return (
               <article key={condition.id} className="cb-condition-card cb-condition-locked">
                 <div className="cb-condition-header">
