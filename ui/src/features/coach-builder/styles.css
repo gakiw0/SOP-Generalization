@@ -421,27 +421,6 @@
   cursor: not-allowed;
 }
 
-.cb-choice-row {
-  margin-top: 0.75rem;
-  display: grid;
-  gap: 0.7rem;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.cb-choice-card {
-  border: 1px solid #ccd4e2;
-  border-radius: 14px;
-  background: linear-gradient(180deg, #ffffff 0%, #f5f8fd 100%);
-  padding: 0.85rem 0.9rem;
-  text-align: left;
-  font-weight: 700;
-}
-
-.cb-choice-card.is-selected {
-  border-color: #d9b61e;
-  background: linear-gradient(180deg, #fffef1 0%, #fff6c9 100%);
-}
-
 .cb-summary-strip {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -574,10 +553,6 @@
 
   .cb-stage-track {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .cb-choice-row {
-    grid-template-columns: 1fr;
   }
 
   .cb-summary-strip {
