@@ -1,0 +1,14 @@
+.coach-builder-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.coach-builder-header h1 {
+  margin: 0;
+}
+
+.coach-builder-header p {
+  margin: 0.75rem 0 0;
+  color: #586172;
+}
