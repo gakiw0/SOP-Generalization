@@ -205,6 +205,10 @@
   color: var(--ink-900);
 }
 
+.cb-multi-select {
+  min-height: 6.4rem;
+}
+
 .cb-full-width {
   grid-column: 1 / -1;
 }

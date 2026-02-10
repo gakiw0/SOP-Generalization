@@ -22,6 +22,12 @@ export function ConditionEditorBasic({
 }: ConditionEditorBasicProps) {
   const { t } = useTranslation()
   const availableRefIds = allConditionIds.filter((id) => id !== condition.id)
+  const selectableRefIds = Array.from(
+    new Set([
+      ...availableRefIds,
+      ...condition.conditionRefs.filter((id) => id !== condition.id),
+    ])
+  )
   const basicTypes = supportedTypes && supportedTypes.length > 0 ? supportedTypes : BASIC_TYPES
   const metrics =
     metricCandidates && metricCandidates.length > 0
@@ -176,25 +182,25 @@ export function ConditionEditorBasic({
 
             <label className="cb-full-width">
               {t('condition.fields.conditionRefs')}
-              <input
-                type="text"
-                value={condition.conditionRefs.join(', ')}
+              <select
+                multiple
+                className="cb-multi-select"
+                value={condition.conditionRefs}
+                data-testid="cb-condition-composite-refs"
                 onChange={(event) =>
                   onUpdate({
-                    conditionRefs: event.target.value
-                      .split(',')
-                      .map((item) => item.trim())
-                      .filter((item) => item.length > 0),
+                    conditionRefs: Array.from(event.target.selectedOptions).map(
+                      (option) => option.value
+                    ),
                   })
                 }
-                placeholder={t('condition.placeholders.conditionRefs')}
-                list={`condition_refs_${condition.id}`}
-              />
-              <datalist id={`condition_refs_${condition.id}`}>
-                {availableRefIds.map((refId) => (
-                  <option key={refId} value={refId} />
+              >
+                {selectableRefIds.map((refId) => (
+                  <option key={refId} value={refId}>
+                    {refId}
+                  </option>
                 ))}
-              </datalist>
+              </select>
             </label>
           </>
         )}

@@ -18,6 +18,13 @@ export type ProfileCapability = {
   metric_catalog_ref?: string
 }
 
+export type ProfileOption = {
+  id: string
+  type: 'generic' | 'preset'
+  preset_id?: string
+  plugin: string
+}
+
 export type PluginCapabilities = {
   version: number
   default_profile_id?: string
@@ -89,6 +96,16 @@ const parseCapabilities = (value: unknown): PluginCapabilities => {
 }
 
 export const pluginCapabilities: PluginCapabilities = parseCapabilities(rawCapabilities)
+
+export const listProfileOptions = (): ProfileOption[] =>
+  Object.values(pluginCapabilities.profiles)
+    .map((profile) => ({
+      id: profile.id,
+      type: profile.type,
+      preset_id: profile.preset_id ?? undefined,
+      plugin: profile.plugin,
+    }))
+    .sort((a, b) => a.id.localeCompare(b.id))
 
 export const getProfileCapability = (profileId: string): PluginCapability | null => {
   const id = profileId.trim()

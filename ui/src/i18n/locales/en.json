@@ -9,7 +9,8 @@
     "importJson": "Import JSON",
     "exportJson": "Export JSON",
     "validate": "Validate",
-    "language": "Language"
+    "language": "Language",
+    "none": "None"
   },
   "language": {
     "ja": "日本語",

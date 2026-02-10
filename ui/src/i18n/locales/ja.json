@@ -9,7 +9,8 @@
     "importJson": "JSONを読み込む",
     "exportJson": "JSONを書き出す",
     "validate": "検証",
-    "language": "言語"
+    "language": "言語",
+    "none": "なし"
   },
   "language": {
     "ja": "日本語",

@@ -5,7 +5,7 @@ import {
   normalizeDraftForExport,
   type ConditionType,
 } from './draftTypes'
-import { getProfileCapability } from './capabilities'
+import { getProfileCapability, listProfileOptions } from './capabilities'
 import { downloadRuleSetJson } from './export'
 import { importDraftFromFile, type ImportMessageKey } from './import'
 import { toRuleSetForExport } from './mappers'
@@ -65,6 +65,47 @@ export function CoachBuilderPage() {
     () => getProfileCapability(state.draft.metadata.metricProfileId.trim()),
     [state.draft.metadata.metricProfileId]
   )
+  const profileOptions = useMemo(() => listProfileOptions(), [])
+  const profileOptionMap = useMemo(
+    () => new Map(profileOptions.map((profile) => [profile.id, profile])),
+    [profileOptions]
+  )
+  const selectableProfileOptions = useMemo(() => {
+    const currentId = state.draft.metadata.metricProfileId.trim()
+    if (currentId.length === 0 || profileOptionMap.has(currentId)) return profileOptions
+    return [
+      ...profileOptions,
+      {
+        id: currentId,
+        type: state.draft.metadata.metricProfileType,
+        preset_id:
+          state.draft.metadata.metricPresetId.trim().length > 0
+            ? state.draft.metadata.metricPresetId.trim()
+            : undefined,
+        plugin: '(custom)',
+      },
+    ]
+  }, [
+    profileOptions,
+    profileOptionMap,
+    state.draft.metadata.metricProfileId,
+    state.draft.metadata.metricProfileType,
+    state.draft.metadata.metricPresetId,
+  ])
+  const selectablePresetIds = useMemo(() => {
+    const presetIds = Array.from(
+      new Set(
+        profileOptions
+          .filter((profile) => profile.type === 'preset' && profile.preset_id)
+          .map((profile) => profile.preset_id as string)
+      )
+    ).sort((a, b) => a.localeCompare(b))
+    const currentPresetId = state.draft.metadata.metricPresetId.trim()
+    if (currentPresetId.length > 0 && !presetIds.includes(currentPresetId)) {
+      return [...presetIds, currentPresetId]
+    }
+    return presetIds
+  }, [profileOptions, state.draft.metadata.metricPresetId])
   const supportedConditionTypes = useMemo(() => {
     if (!activeCapability) return KNOWN_CONDITION_TYPES
     const typeSet = new Set(activeCapability.supported_condition_types)
@@ -184,6 +225,25 @@ export function CoachBuilderPage() {
     const next = event.target.value as LocaleCode
     await i18n.changeLanguage(next)
     window.sessionStorage.setItem(LOCALE_STORAGE_KEY, next)
+  }
+
+  const handleProfileChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const nextProfileId = event.target.value
+    dispatch({ type: 'meta/set', field: 'metricProfileId', value: nextProfileId })
+
+    const selectedProfile = profileOptionMap.get(nextProfileId)
+    if (!selectedProfile) return
+
+    dispatch({
+      type: 'meta/set',
+      field: 'metricProfileType',
+      value: selectedProfile.type,
+    })
+    dispatch({
+      type: 'meta/set',
+      field: 'metricPresetId',
+      value: selectedProfile.preset_id ?? '',
+    })
   }
 
   const moveStage = (nextStage: WorkflowStage) => {
@@ -332,14 +392,21 @@ export function CoachBuilderPage() {
 
               <label>
                 {t('metadata.metricProfileId')}
-                <input
-                  type="text"
+                <select
                   value={state.draft.metadata.metricProfileId}
                   data-testid="cb-setup-profile-id"
-                  onChange={(event) =>
-                    dispatch({ type: 'meta/set', field: 'metricProfileId', value: event.target.value })
-                  }
-                />
+                  onChange={handleProfileChange}
+                >
+                  {selectableProfileOptions.map((profile) => (
+                    <option key={profile.id} value={profile.id}>
+                      {profile.id} ({profile.type}
+                      {profile.type === 'preset' && profile.preset_id
+                        ? `:${profile.preset_id}`
+                        : ''}
+                      )
+                    </option>
+                  ))}
+                </select>
               </label>
 
               <label>
@@ -347,13 +414,7 @@ export function CoachBuilderPage() {
                 <select
                   value={state.draft.metadata.metricProfileType}
                   data-testid="cb-setup-profile-type"
-                  onChange={(event) =>
-                    dispatch({
-                      type: 'meta/set',
-                      field: 'metricProfileType',
-                      value: event.target.value,
-                    })
-                  }
+                  disabled
                 >
                   <option value="generic">generic</option>
                   <option value="preset">preset</option>
@@ -363,14 +424,19 @@ export function CoachBuilderPage() {
               {state.draft.metadata.metricProfileType === 'preset' && (
                 <label>
                   {t('metadata.metricPresetId')}
-                  <input
-                    type="text"
+                  <select
                     value={state.draft.metadata.metricPresetId}
                     data-testid="cb-setup-preset-id"
                     onChange={(event) =>
                       dispatch({ type: 'meta/set', field: 'metricPresetId', value: event.target.value })
                     }
-                  />
+                  >
+                    {selectablePresetIds.map((presetId) => (
+                      <option key={presetId} value={presetId}>
+                        {presetId}
+                      </option>
+                    ))}
+                  </select>
                 </label>
               )}
 

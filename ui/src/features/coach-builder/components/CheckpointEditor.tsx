@@ -294,15 +294,21 @@ export function CheckpointEditor({
             </label>
             <label>
               {t('checkpoint.fields.defaultPhase')}
-              <input
-                type="text"
+              <select
                 value={selectedCheckpoint.signalDefaultPhase}
                 onChange={(event) =>
                   onUpdateCheckpoint(selectedCheckpoint.id, {
                     signalDefaultPhase: event.target.value,
                   })
                 }
-              />
+              >
+                <option value="">{t('common.none')}</option>
+                {stepIds.map((stepId) => (
+                  <option key={stepId} value={stepId}>
+                    {stepId}
+                  </option>
+                ))}
+              </select>
             </label>
           </>
         )}

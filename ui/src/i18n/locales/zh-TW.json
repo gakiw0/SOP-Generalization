@@ -9,7 +9,8 @@
     "importJson": "匯入 JSON",
     "exportJson": "匯出 JSON",
     "validate": "驗證",
-    "language": "語言"
+    "language": "語言",
+    "none": "無"
   },
   "language": {
     "ja": "日本語",
@@ -355,3 +356,4 @@
     "description": "請先執行驗證。只有在驗證通過且錯誤數為 0 時，才可匯出 JSON。"
   }
 }
+
