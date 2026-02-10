@@ -13,8 +13,20 @@ import type {
   ValidationCode,
   ValidationError,
 } from './schemaTypes'
+import type { PluginCapability } from './capabilities'
 
 const ID_RE = /^[A-Za-z0-9_.-]+$/
+const KNOWN_CONDITION_TYPES = [
+  'threshold',
+  'range',
+  'boolean',
+  'event_exists',
+  'composite',
+  'trend',
+  'angle',
+  'distance',
+] as const
+const METRIC_CONDITION_TYPES = ['threshold', 'range', 'boolean', 'trend'] as const
 
 const isNonEmptyString = (value: unknown): value is string =>
   typeof value === 'string' && value.trim().length > 0
@@ -400,7 +412,45 @@ const validateFeedback = (rule: Rule, index: number, errors: ValidationError[]) 
   })
 }
 
-export const validateRuleSet = (ruleSet: RuleSet): ValidationError[] => {
+const validateCapabilitySupport = (
+  rule: Rule,
+  index: number,
+  errors: ValidationError[],
+  capability: PluginCapability
+) => {
+  const supportedConditionTypes = new Set(capability.supported_condition_types)
+  const allMetrics = new Set(capability.all_metrics)
+  const phaseMetrics = new Set(capability.metrics_by_phase[rule.phase] ?? [])
+  const allowedMetrics = new Set([...allMetrics, ...phaseMetrics])
+  const knownConditionTypes = new Set<string>(KNOWN_CONDITION_TYPES)
+  const metricConditionTypes = new Set<string>(METRIC_CONDITION_TYPES)
+  const basePath = `rules[${index}].conditions`
+
+  rule.conditions.forEach((condition, conditionIndex) => {
+    const conditionPath = `${basePath}[${conditionIndex}]`
+    if (knownConditionTypes.has(condition.type) && !supportedConditionTypes.has(condition.type)) {
+      pushError(errors, `${conditionPath}.type`, 'unsupported_condition_type', {
+        type: condition.type,
+      })
+    }
+
+    if (!metricConditionTypes.has(condition.type)) return
+    const metric = (condition as { metric?: unknown }).metric
+    if (!isNonEmptyString(metric)) return
+
+    if (!allowedMetrics.has(metric)) {
+      pushError(errors, `${conditionPath}.metric`, 'unsupported_metric', {
+        metric,
+        phase: rule.phase,
+      })
+    }
+  })
+}
+
+export const validateRuleSet = (
+  ruleSet: RuleSet,
+  capability?: PluginCapability | null
+): ValidationError[] => {
   const errors: ValidationError[] = []
 
   if (!isSemver(ruleSet.schema_version)) pushError(errors, 'schema_version', 'invalid_semver')
@@ -450,6 +500,7 @@ export const validateRuleSet = (ruleSet: RuleSet): ValidationError[] => {
 
     validateSignal(rule, index, errors, phaseIds)
     validateConditions(rule, index, errors)
+    if (capability) validateCapabilitySupport(rule, index, errors, capability)
     validateScore(rule, index, errors)
     validateFeedback(rule, index, errors)
   })
