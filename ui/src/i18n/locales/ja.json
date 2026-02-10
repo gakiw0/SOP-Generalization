@@ -293,7 +293,7 @@
       "decreasing": "減少傾向"
     },
     "placeholders": {
-      "metric": "head_move_diff_ratio",
+      "metric": "メトリクスを選択",
       "thresholdValue": "0.3",
       "rangeValue": "0, 1",
       "tolerance": "0",

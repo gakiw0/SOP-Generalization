@@ -293,7 +293,7 @@
       "decreasing": "Decreasing"
     },
     "placeholders": {
-      "metric": "head_move_diff_ratio",
+      "metric": "Select a metric",
       "thresholdValue": "0.3",
       "rangeValue": "0, 1",
       "tolerance": "0",

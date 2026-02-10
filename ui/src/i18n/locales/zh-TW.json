@@ -293,7 +293,7 @@
       "decreasing": "下降趨勢"
     },
     "placeholders": {
-      "metric": "head_move_diff_ratio",
+      "metric": "請選擇指標",
       "thresholdValue": "0.3",
       "rangeValue": "0, 1",
       "tolerance": "0",
