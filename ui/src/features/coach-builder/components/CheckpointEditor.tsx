@@ -210,7 +210,16 @@ export function CheckpointEditor({
         </section>
 
         <section className="cb-editor-block">
-          <h3>{t('checkpoint.fields.signalType')}</h3>
+          <div className="cb-editor-block-header">
+            <h3>{t('checkpoint.fields.signalType')}</h3>
+            <button
+              type="button"
+              onClick={() => setShowTechnicalFields((value) => !value)}
+              data-testid="cb-checkpoints-toggle-technical"
+            >
+              {showTechnicalFields ? t('checkpoint.hideTechnical') : t('checkpoint.showTechnical')}
+            </button>
+          </div>
           <div className="cb-field-grid">
             <label>
               {t('checkpoint.fields.signalType')}
@@ -380,13 +389,6 @@ export function CheckpointEditor({
           />
           {t('checkpoint.enableExpert')}
         </label>
-        <button
-          type="button"
-          onClick={() => setShowTechnicalFields((value) => !value)}
-          data-testid="cb-checkpoints-toggle-technical"
-        >
-          {showTechnicalFields ? t('checkpoint.hideTechnical') : t('checkpoint.showTechnical')}
-        </button>
 
         <button type="button" className="cb-danger" onClick={() => onRemoveCheckpoint(selectedCheckpoint.id)}>
           {t('checkpoint.removeButton')}
