@@ -69,7 +69,7 @@ test('scenario_4_joint_diagram_step_and_toggle', async ({ page }) => {
   await page.getByTestId('cb-nav-continue').click()
 
   await expect(page.getByTestId('cb-joint-diagram-step')).toBeVisible()
-  await expect(page.getByTestId('cb-joint-diagram-checkpoint')).toBeVisible()
+  await expect(page.getByTestId('cb-joint-diagram-checkpoint')).toHaveCount(0)
 
   const stepLegend = page.locator('[data-testid="cb-joint-diagram-step"] .cb-joint-legend')
   await stepLegend.locator('[data-point-id="1"]').click()
