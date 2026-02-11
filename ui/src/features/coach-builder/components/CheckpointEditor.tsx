@@ -8,11 +8,9 @@ import {
   type ConditionType,
   type StepDraft,
 } from '../draftTypes'
-import { parseJointIdsCsv } from '../jointParsing'
 import { formatSignalTypeLabel } from '../terminology'
 import { ConditionEditorBasic } from './ConditionEditorBasic'
 import { ConditionEditorExpert } from './ConditionEditorExpert'
-import { JointLandmarkDiagram } from './JointLandmarkDiagram'
 
 type CheckpointEditorProps = {
   step: StepDraft | null
@@ -85,21 +83,6 @@ export function CheckpointEditor({
   const selectedCheckpoint =
     step.checkpoints.find((checkpoint) => checkpoint.id === selectedCheckpointId) ?? step.checkpoints[0] ?? null
   const stepLabelMap = new Map(stepIds.map((stepId, index) => [stepId, `Step ${index + 1} (${stepId})`]))
-
-  const highlightedJointIds: number[] = []
-  if (selectedCheckpoint) {
-    const jointSet = new Set<number>()
-    selectedCheckpoint.conditions.forEach((condition) => {
-      const nextIds =
-        condition.type === 'angle'
-          ? parseJointIdsCsv(condition.joints)
-          : condition.type === 'distance'
-            ? parseJointIdsCsv(condition.pair)
-            : []
-      nextIds.forEach((jointId) => jointSet.add(jointId))
-    })
-    highlightedJointIds.push(...jointSet)
-  }
 
   if (!selectedCheckpoint) {
     return (
@@ -383,13 +366,6 @@ export function CheckpointEditor({
           </div>
         </section>
       </div>
-
-      <JointLandmarkDiagram
-        selectedJointIds={highlightedJointIds}
-        titleKey="jointDiagram.checkpointTitle"
-        helpKey="jointDiagram.checkpointHelp"
-        dataTestId="cb-joint-diagram-checkpoint"
-      />
 
       <div className="cb-panel cb-sub-panel">
         <div className="cb-panel-header">
