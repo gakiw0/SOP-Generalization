@@ -168,8 +168,6 @@
     "interactiveMaxHint": "可点击节点进行选择/取消选择（最多 {{count}} 个）。",
     "stepTitle": "当前步骤关节点图",
     "stepHelp": "高亮点表示 joints_of_interest 中填写的关节 ID。",
-    "checkpointTitle": "当前检查点关节点图",
-    "checkpointHelp": "高亮点表示 angle/distance 条件中引用的关节 ID。",
     "conditionTitle": "当前条件关节点图",
     "conditionHelp": "高亮点对应上方输入的关节 ID。"
   },

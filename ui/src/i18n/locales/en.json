@@ -168,8 +168,6 @@
     "interactiveMaxHint": "Click points to select/unselect joints (max {{count}}).",
     "stepTitle": "Joint map for this step",
     "stepHelp": "Highlighted points reflect joints_of_interest values.",
-    "checkpointTitle": "Joint map for this checkpoint",
-    "checkpointHelp": "Highlighted points reflect joints referenced by angle/distance conditions.",
     "conditionTitle": "Joint map for this condition",
     "conditionHelp": "Highlighted points reflect the joint IDs entered above."
   },

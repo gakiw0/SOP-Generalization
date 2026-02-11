@@ -168,8 +168,6 @@
     "interactiveMaxHint": "可點擊節點進行選取/取消選取（最多 {{count}} 個）。",
     "stepTitle": "目前步驟關節圖",
     "stepHelp": "高亮點代表 joints_of_interest 輸入的關節 ID。",
-    "checkpointTitle": "目前檢查點關節圖",
-    "checkpointHelp": "高亮點代表 angle/distance 條件引用的關節 ID。",
     "conditionTitle": "目前條件關節圖",
     "conditionHelp": "高亮點對應上方輸入的關節 ID。"
   },

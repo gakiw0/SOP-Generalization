@@ -168,8 +168,6 @@
     "interactiveMaxHint": "点をクリックして関節IDを選択/解除できます（最大{{count}}）。",
     "stepTitle": "このステップの関節マップ",
     "stepHelp": "ハイライトは joints_of_interest の入力値を示します。",
-    "checkpointTitle": "このチェックポイントの関節マップ",
-    "checkpointHelp": "ハイライトは angle/distance 条件で参照された関節IDを示します。",
     "conditionTitle": "この条件の関節マップ",
     "conditionHelp": "ハイライトは上の入力欄で指定した関節IDです。"
   },
